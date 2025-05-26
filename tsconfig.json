@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    // ... other options ...
+    "target": "es2020",
+    "module": "commonjs",
+    "rootDir": "./src",       // Where your TS source files are
+    "baseUrl": "./",          // Important for path resolution if you use paths
+    "paths": {                // Optional, but can be useful
+      "*": ["node_modules/*", "src/types/*"]
+    },
+    "typeRoots": [            // Explicitly tell TS where to look for .d.ts files
+      "./node_modules/@types",
+      "./src/types"           // Add your custom types directory here
+    ],
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,     // Keep this true to avoid checking library .d.ts files
+    "sourceMap": true
+  },
+  "include": [
+    "src/**/*",                // This should include src/index.ts, src/types/pdf2pic.d.ts, etc.
+  ],
+  "exclude": ["node_modules", "dist"]
+}
