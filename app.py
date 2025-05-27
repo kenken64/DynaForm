@@ -4,10 +4,18 @@ import base64
 from flask import Flask, request, jsonify, send_from_directory # Added send_from_directory
 from pdf2image import convert_from_bytes
 from werkzeug.utils import secure_filename
-import tempfile
+from flask_cors import CORS # Import CORS
 import uuid # For generating unique filenames/directories
 
 app = Flask(__name__)
+CORS(app, resources={
+    r"/conversion/*": {
+        "origins": ["http://localhost:4201"],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"],
+        "supports_credentials": True # If you need to allow cookies or auth headers
+    }
+})
 
 # Configuration
 PORT = 5001
@@ -27,7 +35,7 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app.route('/api/pdf-to-png-save', methods=['POST'])
+@app.route('/conversion/pdf-to-png-save', methods=['POST'])
 def pdf_to_png_save():
     if 'pdfFile' not in request.files:
         return jsonify({"error": "No PDF file part in the request. Use key 'pdfFile'."}), 400
@@ -71,7 +79,7 @@ def pdf_to_png_save():
 
                 # Construct a URL if you plan to serve these files
                 # This assumes you'll set up a route to serve files from GENERATED_IMAGES_DIR
-                file_url = f"/generated_images/{unique_subdir_name}/{output_filename}"
+                file_url = f"/conversion/generated_images/{unique_subdir_name}/{output_filename}"
                 saved_file_urls.append(request.host_url.rstrip('/') + file_url)
 
 
@@ -92,7 +100,7 @@ def pdf_to_png_save():
 # Optional: Add a route to serve the generated images
 # This is a simple way for development/testing. For production, use a proper web server (Nginx, Apache)
 # to serve static files.
-@app.route('/generated_images/<path:subpath_to_file>')
+@app.route('/conversion/generated_images/<path:subpath_to_file>')
 def serve_generated_image(subpath_to_file):
     # subpath_to_file will be like "unique_subdir_name/original_filename_base_page_1.png"
     return send_from_directory(GENERATED_IMAGES_DIR, subpath_to_file)

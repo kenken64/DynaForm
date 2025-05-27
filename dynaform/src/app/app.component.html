@@ -1,0 +1,58 @@
+<mat-stepper>
+  <mat-step label="Step 1" state="phone">
+    <p>Kindly upload the form as a PDF file.</p>
+    <div>
+      <input type="file" (change)="onFileSelected($event)" accept="application/pdf" />
+      <p *ngIf="uploadMessage">{{ uploadMessage }}</p>
+      <button mat-button matStepperNext (click)="uploadPdf()">Next</button>
+    </div>
+  </mat-step>
+  <mat-step label="Step 2" state="chat">
+    <p>See a preview of the form.</p>
+    <div>
+      <img src="{{ generatedImageUrl }}" alt="Form Preview" *ngIf="generatedImageUrl" width="500" height="600" />
+      <button mat-button matStepperPrevious>Back</button>
+      <button mat-button matStepperNext (click)="fetchImageAndDescribe()">Next</button>
+      <!-- Show spinner while loading -->
+      
+    </div>
+  </mat-step>
+  <mat-step label="Step 3">
+    <mat-spinner *ngIf="isFetchingForm" diameter="50"></mat-spinner>
+    <!-- Dynamic Form Rendering -->
+    <!-- Dynamic Form Rendering -->
+    <form [formGroup]="dynamicForm" (ngSubmit)="onSubmit()" *ngIf="dynamicForm">
+      <div *ngFor="let field of fields">
+        <!-- Textbox -->
+        <div *ngIf="isFormControl(field.name)">
+          <label>{{ field.name }}</label>
+          <input type="text" [formControl]="getFormControl(field.name)" />
+        </div>
+
+        <!-- Checkbox group -->
+        <div *ngIf="!isFormControl(field.name)">
+          <label>{{ field.name }}</label>
+          <div [formGroup]="getNestedGroup(field.name)">
+            <div *ngFor="let key of objectKeys(field.value)">
+              <label>
+                <input type="checkbox" [formControlName]="key" />
+                {{ key }}
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <hr />
+      </div>
+
+      <button type="submit">Submit</button>
+    </form>
+  </mat-step>
+  <!-- Icon overrides. -->
+  <ng-template matStepperIcon="phone">
+    <mat-icon>call_end</mat-icon>
+  </ng-template>
+  <ng-template matStepperIcon="chat">
+    <mat-icon>forum</mat-icon>
+  </ng-template>
+</mat-stepper>

@@ -33,7 +33,7 @@ python app.py
 ```
 curl -X POST \
      -F "pdfFile=@/path/to/your/document.pdf" \
-     http://localhost:5001/api/pdf-to-png-save
+     http://localhost:5001/conversion/pdf-to-png-save
 ```
 
 
@@ -110,12 +110,6 @@ curl -X POST \
      http://localhost:3001/api/describe-image
 ```
 
-```
-curl -X POST \
-     -F "pdfFile=@/path/to/your/document.pdf" \
-     http://localhost:3001/api/pdf-to-png \
-     -o output_images.json
-```
 
 ```
 curl -X POST \                         
