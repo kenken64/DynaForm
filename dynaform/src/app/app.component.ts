@@ -14,7 +14,7 @@ export class AppComponent {
   uploadMessage: string = '';
   imageUrls: string[] = [];
   generatedImageUrl: string | null = null;
-
+  originalFieldNameMap: Record<string, string> = {};
 
   dynamicForm!: FormGroup;
   fields: any[] = [];
@@ -76,9 +76,9 @@ export class AppComponent {
               this.loading = false;
               return;
             }
-
+            console.log('Received JSON:', jsonStr);
             const parsed = JSON.parse(jsonStr);
-            this.fields = parsed.form?.fields || [];
+            this.fields = parsed.forms[0].fields || [];
             this.buildForm();
             this.loading = false;
           },
@@ -95,21 +95,27 @@ export class AppComponent {
 
   buildForm(): void {
     const group: any = {};
+    this.originalFieldNameMap = {};
+
     this.fields.forEach(field => {
+      const sanitizedKey = this.sanitizeFieldName(field.name);
+      this.originalFieldNameMap[sanitizedKey] = field.name;
+
       if (field.type === 'checkbox') {
         if (typeof field.value === 'object' && field.value !== null) {
           const nestedGroup: any = {};
           Object.entries(field.value).forEach(([key, val]) => {
             nestedGroup[key] = new FormControl(val);
           });
-          group[field.name] = new FormGroup(nestedGroup);
+          group[sanitizedKey] = new FormGroup(nestedGroup);
         } else {
-          group[field.name] = new FormControl(field.value);
+          group[sanitizedKey] = new FormControl(field.value);
         }
       } else {
-        group[field.name] = new FormControl(field.value);
+        group[sanitizedKey] = new FormControl(field.value);
       }
     });
+
     this.dynamicForm = this.fb.group(group);
   }
 
@@ -128,5 +134,9 @@ export class AppComponent {
 
   onSubmit(): void {
     console.log('Submitted Form:', this.dynamicForm.value);
+  }
+
+  sanitizeFieldName(name: string): string {
+    return name.replace(/[^a-zA-Z0-9_]/g, '_');
   }
 }

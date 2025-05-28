@@ -14,39 +14,45 @@
       <button mat-button matStepperPrevious>Back</button>
       <button mat-button matStepperNext (click)="fetchImageAndDescribe()">Next</button>
       <!-- Show spinner while loading -->
-      
+
     </div>
   </mat-step>
   <mat-step label="Step 3">
-    <mat-spinner *ngIf="isFetchingForm" diameter="50"></mat-spinner>
-    <!-- Dynamic Form Rendering -->
-    <!-- Dynamic Form Rendering -->
-    <form [formGroup]="dynamicForm" (ngSubmit)="onSubmit()" *ngIf="dynamicForm">
-      <div *ngFor="let field of fields">
-        <!-- Textbox -->
-        <div *ngIf="isFormControl(field.name)">
-          <label>{{ field.name }}</label>
-          <input type="text" [formControl]="getFormControl(field.name)" />
-        </div>
+    <mat-spinner *ngIf="isFetchingForm" diameter="50" class="centered-spinner"></mat-spinner>
 
-        <!-- Checkbox group -->
-        <div *ngIf="!isFormControl(field.name)">
-          <label>{{ field.name }}</label>
-          <div [formGroup]="getNestedGroup(field.name)">
-            <div *ngFor="let key of objectKeys(field.value)">
-              <label>
-                <input type="checkbox" [formControlName]="key" />
-                {{ key }}
-              </label>
+    <mat-error *ngIf="error">{{ error }}</mat-error>
+
+    <!-- Dynamic Form Rendering -->
+    <div class="form-container" *ngIf="dynamicForm">
+      <form [formGroup]="dynamicForm" (ngSubmit)="onSubmit()" class="material-form">
+        <div *ngFor="let field of fields">
+          <!-- Get the sanitized field key -->
+          <ng-container *ngIf="isFormControl(sanitizeFieldName(field.name)); else checkboxGroup">
+            <mat-form-field appearance="outline" class="full-width">
+              <!-- Display original name -->
+              <mat-label>{{ field.name }}</mat-label>
+              <input matInput type="text" [formControl]="getFormControl(sanitizeFieldName(field.name))" />
+            </mat-form-field>
+          </ng-container>
+
+          <!-- Checkbox Group -->
+          <ng-template #checkboxGroup>
+            <div [formGroup]="getNestedGroup(sanitizeFieldName(field.name))" class="checkbox-group">
+              <label class="group-label">{{ field.name }}</label>
+              <div *ngFor="let key of objectKeys(field.value)">
+                <mat-checkbox [formControlName]="key">{{ key }}</mat-checkbox>
+              </div>
             </div>
-          </div>
+          </ng-template>
+
+          <mat-divider class="my-divider"></mat-divider>
         </div>
 
-        <hr />
-      </div>
-
-      <button type="submit">Submit</button>
-    </form>
+        <button mat-raised-button color="primary" type="submit" [disabled]="!dynamicForm.valid">
+          Submit
+        </button>
+      </form>
+    </div>
   </mat-step>
   <!-- Icon overrides. -->
   <ng-template matStepperIcon="phone">

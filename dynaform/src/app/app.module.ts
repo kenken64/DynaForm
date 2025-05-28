@@ -13,6 +13,8 @@ import {MatStepperModule} from '@angular/material/stepper';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @NgModule({
   declarations: [
@@ -28,7 +30,9 @@ import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
     MatButtonModule,
     MatInputModule,
     MatFormFieldModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatDividerModule,
+    MatCheckboxModule
   ],
   providers: [
     provideAnimationsAsync(),

@@ -114,7 +114,7 @@ curl -X POST \
 ```
 curl -X POST \                         
      -F "imageFile=@sampleform_page_1.png" \               
-     -F "prompt=List all the form fields format the output in json (make sure sure it looks pretty on terminal )  and also provide the field type whether is a textbox or checkbox" \
+     -F "prompt=List all the form fields format the output in json (make sure is this json structure {forms:[ fields: []]}) and also provide the field type whether it is a textbox or checkbox" \
      -F "model=qwen2.5vl:latest" \
      http://localhost:3001/api/describe-image
 
