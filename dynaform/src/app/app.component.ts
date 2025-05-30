@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { FormBuilder, Validators, FormGroup, FormControl } from '@angular/forms';
 import { PdfUploadService } from './pdf-upload.service';
 import { DescribeImageService } from './describe-image.service';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -22,44 +23,68 @@ export class AppComponent {
   error = '';
   objectKeys = Object.keys;
   isFetchingForm = false;
-
   constructor(private pdfUploadService: PdfUploadService,
     private fb: FormBuilder, private describeService: DescribeImageService
   ) { }
+
+  // Helper method to convert absolute URLs to relative URLs for production
+  private normalizeImageUrl(url: string): string {
+    if (environment.production) {
+      // Convert absolute URLs to relative URLs
+      // From: http://localhost/conversion/generated_images/...
+      // To: /conversion/generated_images/...
+      try {
+        const urlObj = new URL(url);
+        return urlObj.pathname;
+      } catch {
+        // If URL parsing fails, return as-is
+        return url;
+      }
+    }
+    return url;
+  }
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files?.length) {
       this.selectedFile = input.files[0];
     }
-  }
-
-  uploadPdf(): void {
+  }  uploadPdf(): void {
     if (!this.selectedFile) {
       this.uploadMessage = 'Please select a file first.';
       return;
     }
 
+    // Clear any previous errors
+    this.error = '';
+
     this.pdfUploadService.uploadPdf(this.selectedFile).subscribe({
       next: response => {
         this.uploadMessage = 'Upload successful!';
         console.log(response?.accessible_urls[0]);
-        this.imageUrls = response.accessible_urls;
+        // Normalize URLs for production environment
+        this.imageUrls = response.accessible_urls.map(url => this.normalizeImageUrl(url));
         this.generatedImageUrl = this.imageUrls[0];
-        console.log(this.imageUrls);
-        console.log(this.generatedImageUrl);
+        console.log('Normalized image URLs:', this.imageUrls);
+        console.log('Generated image URL:', this.generatedImageUrl);
       },
       error: err => {
         console.error(err);
         this.uploadMessage = 'Upload failed.';
         this.imageUrls = [];
+        this.error = 'Failed to upload PDF. Please try again.';
       }
     });
   }
-
   fetchImageAndDescribe(): void {
     this.isFetchingForm = true; // Start spinner
-    if (!this.generatedImageUrl) return;
+    this.error = ''; // Clear any previous errors
+    
+    if (!this.generatedImageUrl) {
+      this.isFetchingForm = false; // Stop spinner if no image URL
+      this.error = 'No image URL available.';
+      return;
+    }
 
     this.loading = true;
 
@@ -70,26 +95,47 @@ export class AppComponent {
 
         this.describeService.describeImage(file).subscribe({
           next: res => {
-            const jsonStr = res.description.match(/```json\s*([\s\S]*?)```/)?.[1];
-            if (!jsonStr) {
-              this.error = 'Failed to extract JSON from response.';
+            try {
+              const jsonStr = res.description.match(/```json\s*([\s\S]*?)```/)?.[1];
+              if (!jsonStr) {
+                this.error = 'Failed to extract JSON from response.';
+                this.loading = false;
+                this.isFetchingForm = false; // Stop spinner on error
+                return;
+              }
+              console.log('Received JSON:', jsonStr);
+              const parsed = JSON.parse(jsonStr);
+              this.fields = parsed.forms[0].fields || [];
+              this.buildForm();
               this.loading = false;
-              return;
+              this.isFetchingForm = false; // Stop spinner on success
+            } catch (parseError) {
+              this.error = 'Failed to parse JSON response.';
+              this.loading = false;
+              this.isFetchingForm = false; // Stop spinner on parse error
             }
-            console.log('Received JSON:', jsonStr);
-            const parsed = JSON.parse(jsonStr);
-            this.fields = parsed.forms[0].fields || [];
-            this.buildForm();
+          },          error: (err) => {
+            console.error('Image description error:', err);
+            // Provide more specific error messages based on error type
+            if (err.status === 404) {
+              this.error = 'The AI model is not available. Please ensure the Ollama service is running with the required model.';
+            } else if (err.status === 500) {
+              this.error = 'Internal server error during image analysis. Please try again.';
+            } else if (err.error?.message?.includes('model') && err.error?.message?.includes('not found')) {
+              this.error = 'AI model not found. The required model may still be downloading.';
+            } else {
+              this.error = 'Error during image description. Please try again.';
+            }
             this.loading = false;
-          },
-          error: () => {
-            this.error = 'Error during image description.';
-            this.loading = false;
-          },
-          complete: () => {
-            this.isFetchingForm = false; // Stop spinner
+            this.isFetchingForm = false; // Stop spinner on error
           }
         });
+      })
+      .catch(fetchError => {
+        console.error('Image fetch error:', fetchError);
+        this.error = 'Failed to fetch image.';
+        this.loading = false;
+        this.isFetchingForm = false; // Stop spinner on fetch error
       });
   }
 
@@ -138,5 +184,16 @@ export class AppComponent {
 
   sanitizeFieldName(name: string): string {
     return name.replace(/[^a-zA-Z0-9_]/g, '_');
+  }
+
+  // Method to clear error state and retry
+  clearError(): void {
+    this.error = '';
+  }
+
+  // Method to retry form generation
+  retryFormGeneration(): void {
+    this.clearError();
+    this.fetchImageAndDescribe();
   }
 }

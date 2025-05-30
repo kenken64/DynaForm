@@ -1,0 +1,132 @@
+version: '3.8'
+
+services:  # Ollama GPU service for LLM inference (Resource-Limited)
+  ollama-gpu:
+    build:
+      context: ./ollama
+      dockerfile: Dockerfile.minimal
+      no_cache: true
+      args:
+        - BUILDKIT_INLINE_CACHE=0
+        - BUILD_TIMESTAMP=${BUILD_TIMESTAMP:-default}
+    pull_policy: build
+    ports:
+      - "11434:11434"
+    environment:
+      - OLLAMA_HOST=0.0.0.0:11434
+      - OLLAMA_ORIGINS=*
+      - OLLAMA_MODELS=qwen2.5vl:latest
+      - OLLAMA_NUM_PARALLEL=1
+      - OLLAMA_MAX_LOADED_MODELS=1
+      - OLLAMA_GPU_MEMORY_FRACTION=0.3
+      - OLLAMA_KEEP_ALIVE=2m
+      - OLLAMA_MAX_QUEUE=1
+    volumes:
+      - ollama_models:/root/.ollama
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
+    healthcheck:
+      test: [ "CMD", "test", "-f", "/tmp/ollama_ready" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - doc2formjson-network
+
+  # Node.js API service for image description using Ollama
+  doc2formjson-api:
+    build:
+      context: ./describeImge
+      no_cache: true
+      args:
+        - BUILDKIT_INLINE_CACHE=0
+        - BUILD_TIMESTAMP=${BUILD_TIMESTAMP:-default}
+    pull_policy: build
+    ports:
+      - "3000:3000" # Changed to 3000 to match your README examples
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - OLLAMA_BASE_URL=http://ollama-gpu:11434
+      - DEFAULT_QWEN_MODEL_NAME=qwen2.5vl:latest
+    restart: unless-stopped
+    depends_on:
+      - ollama-gpu
+    healthcheck:
+      test: [ "CMD", "node", "-e", "const http = require('http'); const options = { port: process.env.PORT || 3000, timeout: 2000 }; const request = http.request(options, (res) => { process.exit(res.statusCode === 200 ? 0 : 1); }); request.on('error', () => process.exit(1)); request.end();" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - doc2formjson-network
+
+  # Python Flask service for PDF to PNG conversion
+  pdf-converter:
+    build:
+      context: ./pdf-png
+      no_cache: true
+      args:
+        - BUILDKIT_INLINE_CACHE=0
+        - BUILD_TIMESTAMP=${BUILD_TIMESTAMP:-default}
+    pull_policy: build
+    ports:
+      - "5001:5001"
+    environment:
+      - FLASK_ENV=production
+      - PORT=5001
+    restart: unless-stopped
+    volumes:
+      - ./pdf-png/generated_pngs:/app/generated_pngs
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:5001/", "||", "exit", "1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - doc2formjson-network
+  # Angular frontend application
+  dynaform-frontend:
+    build:
+      context: ./dynaform
+      no_cache: true
+      args:
+        - BUILDKIT_INLINE_CACHE=0
+        - BUILD_TIMESTAMP=${BUILD_TIMESTAMP:-default}
+    pull_policy: build
+    ports:
+      - "4201:4201" # Fixed port mapping
+    restart: unless-stopped
+    depends_on:
+      - doc2formjson-api
+      - pdf-converter
+    volumes:
+      - ./pdf-png/generated_pngs:/usr/share/nginx/html/generated_pngs
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4201/health", "||", "exit", "1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - doc2formjson-network
+
+networks:
+  doc2formjson-network:
+    driver: bridge
+
+volumes:
+  generated_images:
+    driver: local
+  ollama_models:
+    driver: local

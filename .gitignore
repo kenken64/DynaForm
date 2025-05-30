@@ -34,3 +34,5 @@ Thumbs.db
 .env.local
 
 generated_pngs
+
+package-lock.json

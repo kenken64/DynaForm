@@ -47,3 +47,24 @@
   display: block;
   margin: 20px auto;
 }
+
+.loading-container {
+  text-align: center;
+  padding: 2rem;
+}
+
+.loading-container p {
+  margin-top: 1rem;
+  color: #666;
+  font-size: 16px;
+}
+
+.error-container {
+  text-align: center;
+  padding: 2rem;
+}
+
+.error-container mat-error {
+  font-size: 16px;
+  margin-bottom: 1rem;
+}

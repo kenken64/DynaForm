@@ -1,0 +1,50 @@
+# Alternative Ollama GPU-enabled Dockerfile
+# Uses different mirrors and approaches to avoid network connectivity issues
+FROM ollama/ollama:latest
+
+# Try different approaches to get curl or equivalent functionality
+RUN echo "Attempting to install curl with alternative sources..." && \
+    # First, try to update sources to use different mirrors
+    (sed -i 's|http://archive.ubuntu.com|http://mirror.us.leaseweb.net|g' /etc/apt/sources.list 2>/dev/null || true) && \
+    (sed -i 's|http://security.ubuntu.com|http://mirror.us.leaseweb.net|g' /etc/apt/sources.list 2>/dev/null || true) && \
+    # Try with DNS change and timeout settings
+    echo "nameserver 8.8.8.8" > /etc/resolv.conf && \
+    echo "nameserver 1.1.1.1" >> /etc/resolv.conf && \
+    # Attempt installation with retries and timeouts
+    for i in 1 2 3; do \
+        echo "Attempt $i: Updating package lists..." && \
+        (timeout 60 apt-get update -o Acquire::Retries=3 -o Acquire::http::Timeout=10 || true) && \
+        echo "Attempt $i: Installing curl..." && \
+        (timeout 120 apt-get install -y --no-install-recommends -o Acquire::Retries=3 -o Acquire::http::Timeout=10 curl && break) || \
+        (echo "Attempt $i failed, trying wget..." && \
+         timeout 120 apt-get install -y --no-install-recommends -o Acquire::Retries=3 -o Acquire::http::Timeout=10 wget && \
+         ln -sf /usr/bin/wget /usr/local/bin/curl-wget && break) || \
+        sleep 15; \
+    done; \
+    # Clean up regardless of success/failure
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* && \
+    echo "Installation attempt completed."
+
+# Set environment variables for GPU support
+ENV NVIDIA_VISIBLE_DEVICES=all
+ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
+
+# Copy entrypoint script (use the main one with fallback logic)
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Create directories for models and data
+RUN mkdir -p /root/.ollama
+
+# Expose the default Ollama port
+EXPOSE 11434
+
+# Flexible health check that works with or without curl/wget
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=5 \
+  CMD (test -f /tmp/ollama_ready && (curl -f http://localhost:11434/api/tags 2>/dev/null || \
+       wget -q --spider http://localhost:11434/api/tags 2>/dev/null || \
+       /usr/local/bin/curl-wget -q --spider http://localhost:11434/api/tags 2>/dev/null || \
+       (echo > /dev/tcp/localhost/11434) 2>/dev/null)) || exit 1
+
+# Use custom entrypoint
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

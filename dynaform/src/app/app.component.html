@@ -16,14 +16,24 @@
       <!-- Show spinner while loading -->
 
     </div>
-  </mat-step>
-  <mat-step label="Step 3">
-    <mat-spinner *ngIf="isFetchingForm" diameter="50" class="centered-spinner"></mat-spinner>
+  </mat-step>  <mat-step label="Step 3">
+    <!-- Show spinner while loading -->
+    <div *ngIf="isFetchingForm" class="loading-container">
+      <mat-spinner diameter="50" class="centered-spinner"></mat-spinner>
+      <p>Analyzing form structure...</p>
+    </div>
 
-    <mat-error *ngIf="error">{{ error }}</mat-error>
+    <!-- Show error message if there's an error -->
+    <div *ngIf="error && !isFetchingForm" class="error-container">
+      <mat-error>{{ error }}</mat-error>
+      <button mat-button color="warn" (click)="fetchImageAndDescribe()" style="margin-top: 16px;">
+        <mat-icon>refresh</mat-icon>
+        Try Again
+      </button>
+    </div>
 
     <!-- Dynamic Form Rendering -->
-    <div class="form-container" *ngIf="dynamicForm">
+    <div class="form-container" *ngIf="dynamicForm && !isFetchingForm && !error">
       <form [formGroup]="dynamicForm" (ngSubmit)="onSubmit()" class="material-form">
         <div *ngFor="let field of fields">
           <!-- Get the sanitized field key -->

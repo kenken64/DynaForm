@@ -1,0 +1,24 @@
+# Minimal Ollama GPU-enabled Dockerfile (fallback option)
+# Use this if the main Dockerfile has network connectivity issues
+FROM ollama/ollama:latest
+
+# Set environment variables for GPU support
+ENV NVIDIA_VISIBLE_DEVICES=all
+ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
+
+# Copy entrypoint script
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Create directories for models and data
+RUN mkdir -p /root/.ollama
+
+# Expose the default Ollama port
+EXPOSE 11434
+
+# Simple health check using built-in tools
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=5 \
+  CMD test -f /tmp/ollama_ready || exit 1
+
+# Use custom entrypoint
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

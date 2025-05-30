@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  doc2formjson-api:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - DEFAULT_QWEN_MODEL_NAME=qwen2.5vl:latest
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "const http = require('http'); const options = { port: process.env.PORT || 3000, timeout: 2000 }; const request = http.request(options, (res) => { process.exit(res.statusCode === 200 ? 0 : 1); }); request.on('error', () => process.exit(1)); request.end();"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

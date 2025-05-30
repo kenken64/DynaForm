@@ -1,0 +1,33 @@
+version: '3.8'
+
+# Development override to ensure containers are always rebuilt
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  ollama-gpu:
+    build:
+      args:
+        - BUILDKIT_INLINE_CACHE=0
+        - BUILD_TIMESTAMP=${BUILD_TIMESTAMP:-dev}
+        - FORCE_REBUILD=true
+
+  doc2formjson-api:
+    build:
+      args:
+        - BUILDKIT_INLINE_CACHE=0
+        - BUILD_TIMESTAMP=${BUILD_TIMESTAMP:-dev}
+        - FORCE_REBUILD=true
+
+  pdf-converter:
+    build:
+      args:
+        - BUILDKIT_INLINE_CACHE=0
+        - BUILD_TIMESTAMP=${BUILD_TIMESTAMP:-dev}
+        - FORCE_REBUILD=true
+
+  dynaform-frontend:
+    build:
+      args:
+        - BUILDKIT_INLINE_CACHE=0
+        - BUILD_TIMESTAMP=${BUILD_TIMESTAMP:-dev}
+        - FORCE_REBUILD=true
