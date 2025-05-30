@@ -1,94 +1,13 @@
-<mat-stepper>
-  <mat-step label="Step 1" state="phone">
-    <p>Kindly upload the form as a PDF file.</p>
-    <div>
-      <input type="file" (change)="onFileSelected($event)" accept="application/pdf" />
-      <p *ngIf="uploadMessage">{{ uploadMessage }}</p>
-      <button mat-button matStepperNext (click)="uploadPdf()">Next</button>
-    </div>
-  </mat-step>
-  <mat-step label="Step 2" state="chat">
-    <p>See a preview of the form.</p>
-    <div>
-      <img src="{{ generatedImageUrl }}" alt="Form Preview" *ngIf="generatedImageUrl" width="500" height="600" />
-      <button mat-button matStepperPrevious>Back</button>
-      <button mat-button matStepperNext (click)="fetchImageAndDescribe()">Next</button>
-      <!-- Show spinner while loading -->
+<div class="app-container">
+  <!-- Side Menu -->
+  <app-side-menu 
+    [isCollapsed]="isSideMenuCollapsed"
+    (formSelected)="onFormSelected($event)"
+    (toggleSidebar)="toggleSideMenu()">
+  </app-side-menu>
 
-    </div>
-  </mat-step>  <mat-step label="Step 3">
-    <!-- Show spinner while loading -->
-    <div *ngIf="isFetchingForm" class="loading-container">
-      <mat-spinner diameter="50" class="centered-spinner"></mat-spinner>
-      <p>Analyzing form structure...</p>
-    </div>
-
-    <!-- Show error message if there's an error -->
-    <div *ngIf="error && !isFetchingForm" class="error-container">
-      <mat-error>{{ error }}</mat-error>
-      <button mat-button color="warn" (click)="fetchImageAndDescribe()" style="margin-top: 16px;">
-        <mat-icon>refresh</mat-icon>
-        Try Again
-      </button>
-    </div>
-
-    <!-- Dynamic Form Rendering -->
-    <div class="form-container" *ngIf="dynamicForm && !isFetchingForm && !error">
-      <form [formGroup]="dynamicForm" (ngSubmit)="onSubmit()" class="material-form">
-        <div *ngFor="let field of fields">
-          
-          <!-- Text Input Field -->
-          <ng-container *ngIf="isTextField(field)">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>{{ field.name }}</mat-label>
-              <input matInput type="text" [formControl]="getFormControl(sanitizeFieldName(field.name))" />
-            </mat-form-field>
-          </ng-container>
-
-          <!-- Textarea Field -->
-          <ng-container *ngIf="isTextAreaField(field)">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>{{ field.name }}</mat-label>
-              <textarea matInput 
-                        rows="4" 
-                        [formControl]="getFormControl(sanitizeFieldName(field.name))"
-                        placeholder="Enter your text here..."></textarea>
-            </mat-form-field>
-          </ng-container>
-
-          <!-- Single Checkbox -->
-          <ng-container *ngIf="isSingleCheckbox(field)">
-            <div class="single-checkbox-container">
-              <mat-checkbox [formControl]="getFormControl(sanitizeFieldName(field.name))">
-                {{ field.name }}
-              </mat-checkbox>
-            </div>
-          </ng-container>
-
-          <!-- Checkbox Group -->
-          <ng-container *ngIf="isCheckboxGroup(field)">
-            <div [formGroup]="getNestedGroup(sanitizeFieldName(field.name))" class="checkbox-group">
-              <label class="group-label">{{ field.name }}</label>
-              <div *ngFor="let key of objectKeys(field.value)" class="checkbox-item">
-                <mat-checkbox [formControlName]="key">{{ key }}</mat-checkbox>
-              </div>
-            </div>
-          </ng-container>
-
-          <mat-divider class="my-divider"></mat-divider>
-        </div>
-
-        <button mat-raised-button color="primary" type="submit" [disabled]="!dynamicForm.valid">
-          Submit
-        </button>
-      </form>
-    </div>
-  </mat-step>
-  <!-- Icon overrides. -->
-  <ng-template matStepperIcon="phone">
-    <mat-icon>call_end</mat-icon>
-  </ng-template>
-  <ng-template matStepperIcon="chat">
-    <mat-icon>forum</mat-icon>
-  </ng-template>
-</mat-stepper>
+  <!-- Main Content -->
+  <div class="main-content" [ngClass]="{'expanded': isSideMenuCollapsed}">
+    <router-outlet></router-outlet>
+  </div>
+</div>

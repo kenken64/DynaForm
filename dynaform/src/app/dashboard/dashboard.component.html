@@ -1,0 +1,323 @@
+<div class="app-container">
+  <!-- Dashboard Header -->
+  <header class="dashboard-header">
+    <div class="header-content">
+      <div class="header-left">
+        <mat-icon class="app-icon">assignment</mat-icon>
+        <h1>DynaForm</h1>
+        <span class="app-subtitle">Dynamic Form Generator</span>
+      </div>
+      <div class="header-right">
+        <span class="user-info">Welcome, {{ authService.getCurrentUser()?.username }}</span>
+        <button mat-button (click)="logout()" class="logout-button">
+          <mat-icon>logout</mat-icon>
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Form View -->
+  <div *ngIf="currentView === 'form'" class="main-content">
+    <mat-stepper>
+  <mat-step label="Step 1" state="phone">
+    <br>
+    <div style="margin-top: 24px;">
+      <!-- Custom File Input Container with Drag & Drop -->
+      <div class="file-input-container" style="margin-bottom: 16px;">
+        <label for="pdf-file-input" class="file-input-label" 
+               style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">
+          Select PDF File
+        </label>
+        
+        <!-- Drag & Drop Zone -->
+        <div class="drag-drop-zone" 
+             [class.drag-over]="isDragOver"
+             (dragover)="onDragOver($event)"
+             (dragleave)="onDragLeave($event)"
+             (drop)="onDrop($event)"
+             style="border: 2px dashed #ccc; border-radius: 8px; padding: 20px; text-align: center; background-color: #fafafa; transition: all 0.3s ease;">
+          
+          <div class="file-input-wrapper" 
+               [class.has-file]="selectedFile"
+               style="position: relative; display: inline-block; width: 100%;">
+            <input id="pdf-file-input"
+                   type="file" 
+                   (change)="onFileSelected($event)" 
+                   accept="application/pdf"
+                   style="position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer;" />
+            <button type="button" 
+                    mat-stroked-button 
+                    class="file-select-button"
+                    style="width: 100%; text-align: left; justify-content: flex-start;">
+              <mat-icon style="margin-right: 8px;">
+                {{ selectedFile ? 'check_circle' : 'attach_file' }}
+              </mat-icon>
+              {{ selectedFile ? selectedFile.name : 'Choose PDF file...' }}
+              <span *ngIf="selectedFile" style="margin-left: auto; color: #666; font-size: 12px;">
+                ({{ (selectedFile.size / 1024 / 1024).toFixed(2) }} MB)
+              </span>
+            </button>
+          </div>
+          
+          <!-- Drag & Drop Instructions -->
+          <p *ngIf="!selectedFile" style="margin: 12px 0 0 0; color: #666; font-size: 13px;">
+            <mat-icon style="vertical-align: middle; margin-right: 4px; font-size: 16px;">cloud_upload</mat-icon>
+            Or drag and drop a PDF file here
+          </p>
+        </div>
+        
+        <mat-hint style="color: #666; font-size: 12px; margin-top: 4px;">
+          Please select a PDF file to continue (max 10MB)
+        </mat-hint>
+      </div>
+      
+      <!-- File Selection Status -->
+      <div *ngIf="selectedFile" class="file-status">
+        <mat-icon style="color: #4caf50; margin-right: 8px;">check_circle</mat-icon>
+        <span>
+          <strong>Selected File:</strong> {{ selectedFile!.name }} 
+          <span style="color: #666;">({{ (selectedFile!.size / 1024 / 1024).toFixed(2) }} MB)</span>
+        </span>
+      </div>
+      
+      <!-- No File Selected Warning -->
+      <div *ngIf="!selectedFile" class="no-file-warning">
+        <mat-icon style="color: #ff9800; margin-right: 8px;">warning</mat-icon>
+        <span>Please select a PDF file before proceeding to the next step.</span>
+      </div>
+      
+      <!-- Upload Message -->
+      <div *ngIf="uploadMessage" class="upload-message">
+        <p style="margin: 0;">{{ uploadMessage }}</p>
+      </div>
+      
+      <!-- Next Button with Validation -->
+      <div style="text-align: center; margin-top: 8px;">
+        <button mat-raised-button 
+                color="primary"
+                matStepperNext 
+                (click)="uploadPdf()"
+                [disabled]="!selectedFile || isUploadingPdf">
+          <mat-spinner *ngIf="isUploadingPdf" diameter="20" style="margin-right: 8px;"></mat-spinner>
+          <mat-icon *ngIf="!isUploadingPdf" style="margin-right: 8px;">cloud_upload</mat-icon>
+          {{ isUploadingPdf ? 'Uploading...' : 'Upload & Continue' }}
+        </button>
+      </div>
+      
+      <!-- Disabled State Helper Text -->
+      <p *ngIf="!selectedFile && !isUploadingPdf" class="helper-text">
+        <mat-icon>info</mat-icon>
+        The button will be enabled once you select a PDF file.
+      </p>
+      
+      <!-- Upload Progress Text -->
+      <p *ngIf="isUploadingPdf" class="helper-text" style="color: #2196f3;">
+        <mat-icon>cloud_upload</mat-icon>
+        Please wait while your PDF is being processed...
+      </p>
+    </div>
+  </mat-step>
+  <mat-step label="Step 2" state="chat">
+    <br>
+    <div>
+      <!-- Show form preview if available -->
+      <div *ngIf="generatedImageUrl" class="form-preview-container">
+        <img src="{{ generatedImageUrl }}" alt="Form Preview" width="500" height="600" />
+        <p style="color: #666; margin-top: 8px;">Form preview generated from your PDF</p>
+      </div>
+      
+      <!-- Show message if no preview available -->
+      <div *ngIf="!generatedImageUrl" style="background: #fff3cd; border: 1px solid #ffc107; padding: 20px; text-align: center; border-radius: 4px; margin-bottom: 20px;">
+        <mat-icon style="color: #ff9800; font-size: 48px; margin-bottom: 16px;">warning</mat-icon>
+        <p style="margin: 0; font-size: 16px;"><strong>No form preview available</strong></p>
+        <p style="margin: 8px 0 0 0; color: #666;">Please go back to Step 1 and upload a PDF file first.</p>
+      </div>
+      
+      <!-- Navigation Buttons -->
+      <div class="navigation-buttons">
+        <button mat-button matStepperPrevious>
+          <mat-icon style="margin-right: 8px;">arrow_back</mat-icon>
+          Back
+        </button>
+        <button mat-raised-button 
+                color="primary"
+                matStepperNext 
+                (click)="fetchImageAndDescribe()"
+                [disabled]="!generatedImageUrl">
+          <mat-icon style="margin-right: 8px;">auto_awesome</mat-icon>
+          Analyze Form
+        </button>
+      </div>
+      
+      <!-- Helper text for disabled next button -->
+      <p *ngIf="!generatedImageUrl" class="helper-text">
+        <mat-icon>info</mat-icon>
+        Please upload and process a PDF file in Step 1 before proceeding.
+      </p>
+    </div>
+  </mat-step>  <mat-step label="Step 3">
+    <br>
+    <!-- Show spinner while loading -->
+    <div *ngIf="isFetchingForm" class="loading-container">
+      <mat-spinner diameter="50" class="centered-spinner"></mat-spinner>
+      <p>Analyzing form structure...</p>
+    </div>
+
+    <!-- Show error message if there's an error -->
+    <div *ngIf="error && !isFetchingForm" class="error-container">
+      <mat-error>{{ error }}</mat-error>
+      <button mat-button color="warn" (click)="fetchImageAndDescribe()" style="margin-top: 16px;">
+        <mat-icon>refresh</mat-icon>
+        Try Again
+      </button>
+    </div>
+
+    <!-- Dynamic Form Rendering -->
+    <div class="form-container" *ngIf="dynamicForm && !isFetchingForm && !error && fields.length > 0">
+      <!-- Form Title Display - Above the card -->
+      <div *ngIf="formTitle" class="form-title-container">
+        <h2 class="form-title">{{ formTitle }}</h2>
+      </div>
+      
+      <form [formGroup]="dynamicForm" (ngSubmit)="onSubmit()" class="material-form">
+
+        <!-- Clean field rendering for all fields -->
+        <div *ngFor="let field of fields; let i = index">
+          <div class="form-field-container">
+            <!-- Field Configuration Panel -->
+            <div class="field-config-panel">
+              <div class="field-config-header">
+                <span class="field-label">{{ field.name }}</span>
+                <mat-form-field appearance="outline" class="config-dropdown">
+                  <mat-label>Configuration</mat-label>
+                  <mat-select multiple 
+                              [value]="getFieldConfiguration(field.name)"
+                              (selectionChange)="updateFieldConfiguration(field.name, $event.value)">
+                    <mat-option *ngFor="let option of fieldConfigOptions" [value]="option">
+                      {{ option | titlecase }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              
+              <!-- Configuration Status Display -->
+              <div class="config-status" *ngIf="getFieldConfiguration(field.name).length > 0">
+                <span *ngFor="let config of getFieldConfiguration(field.name)" class="config-badge">
+                  <mat-icon>{{ config === 'mandatory' ? 'star' : 'verified' }}</mat-icon>
+                  {{ config | titlecase }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Textarea Fields -->
+            <ng-container *ngIf="isTextAreaField(field)">
+              <mat-form-field appearance="outline" class="full-width textarea-field">
+                <mat-label>{{ field.name }}</mat-label>
+                <textarea matInput 
+                          [rows]="field.name.toLowerCase().includes('reason') ? 8 : 6"
+                          [formControlName]="sanitizeFieldName(field.name)"
+                          [placeholder]="'Enter your ' + field.name.toLowerCase()"></textarea>
+                <mat-error *ngIf="getFieldConfiguration(field.name).includes('mandatory')">
+                  This field is required
+                </mat-error>
+              </mat-form-field>
+            </ng-container>
+
+            <!-- Signature Fields -->
+            <ng-container *ngIf="isSignatureField(field)">
+              <mat-form-field appearance="outline" class="full-width signature-field">
+                <mat-label>{{ field.name }}</mat-label>
+                <input matInput 
+                       type="text"
+                       [formControlName]="sanitizeFieldName(field.name)"
+                       placeholder="Click here to sign or type your signature" />
+                <mat-icon matSuffix>edit</mat-icon>
+                <mat-error *ngIf="getFieldConfiguration(field.name).includes('mandatory')">
+                  This field is required
+                </mat-error>
+              </mat-form-field>
+            </ng-container>
+
+            <!-- Text/Number/Date Fields -->
+            <ng-container *ngIf="field.type !== 'checkbox' && !isTextAreaField(field) && !isSignatureField(field)">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ field.name }}</mat-label>
+                <input matInput 
+                       [type]="isDateField(field) ? 'date' : (isNumericField(field) ? 'number' : 'text')"
+                       [formControlName]="sanitizeFieldName(field.name)" />
+                <mat-error *ngIf="getFieldConfiguration(field.name).includes('mandatory')">
+                  This field is required
+                </mat-error>
+              </mat-form-field>
+            </ng-container>
+
+            <!-- Single Checkbox -->
+            <ng-container *ngIf="field.type === 'checkbox' && !isCheckboxGroup(field)">
+              <div class="single-checkbox-container">
+                <mat-checkbox [formControlName]="sanitizeFieldName(field.name)">
+                  {{ field.name }}
+                  <span *ngIf="getFieldConfiguration(field.name).includes('mandatory')" class="required-indicator">*</span>
+                </mat-checkbox>
+              </div>
+            </ng-container>
+
+            <!-- Checkbox Group -->
+            <ng-container *ngIf="field.type === 'checkbox' && isCheckboxGroup(field)">
+              <div [formGroupName]="sanitizeFieldName(field.name)" class="checkbox-group">
+                <label class="group-label">
+                  {{ field.name }}:
+                  <span *ngIf="getFieldConfiguration(field.name).includes('mandatory')" class="required-indicator">*</span>
+                </label>
+                <div *ngFor="let option of objectKeys(field.value)" class="checkbox-item">
+                  <mat-checkbox [formControlName]="option">
+                    {{ option }}
+                  </mat-checkbox>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px;">
+          <button mat-raised-button 
+                  color="primary" 
+                  type="submit"
+                  [disabled]="isSavingForm">
+            <mat-spinner *ngIf="isSavingForm" diameter="20" style="margin-right: 8px;"></mat-spinner>
+            <mat-icon *ngIf="!isSavingForm" style="margin-right: 8px;">save</mat-icon>
+            {{ isSavingForm ? 'Saving...' : 'Save Form' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </mat-step>
+  <!-- Icon overrides. -->
+  <ng-template matStepperIcon="phone">
+    <mat-icon>call_end</mat-icon>
+  </ng-template>
+  <ng-template matStepperIcon="chat">
+    <mat-icon>forum</mat-icon>
+  </ng-template>
+</mat-stepper>
+  </div>
+
+  <!-- Form Confirmation View -->
+  <div *ngIf="currentView === 'confirmation' && savedFormData">
+    <app-form-confirmation
+      [formId]="savedFormData!.formId"
+      [formName]="savedFormData!.formName"
+      [savedAt]="savedFormData!.savedAt"
+      (viewForm)="onViewForm($event)"
+      (createNew)="onCreateNewForm()">>
+    </app-form-confirmation>
+  </div>
+
+  <!-- Form Viewer View -->
+  <div *ngIf="currentView === 'viewer'">
+    <app-form-viewer
+      [formId]="viewerFormId"
+      (backToMain)="onBackToMain()">
+    </app-form-viewer>
+  </div>
+</div>

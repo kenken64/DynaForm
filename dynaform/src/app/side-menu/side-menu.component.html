@@ -1,0 +1,168 @@
+<!-- Side Menu Component Template -->
+<div class="side-menu" [ngClass]="{'collapsed': isCollapsed}">
+  <!-- Header -->
+  <div class="menu-header">
+    <div class="header-content">
+      <button 
+        class="toggle-btn" 
+        (click)="onToggleSidebar()"
+        matRipple
+        [attr.aria-label]="isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+        <mat-icon>{{ isCollapsed ? 'menu_open' : 'menu' }}</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Navigation Menu -->
+  <div class="navigation-section">
+    <div 
+      class="nav-item"
+      [class.active]="isActiveRoute('/dashboard')"
+      (click)="navigateTo('/dashboard')"
+      matRipple>
+      <mat-icon>dashboard</mat-icon>
+      <span *ngIf="!isCollapsed">Dashboard</span>
+    </div>
+    
+    <div 
+      class="nav-item"
+      [class.active]="isActiveRoute('/forms')"
+      (click)="navigateTo('/forms')"
+      matRipple>
+      <mat-icon>description</mat-icon>
+      <span *ngIf="!isCollapsed">Generated Forms</span>
+    </div>
+  </div>
+
+  <!-- Divider -->
+  <div *ngIf="!isCollapsed" class="divider"></div>
+
+  <!-- Recent Forms Section -->
+  <div *ngIf="!isCollapsed" class="forms-section">
+    <div class="section-header">
+      <h3>Recent Forms</h3>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="search-section">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-icon matPrefix>search</mat-icon>
+        <input 
+          matInput 
+          placeholder="Search forms..." 
+          [(ngModel)]="searchQuery"
+          (input)="onSearch(searchQuery)"
+          [disabled]="loading">
+        <button 
+          *ngIf="searchQuery" 
+          matSuffix 
+          mat-icon-button 
+          (click)="clearSearch()"
+          aria-label="Clear search">
+          <mat-icon>clear</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-section">
+      <mat-spinner diameter="30"></mat-spinner>
+      <p>Loading...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error && !loading" class="error-section">
+      <mat-icon color="warn">error</mat-icon>
+      <p>{{ error }}</p>
+      <button mat-stroked-button color="primary" (click)="loadForms()">
+        Retry
+      </button>
+    </div>
+
+    <!-- Forms List -->
+    <div *ngIf="!loading && !error" class="forms-list">
+      <!-- Results Summary -->
+      <div *ngIf="totalCount > 0" class="results-summary">
+        <span class="count-badge">{{ totalCount }} form{{ totalCount !== 1 ? 's' : '' }}</span>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="forms.length === 0" class="empty-state">
+        <mat-icon>description</mat-icon>
+        <p>{{ searchQuery ? 'No forms found.' : 'No forms yet.' }}</p>
+      </div>
+
+      <!-- Form Items -->
+      <div class="form-items">
+        <div 
+          *ngFor="let form of forms; trackBy: trackByFormId" 
+          class="form-item"
+          (click)="onFormClick(form)"
+          matRipple>
+          
+          <div class="form-content">
+            <!-- Form Icon -->
+            <div class="form-icon">
+              <mat-icon>description</mat-icon>
+            </div>
+
+            <!-- Form Details -->
+            <div class="form-details">
+              <h4 class="form-title">{{ form.metadata.formName || 'Untitled Form' }}</h4>
+              <div class="form-meta">
+                <span class="created-date">
+                  <mat-icon>schedule</mat-icon>
+                  {{ formatDate(form.metadata.createdAt) }}
+                </span>
+                <span class="fields-count">
+                  <mat-icon>input</mat-icon>
+                  {{ getFormFieldsCount(form) }} fields
+                </span>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="form-actions">
+              <button 
+                mat-icon-button 
+                class="delete-btn"
+                (click)="onDeleteForm(form, $event)"
+                [attr.aria-label]="'Delete ' + (form.metadata.formName || 'form')"
+                color="warn">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- View All Link -->
+      <div *ngIf="forms.length > 0" class="view-all-section">
+        <button mat-stroked-button color="primary" (click)="navigateTo('/forms')">
+          View All Forms
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Collapsed Navigation Icons -->
+  <div *ngIf="isCollapsed" class="collapsed-nav">
+    <div 
+      class="nav-icon"
+      [class.active]="isActiveRoute('/dashboard')"
+      (click)="navigateTo('/dashboard')"
+      matRipple
+      title="Dashboard">
+      <mat-icon>dashboard</mat-icon>
+    </div>
+    
+    <div 
+      class="nav-icon"
+      [class.active]="isActiveRoute('/forms')"
+      (click)="navigateTo('/forms')"
+      matRipple
+      title="Generated Forms">
+      <mat-icon>description</mat-icon>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,576 @@
+.side-menu {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  width: 350px;
+  background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  transition: width 0.3s ease;
+  overflow: hidden;
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.15);
+  color: white;
+}
+
+.side-menu.collapsed {
+  width: 60px;
+}
+
+/* Header Section */
+.menu-header {
+  display: flex;
+  align-items: center;
+  padding: 0; /* Remove padding to match dashboard header */
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  height: 64px; /* Match dashboard header height exactly */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px);
+}
+
+.menu-header .header-content {
+  width: 100%;
+  padding: 16px 24px; /* Match dashboard header content padding */
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.toggle-btn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  transition: background-color 0.2s ease;
+}
+
+.toggle-btn mat-icon {
+  font-size: 28px; /* Match dashboard app-icon size */
+  width: 28px;
+  height: 28px;
+}
+
+.toggle-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.menu-title {
+  margin: 0 0 0 12px;
+  font-size: 24px; /* Match dashboard h1 font-size */
+  font-weight: 600; /* Match dashboard h1 font-weight */
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* Search Section */
+.search-section {
+  padding: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.search-field {
+  width: 100%;
+}
+
+.search-field .mat-mdc-form-field-infix {
+  min-height: 44px;
+}
+
+.search-field .mat-mdc-text-field-wrapper {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.search-field .mat-mdc-form-field-flex {
+  background-color: transparent;
+}
+
+.search-field input {
+  color: white;
+}
+
+.search-field .mat-mdc-form-field-label {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.search-field .mat-mdc-form-field-icon-prefix {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.search-field .mat-mdc-form-field-icon-suffix {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.search-field .mat-mdc-form-field-outline {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.search-field.mat-focused .mat-mdc-form-field-outline {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.search-field input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Loading Section */
+.loading-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.loading-section mat-spinner {
+  --mdc-circular-progress-active-indicator-color: rgba(255, 255, 255, 0.8);
+}
+
+.loading-section p {
+  margin-top: 16px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+}
+
+/* Error Section */
+.error-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  text-align: center;
+}
+
+.error-section mat-icon {
+  font-size: 48px;
+  height: 48px;
+  width: 48px;
+  margin-bottom: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.error-section p {
+  margin: 0 0 16px 0;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+}
+
+.error-section button {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.error-section button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Navigation Section */
+.navigation-section {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.nav-item.active {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  border-right: 3px solid #fff;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.nav-item mat-icon {
+  margin-right: 12px;
+  font-size: 20px;
+  height: 20px;
+  width: 20px;
+}
+
+.nav-item span {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Collapsed Navigation Icons */
+.collapsed-nav {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 0;
+  gap: 4px;
+}
+
+.nav-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  margin: 0 6px;
+}
+
+.nav-icon:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.nav-icon.active {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.nav-icon mat-icon {
+  font-size: 20px;
+  height: 20px;
+  width: 20px;
+}
+
+/* Divider */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
+  margin: 8px 16px;
+}
+
+/* Forms Section */
+.forms-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.section-header {
+  padding: 16px 16px 8px 16px;
+}
+
+.section-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* View All Section */
+.view-all-section {
+  padding: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: auto;
+}
+
+.view-all-section button {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.view-all-section button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Update existing styles for forms-list */
+.forms-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Empty State */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.empty-state mat-icon {
+  font-size: 64px;
+  height: 64px;
+  width: 64px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Results Summary */
+.results-summary {
+  padding: 8px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.count-badge {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Form Items */
+.form-items {
+  padding: 8px 0;
+}
+
+.form-item {
+  position: relative;
+  padding: 12px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background-color 0.2s ease;
+}
+
+.form-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.form-item:last-child {
+  border-bottom: none;
+}
+
+.form-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.form-icon {
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 2px;
+}
+
+.form-icon mat-icon {
+  font-size: 20px;
+  height: 20px;
+  width: 20px;
+}
+
+.form-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.form-title {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.form-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-meta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.form-meta mat-icon {
+  font-size: 14px;
+  height: 14px;
+  width: 14px;
+}
+
+.form-actions {
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.form-item:hover .form-actions {
+  opacity: 1;
+}
+
+.delete-btn {
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+}
+
+.delete-btn mat-icon {
+  font-size: 16px;
+  height: 16px;
+  width: 16px;
+}
+
+/* Tooltip for collapsed view */
+.tooltip {
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #333;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 1001;
+  margin-left: 8px;
+}
+
+.tooltip::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -4px;
+  transform: translateY(-50%);
+  border: 4px solid transparent;
+  border-right-color: #333;
+}
+
+.collapsed .form-item:hover .tooltip {
+  opacity: 1;
+}
+
+/* Pagination */
+.pagination {
+  padding: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+}
+
+.pagination-info {
+  text-align: center;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 12px;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 4px;
+}
+
+.page-numbers button {
+  min-width: 32px;
+  height: 32px;
+  font-size: 12px;
+  padding: 0;
+}
+
+.page-numbers button.active {
+  background-color: rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .side-menu {
+    width: 100%;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+
+  .side-menu.collapsed {
+    width: 100%;
+    transform: translateX(-100%);
+  }
+
+  .side-menu.mobile-open {
+    transform: translateX(0);
+  }
+
+  .side-menu.mobile-open.collapsed {
+    transform: translateX(0);
+    width: 60px;
+  }
+}
+
+/* Scrollbar Styling */
+.forms-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.forms-list::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.forms-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.forms-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Animation for form items */
+.form-item {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

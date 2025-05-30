@@ -1,0 +1,56 @@
+<div class="confirmation-container">
+  <div class="confirmation-card">
+    <!-- Success Icon -->
+    <div class="success-icon">
+      <mat-icon>check_circle</mat-icon>
+    </div>
+    
+    <!-- Success Message -->
+    <h2 class="confirmation-title">Form Saved Successfully!</h2>
+    
+    <!-- Form Details -->
+    <div class="form-details">
+      <div class="detail-item">
+        <span class="detail-label">Form Name:</span>
+        <span class="detail-value">{{ formName }}</span>
+      </div>
+      
+      <div class="detail-item">
+        <span class="detail-label">Form ID:</span>
+        <span class="detail-value form-id">{{ formId }}</span>
+      </div>
+      
+      <div class="detail-item">
+        <span class="detail-label">Saved At:</span>
+        <span class="detail-value">{{ formattedDate }}</span>
+      </div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button mat-raised-button 
+              color="primary" 
+              (click)="onViewForm()"
+              class="action-button">
+        <mat-icon>visibility</mat-icon>
+        View Saved Form
+      </button>
+      
+      <button mat-stroked-button 
+              color="primary" 
+              (click)="onCreateNew()"
+              class="action-button">
+        <mat-icon>add</mat-icon>
+        Create New Form
+      </button>
+    </div>
+    
+    <!-- Additional Info -->
+    <div class="info-section">
+      <mat-icon class="info-icon">info</mat-icon>
+      <p class="info-text">
+        Your form has been saved to the database. You can view or edit it anytime using the Form ID above.
+      </p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,172 @@
+<div class="app-container">
+  <!-- Dashboard Header -->
+  <header class="dashboard-header">
+    <div class="header-content">
+      <div class="header-left">
+        <mat-icon class="app-icon">assignment</mat-icon>
+        <h1>DynaForm</h1>
+        <span class="app-subtitle">Generated Forms</span>
+      </div>
+      <div class="header-right">
+        <span class="user-info">Welcome, {{ authService.getCurrentUser()?.username }}</span>
+        <button mat-button (click)="logout()" class="logout-button">
+          <mat-icon>logout</mat-icon>
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="forms-list-container">
+  <!-- Header -->
+  <div class="page-header">
+    <h1>Generated Forms</h1>
+    <p class="page-description">View and manage all your generated forms</p>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="search-section">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-icon matPrefix>search</mat-icon>
+      <input 
+        matInput 
+        placeholder="Search forms..." 
+        [(ngModel)]="searchQuery"
+        (input)="onSearch(searchQuery)"
+        [disabled]="loading">
+      <button 
+        *ngIf="searchQuery" 
+        matSuffix 
+        mat-icon-button 
+        (click)="clearSearch()"
+        aria-label="Clear search">
+        <mat-icon>clear</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-section">
+    <mat-spinner diameter="60"></mat-spinner>
+    <p>Loading forms...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-section">
+    <mat-icon color="warn">error</mat-icon>
+    <p>{{ error }}</p>
+    <button mat-raised-button color="primary" (click)="loadForms()">
+      Retry
+    </button>
+  </div>
+
+  <!-- Forms Grid -->
+  <div *ngIf="!loading && !error" class="forms-content">
+    <!-- Results Summary -->
+    <div *ngIf="totalCount > 0" class="results-summary">
+      <span class="count-badge">{{ totalCount }} form{{ totalCount !== 1 ? 's' : '' }} found</span>
+      <span *ngIf="searchQuery" class="search-info">for "{{ searchQuery }}"</span>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="forms.length === 0" class="empty-state">
+      <mat-icon>description</mat-icon>
+      <h2>{{ searchQuery ? 'No forms found' : 'No forms available' }}</h2>
+      <p>
+        {{ searchQuery ? 'Try adjusting your search criteria.' : 'Start creating forms from the dashboard.' }}
+      </p>
+      <button *ngIf="!searchQuery" mat-raised-button color="primary" routerLink="/dashboard">
+        Go to Dashboard
+      </button>
+    </div>
+
+    <!-- Forms Grid -->
+    <div *ngIf="forms.length > 0" class="forms-grid">
+      <mat-card 
+        *ngFor="let form of forms; trackBy: trackByFormId" 
+        class="form-card"
+        (click)="onFormClick(form)"
+        matRipple>
+        
+        <mat-card-header>
+          <div mat-card-avatar class="form-avatar">
+            <mat-icon>description</mat-icon>
+          </div>
+          <mat-card-title>{{ form.metadata.formName || 'Untitled Form' }}</mat-card-title>
+          <mat-card-subtitle>
+            <span class="created-date">
+              <mat-icon>schedule</mat-icon>
+              {{ formatDate(form.metadata.createdAt) }}
+            </span>
+          </mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+          <div class="form-stats">
+            <div class="stat">
+              <mat-icon>input</mat-icon>
+              <span>{{ getFormFieldsCount(form) }} fields</span>
+            </div>
+          </div>
+        </mat-card-content>
+
+        <mat-card-actions align="end">
+          <button 
+            mat-icon-button 
+            color="primary"
+            (click)="onFormClick(form); $event.stopPropagation()"
+            aria-label="View form">
+            <mat-icon>visibility</mat-icon>
+          </button>
+          <button 
+            mat-icon-button 
+            color="warn"
+            (click)="onDeleteForm(form); $event.stopPropagation()"
+            aria-label="Delete form">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="totalPages > 1" class="pagination-section">
+      <div class="pagination-info">
+        Page {{ currentPage }} of {{ totalPages }}
+      </div>
+      
+      <div class="pagination-controls">
+        <button 
+          mat-icon-button 
+          [disabled]="currentPage === 1" 
+          (click)="previousPage()"
+          aria-label="Previous page">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+
+        <div class="page-numbers">
+          <button 
+            *ngFor="let page of getPageNumbers()" 
+            mat-button
+            [class.active]="page === currentPage"
+            (click)="goToPage(page)"
+            [attr.aria-label]="'Go to page ' + page">
+            {{ page }}
+          </button>
+        </div>
+
+        <button 
+          mat-icon-button 
+          [disabled]="currentPage === totalPages" 
+          (click)="nextPage()"
+          aria-label="Next page">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+    </div>
+  </div>
+</div>

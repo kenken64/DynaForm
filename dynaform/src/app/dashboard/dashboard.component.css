@@ -1,0 +1,833 @@
+/* Dashboard Header Styles */
+.dashboard-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 999; /* Lower than side menu z-index */
+  height: 64px; /* Match side menu header height exactly */
+  display: flex;
+  align-items: center;
+}
+
+.header-content {
+  max-width: none; /* Remove max-width constraint */
+  width: 100%;
+  padding: 16px 24px; /* Match side menu header padding */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.app-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.header-left h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.app-subtitle {
+  font-size: 14px;
+  opacity: 0.9;
+  font-weight: 300;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.user-info {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.logout-button {
+  color: white !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  transition: all 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.main-content {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header-content {
+    padding: 12px 16px; /* Match side menu responsive padding */
+  }
+  
+  .header-left h1 {
+    font-size: 20px;
+  }
+  
+  .app-subtitle {
+    display: none;
+  }
+  
+  .user-info {
+    display: none;
+  }
+  
+  .main-content {
+    padding: 16px;
+  }
+}
+
+.mat-stepper-horizontal {
+    margin-top: 8px;
+    width: 100%;
+    max-width: 100%;
+    margin: 8px 0 0 0;
+}
+
+/* Stepper size customization */
+.mat-stepper-horizontal .mat-step-header {
+    height: 50px !important;
+    padding: 0 8px !important;
+    min-width: 120px !important;
+}
+
+.mat-stepper-horizontal .mat-step-header .mat-step-icon {
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 14px !important;
+    line-height: 24px !important;
+}
+
+.mat-stepper-horizontal .mat-step-header .mat-step-label {
+    font-size: 14px !important;
+    font-weight: 500 !important;
+}
+
+.mat-stepper-horizontal .mat-horizontal-stepper-header:not(:first-child)::before,
+.mat-stepper-horizontal .mat-horizontal-stepper-header:not(:last-child)::after {
+    height: 2px !important;
+    top: 23px !important;
+}
+
+.mat-stepper-horizontal .mat-horizontal-content {
+    padding: 16px 0 !important;
+}
+
+.mat-mdc-form-field {
+    margin-top: 16px;
+    pointer-events: auto !important;
+    position: relative;
+    z-index: 1;
+}
+
+.mat-mdc-form-field input,
+.mat-mdc-form-field textarea {
+    pointer-events: auto !important;
+    cursor: text !important;
+    background-color: transparent !important;
+    border: none !important;
+    outline: none !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+}
+
+.mat-mdc-form-field input[type="date"] {
+    cursor: pointer !important;
+}
+
+.mat-mdc-form-field input[type="number"] {
+    cursor: text !important;
+}
+
+/* Ensure all form inputs are fully interactive */
+input[matInput], textarea[matInput] {
+    pointer-events: auto !important;
+    cursor: text !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    opacity: 1 !important;
+    background-color: transparent !important;
+}
+
+input[matInput][type="date"] {
+    cursor: pointer !important;
+}
+
+/* Force enable all form fields - override any disabled states */
+.mat-mdc-form-field-disabled,
+.mat-mdc-form-field-disabled input,
+.mat-mdc-form-field-disabled textarea {
+    pointer-events: auto !important;
+    cursor: text !important;
+    opacity: 1 !important;
+    color: inherit !important;
+    background-color: transparent !important;
+}
+
+.mat-mdc-form-field-disabled input[type="date"] {
+    cursor: pointer !important;
+}
+
+/* Override Material Design disabled states */
+.mat-mdc-form-field.mat-form-field-disabled .mat-mdc-form-field-flex {
+    background-color: transparent !important;
+    opacity: 1 !important;
+}
+
+.mat-mdc-form-field.mat-form-field-disabled .mat-mdc-form-field-label {
+    color: rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Ensure disabled checkboxes remain interactive */
+mat-checkbox.mat-mdc-checkbox-disabled {
+    pointer-events: auto !important;
+    opacity: 1 !important;
+}
+
+mat-checkbox.mat-mdc-checkbox-disabled .mdc-checkbox {
+    pointer-events: auto !important;
+    opacity: 1 !important;
+}
+
+/* Override any blocking styles */
+.material-form * {
+    pointer-events: auto !important;
+}
+
+.material-form input, 
+.material-form textarea, 
+.material-form mat-checkbox {
+    pointer-events: auto !important;
+    cursor: text !important;
+}
+
+.material-form input[type="date"] {
+    cursor: pointer !important;
+}
+
+.material-form mat-checkbox {
+    cursor: pointer !important;
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    min-height: 100vh;
+    background-color: #f5f5f5;
+}
+
+.material-form {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 600px;
+    border: 1px solid #e0e0e0;
+}
+
+.full-width {
+    width: 100%;
+    margin-bottom: 1.5rem;
+    pointer-events: auto; /* Ensure clickability */
+    position: relative;
+    z-index: 1;
+}
+
+.full-width input,
+.full-width textarea {
+    pointer-events: auto;
+    cursor: text;
+}
+
+.full-width input[type="date"] {
+    cursor: pointer;
+}
+
+.full-width input[type="number"] {
+    cursor: text;
+}
+
+.checkbox-group {
+    margin-bottom: 1.5rem;
+}
+
+.group-label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.checkbox-item {
+    margin-bottom: 0.5rem;
+}
+
+.single-checkbox-container {
+    margin-bottom: 1.5rem;
+    padding: 0.5rem 0;
+}
+
+.single-checkbox-container mat-checkbox {
+    font-size: 16px;
+}
+
+.my-divider {
+    margin: 1.5rem 0;
+}
+
+.centered-spinner {
+  display: block;
+  margin: 20px auto;
+}
+
+.loading-container {
+  text-align: center;
+  padding: 2rem;
+}
+
+.loading-container p {
+  margin-top: 1rem;
+  color: #666;
+  font-size: 16px;
+}
+
+.error-container {
+  text-align: center;
+  padding: 2rem;
+}
+
+.error-container mat-error {
+  font-size: 16px;
+  margin-bottom: 1rem;
+}
+
+/* Form Title Styling */
+.form-title-container {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  width: 100%;
+  max-width: 600px;
+}
+
+.form-title {
+  color: #1976d2;
+  font-weight: 600;
+  font-size: 2rem;
+  margin: 0;
+  letter-spacing: 0.5px;
+  text-transform: capitalize;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Leave Period Section Styling */
+.leave-period-section {
+  background-color: #f8f9ff;
+  border: 2px solid #e3f2fd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.section-title {
+  color: #1976d2;
+  font-weight: 600;
+  font-size: 1.2rem;
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e3f2fd;
+}
+
+.leave-period-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.leave-field {
+  flex: 1;
+  min-width: 150px;
+}
+
+.leave-input {
+    width: 100%;
+    pointer-events: auto;
+    position: relative;
+    z-index: 1;
+}
+
+.leave-input input,
+.leave-input textarea {
+    pointer-events: auto;
+    cursor: text;
+}
+
+.leave-input input[type="date"] {
+    cursor: pointer;
+}
+
+.leave-input input[type="number"] {
+    cursor: text;
+}
+
+/* Responsive design for leave period fields */
+@media (max-width: 768px) {
+  .leave-period-fields {
+    flex-direction: column;
+  }
+  
+  .leave-field {
+    min-width: 100%;
+  }
+}
+
+/* Form Date Field Styling */
+.form-date-field {
+  background-color: #f3f8ff;
+  border: 1px solid #e3f2fd;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.1);
+  pointer-events: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.form-date-field mat-form-field {
+  width: 100%;
+  pointer-events: auto;
+}
+
+.form-date-field input {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.form-date-field mat-label {
+  font-weight: 600;
+  color: #1976d2;
+  font-size: 1.1rem;
+  pointer-events: none;
+}
+
+.form-date-field .mat-mdc-form-field-outline {
+  color: #1976d2;
+}
+
+.form-date-field .mat-mdc-form-field-focus-overlay {
+  background-color: rgba(25, 118, 210, 0.04);
+}
+
+.form-date-field mat-icon {
+  color: #1976d2;
+  pointer-events: none;
+}
+
+/* File upload and stepper validation styles */
+.file-status {
+    background: #e8f5e8 !important;
+    border: 1px solid #4caf50 !important;
+    padding: 12px;
+    margin-bottom: 16px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+}
+
+.no-file-warning {
+    background: #fff3cd !important;
+    border: 1px solid #ffc107 !important;
+    padding: 12px;
+    margin-bottom: 16px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+}
+
+.upload-message {
+    margin-bottom: 16px;
+    padding: 12px;
+    background: #f5f5f5;
+    border-radius: 4px;
+    border-left: 4px solid #2196f3;
+}
+
+/* Step validation styles */
+.mat-step-header .mat-step-icon {
+    background-color: #f5f5f5;
+    color: #666;
+}
+
+.mat-step-header .mat-step-icon-selected {
+    background-color: #2196f3;
+    color: white;
+}
+
+.mat-step-header .mat-step-icon-state-done {
+    background-color: #4caf50;
+    color: white;
+}
+
+/* Button states */
+button:disabled {
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
+}
+
+button:disabled mat-icon {
+    opacity: 0.6 !important;
+}
+
+/* Form preview styles */
+.form-preview-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form-preview-container img {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    max-width: 100%;
+    height: auto;
+}
+
+/* Navigation button styles */
+.navigation-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+/* Helper text styles */
+.helper-text {
+    color: #666;
+    font-size: 12px;
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+}
+
+.helper-text mat-icon {
+    font-size: 16px;
+    margin-right: 4px;
+}
+
+/* Custom file input styles */
+.file-input-container {
+    margin-bottom: 16px;
+}
+
+.file-input-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #333;
+    font-size: 14px;
+}
+
+.file-input-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.file-input-wrapper input[type="file"] {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.file-select-button {
+    width: 100% !important;
+    text-align: left !important;
+    justify-content: flex-start !important;
+    padding: 12px 16px !important;
+    border: 1px solid #ccc !important;
+    border-radius: 4px !important;
+    background-color: #fafafa !important;
+    transition: all 0.2s ease !important;
+}
+
+.file-select-button:hover {
+    background-color: #f0f0f0 !important;
+    border-color: #999 !important;
+}
+
+.file-select-button.mat-button-focus {
+    background-color: #e3f2fd !important;
+    border-color: #2196f3 !important;
+}
+
+/* File selected state */
+.file-input-wrapper.has-file .file-select-button {
+    background-color: #e8f5e8 !important;
+    border-color: #4caf50 !important;
+    color: #2e7d32 !important;
+}
+
+/* Textarea field styling */
+.textarea-field {
+    min-height: 150px !important;
+}
+
+.textarea-field textarea {
+    min-height: 120px !important;
+    resize: vertical !important;
+    font-family: inherit !important;
+    line-height: 1.5 !important;
+    pointer-events: auto !important;
+    cursor: text !important;
+}
+
+.textarea-field .mat-mdc-form-field-flex {
+    min-height: 150px !important;
+}
+
+.textarea-field .mat-mdc-form-field-infix {
+    min-height: 120px !important;
+    padding: 16px 0 !important;
+}
+
+/* Special styling for "Reasons for Leave" field */
+.textarea-field:has(textarea[formcontrolname*="reasons"]) textarea,
+.textarea-field:has(textarea[formcontrolname*="leave"]) textarea,
+.textarea-field:has(textarea[placeholder*="reasons"]) textarea {
+    min-height: 180px !important;
+}
+
+.textarea-field:has(textarea[formcontrolname*="reasons"]),
+.textarea-field:has(textarea[formcontrolname*="leave"]) {
+    min-height: 200px !important;
+}
+
+.textarea-field:has(textarea[formcontrolname*="reasons"]) .mat-mdc-form-field-flex,
+.textarea-field:has(textarea[formcontrolname*="leave"]) .mat-mdc-form-field-flex {
+    min-height: 200px !important;
+}
+
+.textarea-field:has(textarea[formcontrolname*="reasons"]) .mat-mdc-form-field-infix,
+.textarea-field:has(textarea[formcontrolname*="leave"]) .mat-mdc-form-field-infix {
+    min-height: 160px !important;
+}
+
+/* Clean form field container styling */
+.form-field-container {
+    margin-bottom: 1.5rem;
+    padding: 0;
+    border: none;
+    background: none;
+}
+
+.form-field-container .full-width {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+/* Remove debug border styling */
+.form-field-container {
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 0 1.5rem 0 !important;
+}
+
+/* Signature field styling */
+.signature-field {
+    border: 2px dashed #2196f3 !important;
+    border-radius: 8px !important;
+    background-color: #f8f9ff !important;
+    padding: 8px !important;
+}
+
+.signature-field .mat-mdc-form-field-flex {
+    background-color: transparent !important;
+    border-radius: 4px !important;
+}
+
+.signature-field input {
+    font-style: italic !important;
+    color: #1976d2 !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+}
+
+.signature-field mat-label {
+    color: #1976d2 !important;
+    font-weight: 600 !important;
+}
+
+.signature-field mat-icon {
+    color: #1976d2 !important;
+}
+
+.signature-field:hover {
+    background-color: #e3f2fd !important;
+    border-color: #1976d2 !important;
+}
+
+.signature-field input:focus {
+    background-color: #ffffff !important;
+    box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2) !important;
+}
+
+/* Field Configuration Panel Styling */
+.field-config-panel {
+    background: #f8f9ff;
+    border: 1px solid #e3f2fd;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.field-config-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+.field-label {
+    font-weight: 600;
+    color: #1976d2;
+    font-size: 14px;
+    flex: 1;
+}
+
+.config-dropdown {
+    min-width: 200px;
+    max-width: 250px;
+}
+
+.config-dropdown .mat-mdc-form-field-flex {
+    height: 48px !important;
+}
+
+.config-status {
+    margin-top: 8px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.config-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 4px 8px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.config-badge mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+.config-badge:has(mat-icon[ng-reflect-font-icon="star"]) {
+    background: #ffebee;
+    color: #d32f2f;
+}
+
+.config-badge:has(mat-icon[ng-reflect-font-icon="verified"]) {
+    background: #e8f5e8;
+    color: #2e7d32;
+}
+
+.required-indicator {
+    color: #d32f2f;
+    font-weight: bold;
+    margin-left: 4px;
+}
+
+/* Update form field container to accommodate config panel */
+.form-field-container {
+    margin-bottom: 2rem;
+    padding: 0;
+    border: none;
+    background: none;
+}
+
+.form-field-container .full-width {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+/* Enhanced error styling */
+mat-error {
+    color: #d32f2f !important;
+    font-size: 12px !important;
+    margin-top: 4px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+}
+
+/* Multi-select styling */
+.mat-mdc-select-multiple .mat-mdc-select-value {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* App container and view management */
+.app-container {
+    min-height: 100vh;
+    width: 100%;
+}
+
+/* View transitions */
+.app-container > div {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Ensure form view maintains proper styling */
+.app-container .form-container {
+    animation: none; /* Prevent double animation */
+}
