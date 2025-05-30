@@ -94,7 +94,7 @@ export class AppComponent {
         const file = new File([blob], 'form_image.png', { type: blob.type });
 
         this.describeService.describeImage(file).subscribe({
-          next: res => {
+          next: (res: any) => {
             try {
               const jsonStr = res.description.match(/```json\s*([\s\S]*?)```/)?.[1];
               if (!jsonStr) {
@@ -114,7 +114,7 @@ export class AppComponent {
               this.loading = false;
               this.isFetchingForm = false; // Stop spinner on parse error
             }
-          },          error: (err) => {
+          },          error: (err: any) => {
             console.error('Image description error:', err);
             // Provide more specific error messages based on error type
             if (err.status === 404) {
@@ -147,18 +147,30 @@ export class AppComponent {
       const sanitizedKey = this.sanitizeFieldName(field.name);
       this.originalFieldNameMap[sanitizedKey] = field.name;
 
-      if (field.type === 'checkbox') {
-        if (typeof field.value === 'object' && field.value !== null) {
-          const nestedGroup: any = {};
-          Object.entries(field.value).forEach(([key, val]) => {
-            nestedGroup[key] = new FormControl(val);
-          });
-          group[sanitizedKey] = new FormGroup(nestedGroup);
-        } else {
-          group[sanitizedKey] = new FormControl(field.value);
-        }
-      } else {
-        group[sanitizedKey] = new FormControl(field.value);
+      switch (field.type) {
+        case 'checkbox':
+          if (typeof field.value === 'object' && field.value !== null) {
+            // Multiple checkbox options (checkbox group)
+            const nestedGroup: any = {};
+            Object.entries(field.value).forEach(([key, val]) => {
+              nestedGroup[key] = new FormControl(!!val); // Ensure boolean value
+            });
+            group[sanitizedKey] = new FormGroup(nestedGroup);
+          } else {
+            // Single checkbox
+            group[sanitizedKey] = new FormControl(!!field.value); // Ensure boolean value
+          }
+          break;
+        
+        case 'textarea':
+          group[sanitizedKey] = new FormControl(field.value || '');
+          break;
+        
+        case 'textbox':
+        case 'text':
+        default:
+          group[sanitizedKey] = new FormControl(field.value || '');
+          break;
       }
     });
 
@@ -178,8 +190,62 @@ export class AppComponent {
     return this.dynamicForm.get(fieldName) as FormGroup;
   }
 
+  // Helper methods to determine field types
+  isTextField(field: any): boolean {
+    return field.type === 'textbox' || field.type === 'text' || (!field.type && typeof field.value === 'string');
+  }
+
+  isTextAreaField(field: any): boolean {
+    return field.type === 'textarea';
+  }
+
+  isSingleCheckbox(field: any): boolean {
+    return field.type === 'checkbox' && (typeof field.value !== 'object' || field.value === null);
+  }
+
+  isCheckboxGroup(field: any): boolean {
+    return field.type === 'checkbox' && typeof field.value === 'object' && field.value !== null;
+  }
+
   onSubmit(): void {
-    console.log('Submitted Form:', this.dynamicForm.value);
+    const formData = this.dynamicForm.value;
+    console.log('Submitted Form Data:', formData);
+    
+    // Process and format the form data for better readability
+    const processedData: any = {};
+    
+    this.fields.forEach(field => {
+      const sanitizedKey = this.sanitizeFieldName(field.name);
+      const originalName = field.name;
+      const value = formData[sanitizedKey];
+      
+      if (field.type === 'checkbox' && typeof field.value === 'object') {
+        // For checkbox groups, show which options were selected
+        const selectedOptions = Object.entries(value)
+          .filter(([key, val]) => val === true)
+          .map(([key, val]) => key);
+        processedData[originalName] = {
+          type: 'checkbox_group',
+          selected: selectedOptions,
+          all_options: Object.keys(field.value)
+        };
+      } else if (field.type === 'checkbox') {
+        // For single checkbox
+        processedData[originalName] = {
+          type: 'single_checkbox',
+          checked: !!value
+        };
+      } else {
+        // For text and textarea fields
+        processedData[originalName] = {
+          type: field.type || 'text',
+          value: value
+        };
+      }
+    });
+    
+    console.log('Processed Form Data:', processedData);
+    alert('Form submitted! Check the console for detailed form data.');
   }
 
   sanitizeFieldName(name: string): string {

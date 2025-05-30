@@ -11,7 +11,14 @@ export class DescribeImageService {
   describeImage(file: File): Observable<any> {
     const formData = new FormData();
     formData.append('imageFile', file);
-    formData.append('prompt', 'List all the form fields format the output in json (make sure structure {forms:[ fields: []]}) and also provide the field type whether it is a textbox or checkbox');
+    
+    const prompt = 'Analyze this form image and identify all form fields. Return the output in JSON format with the structure {forms: [{fields: []}]}. ' +
+      'For each field, provide: name (field label), type (textbox/textarea/checkbox), and value (default value). ' +
+      'Field types: textbox for single-line inputs, textarea for multi-line text areas, checkbox for checkboxes. ' +
+      'For single checkbox use: {"name": "Field Name", "type": "checkbox", "value": false}. ' +
+      'For checkbox groups use: {"name": "Group Name", "type": "checkbox", "value": {"Option 1": false, "Option 2": false}}.';
+    
+    formData.append('prompt', prompt);
     formData.append('model', 'qwen2.5vl:latest');
 
     return this.http.post('/api/describe-image', formData);

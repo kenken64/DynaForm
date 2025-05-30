@@ -39,6 +39,19 @@
     margin-bottom: 0.5rem;
 }
 
+.checkbox-item {
+    margin-bottom: 0.5rem;
+}
+
+.single-checkbox-container {
+    margin-bottom: 1.5rem;
+    padding: 0.5rem 0;
+}
+
+.single-checkbox-container mat-checkbox {
+    font-size: 16px;
+}
+
 .my-divider {
     margin: 1.5rem 0;
 }

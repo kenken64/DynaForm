@@ -36,24 +36,44 @@
     <div class="form-container" *ngIf="dynamicForm && !isFetchingForm && !error">
       <form [formGroup]="dynamicForm" (ngSubmit)="onSubmit()" class="material-form">
         <div *ngFor="let field of fields">
-          <!-- Get the sanitized field key -->
-          <ng-container *ngIf="isFormControl(sanitizeFieldName(field.name)); else checkboxGroup">
+          
+          <!-- Text Input Field -->
+          <ng-container *ngIf="isTextField(field)">
             <mat-form-field appearance="outline" class="full-width">
-              <!-- Display original name -->
               <mat-label>{{ field.name }}</mat-label>
               <input matInput type="text" [formControl]="getFormControl(sanitizeFieldName(field.name))" />
             </mat-form-field>
           </ng-container>
 
+          <!-- Textarea Field -->
+          <ng-container *ngIf="isTextAreaField(field)">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ field.name }}</mat-label>
+              <textarea matInput 
+                        rows="4" 
+                        [formControl]="getFormControl(sanitizeFieldName(field.name))"
+                        placeholder="Enter your text here..."></textarea>
+            </mat-form-field>
+          </ng-container>
+
+          <!-- Single Checkbox -->
+          <ng-container *ngIf="isSingleCheckbox(field)">
+            <div class="single-checkbox-container">
+              <mat-checkbox [formControl]="getFormControl(sanitizeFieldName(field.name))">
+                {{ field.name }}
+              </mat-checkbox>
+            </div>
+          </ng-container>
+
           <!-- Checkbox Group -->
-          <ng-template #checkboxGroup>
+          <ng-container *ngIf="isCheckboxGroup(field)">
             <div [formGroup]="getNestedGroup(sanitizeFieldName(field.name))" class="checkbox-group">
               <label class="group-label">{{ field.name }}</label>
-              <div *ngFor="let key of objectKeys(field.value)">
+              <div *ngFor="let key of objectKeys(field.value)" class="checkbox-item">
                 <mat-checkbox [formControlName]="key">{{ key }}</mat-checkbox>
               </div>
             </div>
-          </ng-template>
+          </ng-container>
 
           <mat-divider class="my-divider"></mat-divider>
         </div>
