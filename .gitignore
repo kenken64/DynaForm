@@ -38,3 +38,5 @@ generated_pngs
 package-lock.json
 describeImge/node_modules
 dynaform/node_modules
+node_modules/
+.cache/
