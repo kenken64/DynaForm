@@ -4,7 +4,7 @@ import { FormDataSubmission, SavedFormDataSubmission, PaginatedResponse } from '
 
 export class FormDataService {
   private getCollection(): Collection<SavedFormDataSubmission> {
-    return getDatabase().collection('forms_data');
+    return getDatabase().collection('form_submissions');
   }
 
   async saveFormData(

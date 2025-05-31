@@ -1,6 +1,28 @@
 ## Docker Setup and Build Options
 
-This project uses Docker Compose to orchestrate multiple services. The configuration ensures that containers are always rebuilt with the latest changes.
+This project uses Docker Compose to orchestrate multiple services including MongoDB for data persistence. The configuration ensures that containers are always rebuilt with the latest changes.
+
+### Complete Application Stack
+
+**MongoDB + All Services (Recommended):**
+
+```bash
+# Complete setup with MongoDB - Interactive mode
+./start-complete-with-mongodb.sh
+
+# MongoDB management
+./mongodb-manager.sh start     # Start MongoDB only
+./mongodb-manager.sh connect   # Connect to MongoDB shell
+./mongodb-manager.sh stats     # Show database statistics
+./mongodb-manager.sh help      # Show all commands
+```
+
+**Services Included:**
+- 🗄️ **MongoDB**: Document database for form data storage
+- 🤖 **Ollama**: LLM service for form field analysis  
+- 🔧 **API**: Node.js/Express backend service
+- 📄 **PDF Converter**: Python Flask service for PDF processing
+- 🌐 **Frontend**: Angular application
 
 ### Quick Start Options
 
@@ -19,6 +41,9 @@ This project uses Docker Compose to orchestrate multiple services. The configura
 ```bash
 # Make scripts executable (first time only)
 chmod +x *.sh
+
+# Complete stack with MongoDB (recommended)
+./start-complete-with-mongodb.sh
 
 # Interactive mode with forced rebuild
 ./start-dev.sh
@@ -88,6 +113,63 @@ docker-compose down
 - **API (Node.js)**: http://localhost:3000  
 - **PDF Converter (Python Flask)**: http://localhost:5001
 - **Ollama GPU**: http://localhost:11434
+- **MongoDB**: mongodb://localhost:27017
+
+### MongoDB Configuration
+
+The application uses MongoDB for persistent data storage with the following setup:
+
+**Database Information:**
+- **Database Name**: `doc2formjson`
+- **Collections**: `form_submissions`, `forms`, `users`, `form_templates`
+- **Application User**: `doc2formapp` (read/write access)
+- **Read-only User**: `doc2formreader` (analytics access)
+
+**Connection Details:**
+```
+MongoDB URI: mongodb://doc2formapp:apppassword123@localhost:27017/doc2formjson
+Admin URI: mongodb://admin:password123@localhost:27017/admin
+```
+
+**Environment Variables:**
+```bash
+MONGODB_URI=mongodb://doc2formapp:apppassword123@localhost:27017/doc2formjson
+MONGODB_DB_NAME=doc2formjson
+```
+
+**⚠️ Security Note**: Default passwords are for development only. Change them in production!
+
+### MongoDB Management
+
+Use the MongoDB manager script for easy database operations:
+
+```bash
+./mongodb-manager.sh start      # Start MongoDB container
+./mongodb-manager.sh stop       # Stop MongoDB container
+./mongodb-manager.sh connect    # Open MongoDB shell
+./mongodb-manager.sh stats      # Show database statistics
+./mongodb-manager.sh backup     # Create database backup
+./mongodb-manager.sh logs       # View MongoDB logs
+./mongodb-manager.sh help       # Show all commands
+```
+
+**Sample Database Operations:**
+```javascript
+// Connect to application database
+use doc2formjson
+
+// View collections
+show collections
+
+// Count form submissions
+db.form_submissions.countDocuments()
+
+// Find recent submissions
+db.form_submissions.find().sort({submissionMetadata.submittedAt: -1}).limit(5)
+
+// Search submissions by form title
+db.form_submissions.find({formTitle: {$regex: "invoice", $options: "i"}})
+```
 
 ## Install Ollama with Qwen Multimodal
 

@@ -1,0 +1,51 @@
+# MongoDB Service Configuration
+# Add this to your main docker-compose.yml file
+
+version: '3.8'
+
+services:
+  # MongoDB database service
+  mongodb:
+    build:
+      context: ./mongodb
+      dockerfile: Dockerfile
+      no_cache: true
+      args:
+        - BUILDKIT_INLINE_CACHE=0
+        - BUILD_TIMESTAMP=${BUILD_TIMESTAMP:-default}
+    container_name: doc2formjson-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password123
+      - MONGO_INITDB_DATABASE=doc2formjson
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_logs:/data/logs
+      - ./mongodb/mongod.conf:/etc/mongod.conf:ro
+    networks:
+      - doc2formjson-network
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 512M
+
+volumes:
+  mongodb_data:
+    driver: local
+  mongodb_logs:
+    driver: local
+
+networks:
+  doc2formjson-network:
+    driver: bridge

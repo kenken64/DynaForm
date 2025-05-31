@@ -1,43 +1,6 @@
 version: '3.8'
 
-services:
-  # MongoDB database service
-  mongodb:
-    build:
-      context: ./mongodb
-      dockerfile: Dockerfile
-      no_cache: true
-      args:
-        - BUILDKIT_INLINE_CACHE=0
-        - BUILD_TIMESTAMP=${BUILD_TIMESTAMP:-default}
-    container_name: doc2formjson-mongodb
-    restart: unless-stopped
-    ports:
-      - "27017:27017"
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=password123
-      - MONGO_INITDB_DATABASE=doc2formjson
-    volumes:
-      - mongodb_data:/data/db
-      - mongodb_logs:/data/logs
-      - ./mongodb/mongod.conf:/etc/mongod.conf:ro
-    networks:
-      - doc2formjson-network
-    healthcheck:
-      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
-    deploy:
-      resources:
-        limits:
-          memory: 2G
-        reservations:
-          memory: 512M
-
-  # Ollama GPU service for LLM inference (Resource-Limited)
+services:  # Ollama CPU service for LLM inference (macOS compatible)
   ollama-gpu:
     build:
       context: ./ollama
@@ -55,7 +18,6 @@ services:
       - OLLAMA_MODELS=qwen2.5vl:latest
       - OLLAMA_NUM_PARALLEL=1
       - OLLAMA_MAX_LOADED_MODELS=1
-      - OLLAMA_GPU_MEMORY_FRACTION=0.3
       - OLLAMA_KEEP_ALIVE=2m
       - OLLAMA_MAX_QUEUE=1
     volumes:
@@ -90,11 +52,9 @@ services:
       - PORT=3000
       - OLLAMA_BASE_URL=http://ollama-gpu:11434
       - DEFAULT_QWEN_MODEL_NAME=qwen2.5vl:latest
-      - MONGODB_URI=mongodb://doc2formapp:apppassword123@mongodb:27017/doc2formjson
     restart: unless-stopped
     depends_on:
       - ollama-gpu
-      - mongodb
     healthcheck:
       test: [ "CMD", "node", "-e", "const http = require('http'); const options = { port: process.env.PORT || 3000, timeout: 2000 }; const request = http.request(options, (res) => { process.exit(res.statusCode === 200 ? 0 : 1); }); request.on('error', () => process.exit(1)); request.end();" ]
       interval: 30s
@@ -163,8 +123,4 @@ volumes:
   generated_images:
     driver: local
   ollama_models:
-    driver: local
-  mongodb_data:
-    driver: local
-  mongodb_logs:
     driver: local
