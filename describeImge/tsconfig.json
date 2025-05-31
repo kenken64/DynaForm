@@ -3,6 +3,7 @@
     // ... other options ...
     "target": "es2020",
     "module": "commonjs",
+    "lib": ["es2020", "dom"],
     "rootDir": "./src",       // Where your TS source files are
     "baseUrl": "./",          // Important for path resolution if you use paths
     "paths": {                // Optional, but can be useful

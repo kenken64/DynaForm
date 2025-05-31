@@ -16,8 +16,9 @@ RUN mkdir -p /docker-entrypoint-initdb.d
 RUN mkdir -p /data/db
 RUN mkdir -p /data/logs
 
-# Copy initialization scripts
-COPY init-scripts/ /docker-entrypoint-initdb.d/
+# Copy initialization scripts (secure version for Docker secrets)
+COPY init-scripts/01-init-database.js /docker-entrypoint-initdb.d/
+COPY init-scripts/02-create-users-secure.sh /docker-entrypoint-initdb.d/02-create-users.sh
 
 # Set proper permissions
 RUN chown -R mongodb:mongodb /data/db
