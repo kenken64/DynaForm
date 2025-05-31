@@ -1,22 +1,23 @@
-import multer from 'multer';
-import config from '../config';
+import multer, { Multer } from 'multer';
+import { config } from '../config';
 
+// Configure multer for file uploads
 const storage = multer.memoryStorage();
 
-export const upload = multer({
-    storage: storage,
-    limits: { 
-        fileSize: config.MAX_FILE_SIZE 
-    },
-    fileFilter: (req, file, cb) => {
-        // Add file type validation if needed
-        const allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-        if (allowedMimes.includes(file.mimetype)) {
-            cb(null, true);
-        } else {
-            cb(new Error('Invalid file type. Only images are allowed.'));
-        }
+export const upload: Multer = multer({
+  storage: storage,
+  limits: { 
+    fileSize: config.MAX_FILE_SIZE 
+  },
+  fileFilter: (req, file, cb) => {
+    // Accept only image files
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'));
     }
+  }
 });
 
-export const uploadSingle = upload.single('imageFile');
+// Middleware for single file upload
+export const uploadSingle = (fieldName: string = 'imageFile') => upload.single(fieldName);

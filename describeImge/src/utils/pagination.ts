@@ -1,39 +1,41 @@
-import { PaginationQuery } from '../types';
-import config from '../config';
+export interface PaginationOptions {
+  page: number;
+  pageSize: number;
+}
 
-export const validatePagination = (query: PaginationQuery) => {
-    const page = Math.max(1, parseInt(query.page || '1'));
-    const pageSize = Math.min(
-        Math.max(1, parseInt(query.pageSize || config.DEFAULT_PAGE_SIZE.toString())),
-        config.MAX_PAGE_SIZE
-    );
-    
-    return { page, pageSize };
-};
+export interface PaginationResult {
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  skip: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
 
-export const calculateSkip = (page: number, pageSize: number) => {
-    return (page - 1) * pageSize;
-};
+export function calculatePagination(totalCount: number, options: PaginationOptions): PaginationResult {
+  const { page, pageSize } = options;
+  
+  const totalPages = Math.ceil(totalCount / pageSize);
+  const skip = (page - 1) * pageSize;
+  
+  return {
+    page,
+    pageSize,
+    totalPages,
+    skip,
+    hasNextPage: page < totalPages,
+    hasPreviousPage: page > 1
+  };
+}
 
-export const calculateTotalPages = (totalCount: number, pageSize: number) => {
-    return Math.ceil(totalCount / pageSize);
-};
-
-export const createPaginationResponse = <T>(
-    data: T[],
-    totalCount: number,
-    page: number,
-    pageSize: number
-) => {
-    return {
-        data,
-        pagination: {
-            count: totalCount,
-            page,
-            pageSize,
-            totalPages: calculateTotalPages(totalCount, pageSize),
-            hasNext: page * pageSize < totalCount,
-            hasPrevious: page > 1
-        }
-    };
-};
+export function validatePaginationParams(page?: string, pageSize?: string): PaginationOptions {
+  const validatedPage = Math.max(1, parseInt(page || '1', 10) || 1);
+  
+  const parsedPageSize = parseInt(pageSize || '10', 10);
+  const validatedPageSize = Math.min(100, Math.max(1, isNaN(parsedPageSize) ? 10 : parsedPageSize));
+  
+  return {
+    page: validatedPage,
+    pageSize: validatedPageSize
+  };
+}

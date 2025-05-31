@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.config = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
-// Load environment variables from .env file
+// Load environment variables
 dotenv_1.default.config();
 exports.config = {
     // Application Configuration
@@ -17,13 +17,12 @@ exports.config = {
     // Ollama Configuration
     OLLAMA_BASE_URL: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
     DEFAULT_MODEL_NAME: process.env.DEFAULT_QWEN_MODEL_NAME || 'qwen:7b',
-    // Server Configuration
-    CORS_ORIGIN: process.env.CORS_ORIGIN || '*',
+    // File Upload Configuration
     MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB
     JSON_LIMIT: '50mb',
     // API Configuration
-    DEFAULT_PAGE_SIZE: 10,
-    MAX_PAGE_SIZE: 100
+    API_VERSION: '1.0.0',
+    SERVICE_NAME: 'doc2formjson-api'
 };
 exports.default = exports.config;
 //# sourceMappingURL=index.js.map

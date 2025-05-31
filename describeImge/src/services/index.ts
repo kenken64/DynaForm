@@ -1,3 +1,3 @@
-export { OllamaService } from './ollamaService';
-export { FormService } from './formService';
-export { FormDataService } from './formDataService';
+export { OllamaService, ollamaService } from './ollamaService';
+export { FormService, formService } from './formService';
+export { FormDataService, formDataService } from './formDataService';

@@ -1,26 +1,16 @@
 import { Router } from 'express';
-import { ImageController } from '../controllers';
+import { imageController } from '../controllers';
 import { uploadSingle } from '../middleware/upload';
 
 const router = Router();
-const imageController = new ImageController();
 
-/**
- * @route POST /api/describe-image
- * @description Analyze an image using Ollama AI and return description
- * @access Public
- */
-router.post('/describe-image', uploadSingle, (req, res) => {
-    imageController.describeImage(req, res);
-});
+// GET /health - Health check endpoint
+router.get('/health', imageController.healthCheck);
 
-/**
- * @route GET /api/healthcheck
- * @description Check API and Ollama service health
- * @access Public
- */
-router.get('/healthcheck', (req, res) => {
-    imageController.healthCheck(req, res);
-});
+// POST /describe-image - Upload and describe an image
+router.post('/describe-image', uploadSingle('imageFile'), imageController.describeImage);
+
+// POST /summarize-text - Summarize text
+router.post('/summarize-text', imageController.summarizeText);
 
 export default router;

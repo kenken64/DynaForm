@@ -1,61 +1,21 @@
 import { Router } from 'express';
-import { FormController } from '../controllers';
+import { formController } from '../controllers';
 
 const router = Router();
-const formController = new FormController();
 
-/**
- * @route POST /api/forms
- * @description Save a new form
- * @access Public
- */
-router.post('/', (req, res) => {
-    formController.saveForm(req, res);
-});
+// POST /api/forms - Save a new form
+router.post('/', formController.saveForm);
 
-/**
- * @route GET /api/forms
- * @description Get all forms with pagination
- * @access Public
- */
-router.get('/', (req, res) => {
-    formController.getForms(req, res);
-});
+// GET /api/forms - Get all forms with pagination
+router.get('/', formController.getForms);
 
-/**
- * @route GET /api/forms/search
- * @description Search forms by name or field names
- * @access Public
- */
-router.get('/search', (req, res) => {
-    formController.searchForms(req, res);
-});
+// GET /api/forms/search - Search forms
+router.get('/search', formController.searchForms);
 
-/**
- * @route GET /api/forms/:id
- * @description Get a specific form by ID
- * @access Public
- */
-router.get('/:id', (req, res) => {
-    formController.getFormById(req, res);
-});
+// GET /api/forms/:id - Get a specific form by ID
+router.get('/:id', formController.getFormById);
 
-/**
- * @route PUT /api/forms/:id
- * @description Update a form by ID
- * @access Public
- */
-router.put('/:id', (req, res) => {
-    formController.updateForm(req, res);
-});
-
-/**
- * @route DELETE /api/forms/:id
- * @description Delete a form by ID
- * @access Public
- */
-router.delete('/:id', (req, res) => {
-    formController.deleteForm(req, res);
-});
+// DELETE /api/forms/:id - Delete a form by ID
+router.delete('/:id', formController.deleteForm);
 
 export default router;

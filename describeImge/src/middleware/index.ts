@@ -1,46 +1,44 @@
 import { Request, Response, NextFunction } from 'express';
 
-export const corsMiddleware = (req: Request, res: Response, next: NextFunction) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    
-    if (req.method === 'OPTIONS') {
-        res.sendStatus(200);
-    } else {
-        next();
-    }
-};
+export function corsMiddleware(req: Request, res: Response, next: NextFunction): void {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+    return;
+  }
+  
+  next();
+}
 
-export const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
-    console.error('Error:', err);
-    
-    // Default error response
-    const statusCode = err.status || err.statusCode || 500;
-    const message = err.message || 'Internal server error';
-    
-    res.status(statusCode).json({
-        success: false,
-        error: message,
-        ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+export function errorHandler(error: any, req: Request, res: Response, next: NextFunction): void {
+  console.error('Error:', error);
+  
+  // Handle specific error types
+  if (error.name === 'ValidationError') {
+    res.status(400).json({
+      success: false,
+      error: 'Validation Error',
+      message: error.message
     });
-};
-
-export const notFoundHandler = (req: Request, res: Response) => {
-    res.status(404).json({
-        success: false,
-        error: 'Route not found',
-        message: `Cannot ${req.method} ${req.path}`
+    return;
+  }
+  
+  if (error.name === 'CastError') {
+    res.status(400).json({
+      success: false,
+      error: 'Invalid ID format',
+      message: 'The provided ID is not valid'
     });
-};
-
-export const requestLogger = (req: Request, res: Response, next: NextFunction) => {
-    const start = Date.now();
-    
-    res.on('finish', () => {
-        const duration = Date.now() - start;
-        console.log(`${req.method} ${req.path} - ${res.statusCode} - ${duration}ms`);
-    });
-    
-    next();
-};
+    return;
+  }
+  
+  // Default error response
+  res.status(error.status || 500).json({
+    success: false,
+    error: error.message || 'Internal Server Error',
+    ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
+  });
+}

@@ -1,159 +1,121 @@
 import { Request, Response } from 'express';
-import { FormDataService } from '../services';
-import { PaginationQuery } from '../types';
+import { formDataService } from '../services';
+import { FormDataSubmission } from '../types';
 
 export class FormDataController {
-    private formDataService: FormDataService;
+  async saveFormData(req: Request, res: Response): Promise<void> {
+    try {
+      const formDataSubmission: FormDataSubmission = req.body;
+      
+      const requestInfo = {
+        ip: req.ip,
+        userAgent: req.get('User-Agent')
+      };
 
-    constructor() {
-        this.formDataService = new FormDataService();
+      const result = await formDataService.saveFormData(formDataSubmission, requestInfo);
+
+      res.status(result.isNewSubmission ? 201 : 200).json({
+        success: true,
+        message: result.isNewSubmission ? 'Form data saved successfully' : 'Form data updated successfully',
+        formId: formDataSubmission.formId,
+        isNewSubmission: result.isNewSubmission,
+        submittedAt: result.submittedAt
+      });
+
+    } catch (error: any) {
+      console.error('Error saving form data:', error);
+      res.status(400).json({ 
+        success: false,
+        error: 'Failed to save form data', 
+        message: error.message 
+      });
     }
+  }
 
-    async saveFormData(req: Request, res: Response): Promise<void> {
-        try {
-            const { formId, formData, formTitle, userInfo, submissionMetadata } = req.body;
+  async getFormData(req: Request, res: Response): Promise<void> {
+    try {
+      const { formId } = req.params;
+      const { userId } = req.query;
 
-            const result = await this.formDataService.saveFormData({
-                formId,
-                formData,
-                formTitle,
-                userInfo,
-                submissionMetadata,
-                ipAddress: req.ip || 'unknown',
-                userAgent: req.get('User-Agent') || 'unknown'
-            });
+      const formData = await formDataService.getFormData(formId, userId as string);
 
-            res.status(result.isNewSubmission ? 201 : 200).json({
-                success: true,
-                message: result.isNewSubmission ? 'Form data saved successfully' : 'Form data updated successfully',
-                data: {
-                    formId: formId,
-                    isNewSubmission: result.isNewSubmission,
-                    submittedAt: result.submittedAt
-                }
-            });
+      if (!formData) {
+        res.status(404).json({
+          success: false,
+          error: 'Form data not found',
+          message: `No form data found for form ID: ${formId}`
+        });
+        return;
+      }
 
-        } catch (error: any) {
-            console.error('Error saving form data:', error);
-            res.status(400).json({
-                success: false,
-                error: 'Failed to save form data',
-                message: error.message
-            });
-        }
+      res.status(200).json({
+        success: true,
+        formData: formData
+      });
+
+    } catch (error: any) {
+      console.error('Error retrieving form data:', error);
+      res.status(500).json({ 
+        success: false,
+        error: 'Failed to retrieve form data', 
+        message: error.message 
+      });
     }
+  }
 
-    async getFormData(req: Request, res: Response): Promise<void> {
-        try {
-            const { formId } = req.params;
-            const { userId } = req.query;
+  async getFormSubmissions(req: Request, res: Response): Promise<void> {
+    try {
+      const { formId } = req.params;
+      const page = parseInt(req.query.page as string) || 1;
+      const pageSize = parseInt(req.query.pageSize as string) || 10;
 
-            const formData = await this.formDataService.getFormData(formId, userId as string);
+      const result = await formDataService.getFormSubmissions(formId, page, pageSize);
 
-            if (!formData) {
-                res.status(404).json({
-                    success: false,
-                    error: 'Form data not found',
-                    message: `No form data found for form ID: ${formId}`
-                });
-                return;
-            }
+      res.status(200).json({
+        success: result.success,
+        count: result.count,
+        page: result.page,
+        pageSize: result.pageSize,
+        totalPages: result.totalPages,
+        submissions: result.data
+      });
 
-            res.status(200).json({
-                success: true,
-                data: formData
-            });
-
-        } catch (error: any) {
-            console.error('Error retrieving form data:', error);
-            res.status(500).json({
-                success: false,
-                error: 'Failed to retrieve form data',
-                message: error.message
-            });
-        }
+    } catch (error: any) {
+      console.error('Error retrieving form submissions:', error);
+      res.status(500).json({ 
+        success: false,
+        error: 'Failed to retrieve form submissions', 
+        message: error.message 
+      });
     }
+  }
 
-    async getFormSubmissions(req: Request, res: Response): Promise<void> {
-        try {
-            const { formId } = req.params;
-            const query: PaginationQuery = req.query;
+  async getAllFormData(req: Request, res: Response): Promise<void> {
+    try {
+      const { formId } = req.query;
+      const page = parseInt(req.query.page as string) || 1;
+      const pageSize = parseInt(req.query.pageSize as string) || 10;
 
-            const result = await this.formDataService.getFormSubmissions(formId, query);
+      const result = await formDataService.getAllFormData(formId as string, page, pageSize);
 
-            res.status(200).json({
-                success: true,
-                data: result.submissions,
-                pagination: {
-                    count: result.totalCount,
-                    page: result.page,
-                    pageSize: result.pageSize,
-                    totalPages: result.totalPages
-                }
-            });
+      res.status(200).json({
+        success: result.success,
+        count: result.count,
+        page: result.page,
+        pageSize: result.pageSize,
+        totalPages: result.totalPages,
+        data: result.data
+      });
 
-        } catch (error: any) {
-            console.error('Error retrieving form submissions:', error);
-            res.status(500).json({
-                success: false,
-                error: 'Failed to retrieve form submissions',
-                message: error.message
-            });
-        }
+    } catch (error: any) {
+      console.error('Error retrieving all form data:', error);
+      res.status(500).json({ 
+        success: false,
+        error: 'Failed to retrieve form data', 
+        message: error.message 
+      });
     }
-
-    async deleteFormData(req: Request, res: Response): Promise<void> {
-        try {
-            const { formId } = req.params;
-            const { userId } = req.query;
-
-            const deleted = await this.formDataService.deleteFormData(formId, userId as string);
-
-            if (!deleted) {
-                res.status(404).json({
-                    success: false,
-                    error: 'Form data not found',
-                    message: `No form data found for form ID: ${formId}`
-                });
-                return;
-            }
-
-            res.status(200).json({
-                success: true,
-                message: 'Form data deleted successfully'
-            });
-
-        } catch (error: any) {
-            console.error('Error deleting form data:', error);
-            res.status(500).json({
-                success: false,
-                error: 'Failed to delete form data',
-                message: error.message
-            });
-        }
-    }
-
-    async deleteAllFormSubmissions(req: Request, res: Response): Promise<void> {
-        try {
-            const { formId } = req.params;
-
-            const deletedCount = await this.formDataService.deleteAllFormSubmissions(formId);
-
-            res.status(200).json({
-                success: true,
-                message: `Deleted ${deletedCount} form submissions`,
-                data: {
-                    deletedCount
-                }
-            });
-
-        } catch (error: any) {
-            console.error('Error deleting form submissions:', error);
-            res.status(500).json({
-                success: false,
-                error: 'Failed to delete form submissions',
-                message: error.message
-            });
-        }
-    }
+  }
 }
+
+export const formDataController = new FormDataController();

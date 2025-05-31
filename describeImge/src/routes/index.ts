@@ -5,9 +5,9 @@ import formDataRoutes from './formDataRoutes';
 
 const router = Router();
 
-// Mount route modules
-router.use('/api', imageRoutes);
+// Mount routes
+router.use('/', imageRoutes);        // Health check and image description
 router.use('/api/forms', formRoutes);
-router.use('/api/forms-data', formDataRoutes);
+router.use('/api/form-data', formDataRoutes);  // Fixed path
 
 export default router;

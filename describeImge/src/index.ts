@@ -1,10 +1,47 @@
-import App from './app';
+import { config } from './config';
+import { createApp } from './app';
+import { connectToMongoDB, closeConnection } from './database/connection';
 
-// Create and start the application
-const app = new App();
+async function startServer(): Promise<void> {
+  try {
+    // Connect to MongoDB
+    await connectToMongoDB();
+    
+    // Create Express app
+    const app = createApp();
+    
+    // Start server
+    const server = app.listen(config.PORT, () => {
+      console.log(`🚀 Server listening on http://localhost:${config.PORT}`);
+      console.log(`📡 Ollama endpoint configured at: ${config.OLLAMA_BASE_URL}`);
+      console.log(`🤖 Default Qwen VL model for API: ${config.DEFAULT_MODEL_NAME}`);
+      console.log(`🌍 Environment: ${config.NODE_ENV}`);
+      
+      if (config.DEFAULT_MODEL_NAME === 'qwen:7b') {
+        console.warn("⚠️ WARNING: Update DEFAULT_MODEL_NAME in your .env file.");
+      }
+    });
+
+    // Graceful shutdown
+    const gracefulShutdown = async (signal: string) => {
+      console.log(`\n📡 ${signal} received. Shutting down gracefully...`);
+      
+      server.close(async () => {
+        console.log('🔄 HTTP server closed.');
+        await closeConnection();
+        console.log('✅ Graceful shutdown complete.');
+        process.exit(0);
+      });
+    };
+
+    process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+
+  } catch (error) {
+    console.error('❌ Failed to start server:', error);
+    process.exit(1);
+  }
+}
 
 // Start the server
-app.start().catch((error) => {
-    console.error('Failed to start application:', error);
-    process.exit(1);
-});
+startServer();

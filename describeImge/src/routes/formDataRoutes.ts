@@ -1,52 +1,18 @@
 import { Router } from 'express';
-import { FormDataController } from '../controllers';
+import { formDataController } from '../controllers';
 
 const router = Router();
-const formDataController = new FormDataController();
 
-/**
- * @route POST /api/forms-data
- * @description Save form submission data
- * @access Public
- */
-router.post('/', (req, res) => {
-    formDataController.saveFormData(req, res);
-});
+// GET /api/form-data - Get all form data with optional formId filtering
+router.get('/', formDataController.getAllFormData);
 
-/**
- * @route GET /api/forms-data/:formId
- * @description Get form data by form ID and optional user ID
- * @access Public
- */
-router.get('/:formId', (req, res) => {
-    formDataController.getFormData(req, res);
-});
+// POST /api/forms-data - Save form submission data
+router.post('/', formDataController.saveFormData);
 
-/**
- * @route GET /api/forms-data/submissions/:formId
- * @description Get all submissions for a specific form
- * @access Public
- */
-router.get('/submissions/:formId', (req, res) => {
-    formDataController.getFormSubmissions(req, res);
-});
+// GET /api/forms-data/:formId - Get form data by form ID
+router.get('/:formId', formDataController.getFormData);
 
-/**
- * @route DELETE /api/forms-data/:formId
- * @description Delete form data by form ID and optional user ID
- * @access Public
- */
-router.delete('/:formId', (req, res) => {
-    formDataController.deleteFormData(req, res);
-});
-
-/**
- * @route DELETE /api/forms-data/submissions/:formId
- * @description Delete all submissions for a specific form
- * @access Public
- */
-router.delete('/submissions/:formId', (req, res) => {
-    formDataController.deleteAllFormSubmissions(req, res);
-});
+// GET /api/forms-data/submissions/:formId - Get all submissions for a form
+router.get('/submissions/:formId', formDataController.getFormSubmissions);
 
 export default router;

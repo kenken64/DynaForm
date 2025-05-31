@@ -1,3 +1,3 @@
-export { ImageController } from './imageController';
-export { FormController } from './formController';
-export { FormDataController } from './formDataController';
+export { ImageController, imageController } from './imageController';
+export { FormController, formController } from './formController';
+export { FormDataController, formDataController } from './formDataController';

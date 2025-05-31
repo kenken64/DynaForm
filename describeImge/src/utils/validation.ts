@@ -1,52 +1,54 @@
 import { ObjectId } from 'mongodb';
 
-export const isValidObjectId = (id: string): boolean => {
-    return ObjectId.isValid(id);
-};
+export function isValidObjectId(id: string): boolean {
+  if (typeof id !== 'string') {
+    return false;
+  }
+  return ObjectId.isValid(id);
+}
 
-export const createObjectId = (id?: string) => {
-    return id ? new ObjectId(id) : new ObjectId();
-};
-
-export const toObjectId = (id: string) => {
-    if (!isValidObjectId(id)) {
-        throw new Error(`Invalid ObjectId: ${id}`);
+export function validateRequiredFields(data: Record<string, any>, requiredFields: string[]): string[] {
+  const missingFields: string[] = [];
+  
+  for (const field of requiredFields) {
+    if (data[field] === undefined || data[field] === null || data[field] === '') {
+      missingFields.push(field);
     }
-    return new ObjectId(id);
-};
+  }
+  
+  return missingFields;
+}
 
-export const validateRequiredFields = (data: Record<string, any>, requiredFields: string[]) => {
-    const missingFields = requiredFields.filter(field => {
-        const value = data[field];
-        return value === undefined || value === null || (typeof value === 'string' && value.trim() === '');
-    });
+export function sanitizeSearchQuery(query: string): string {
+  // Remove special regex characters to prevent injection
+  return query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
-    if (missingFields.length > 0) {
-        throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+export function validateFormData(formData: any[]): { isValid: boolean; errors: string[] } {
+  const errors: string[] = [];
+  
+  if (!Array.isArray(formData)) {
+    errors.push('Form data must be an array');
+    return { isValid: false, errors };
+  }
+  
+  formData.forEach((field, index) => {
+    if (!field.name || typeof field.name !== 'string') {
+      errors.push(`Field at index ${index} must have a valid name`);
     }
-};
-
-export const sanitizeString = (input: string, maxLength: number = 1000): string => {
-    if (typeof input !== 'string') {
-        return '';
+    
+    if (!field.type || typeof field.type !== 'string') {
+      errors.push(`Field at index ${index} must have a valid type`);
     }
-    return input.trim().substring(0, maxLength);
-};
+  });
+  
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+}
 
-export const createSearchRegex = (searchTerm: string) => {
-    // Escape special regex characters
-    const escapedTerm = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    return { $regex: escapedTerm, $options: 'i' };
-};
-
-export const formatTimestamp = (date: Date = new Date()): string => {
-    return date.toISOString();
-};
-
-export const parseBoolean = (value: any): boolean => {
-    if (typeof value === 'boolean') return value;
-    if (typeof value === 'string') {
-        return value.toLowerCase() === 'true' || value === '1';
-    }
-    return Boolean(value);
-};
+export function validateEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
