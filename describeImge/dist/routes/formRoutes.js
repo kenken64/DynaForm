@@ -11,6 +11,8 @@ router.get('/', controllers_1.formController.getForms);
 router.get('/search', controllers_1.formController.searchForms);
 // GET /api/forms/:id - Get a specific form by ID
 router.get('/:id', controllers_1.formController.getFormById);
+// PUT /api/forms/:id - Update a form by ID
+router.put('/:id', controllers_1.formController.updateForm);
 // DELETE /api/forms/:id - Delete a form by ID
 router.delete('/:id', controllers_1.formController.deleteForm);
 exports.default = router;

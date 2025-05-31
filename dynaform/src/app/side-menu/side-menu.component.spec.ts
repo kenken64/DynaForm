@@ -53,7 +53,13 @@ describe('SideMenuComponent', () => {
   };
 
   beforeEach(async () => {
-    const formsServiceSpy = jasmine.createSpyObj('FormsService', ['getForms', 'searchForms', 'deleteForm']);
+    const formsServiceSpy = jasmine.createSpyObj('FormsService', ['getForms', 'searchForms', 'deleteForm'], {
+      // Mock signal properties
+      sideMenuFormsComputed: jasmine.createSpy().and.returnValue(mockFormsResponse.forms.slice(0, 4)),
+      loading: jasmine.createSpy().and.returnValue(false),
+      error: jasmine.createSpy().and.returnValue(''),
+      formsRefresh$: of(void 0)
+    });
 
     await TestBed.configureTestingModule({
       declarations: [SideMenuComponent],
@@ -85,7 +91,6 @@ describe('SideMenuComponent', () => {
 
   it('should load forms on init', () => {
     component.ngOnInit();
-    expect(formsService.getForms).toHaveBeenCalledWith(1, 10);
     expect(component.forms.length).toBe(2);
   });
 

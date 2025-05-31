@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, computed, effect } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { FormsService } from '../services/forms.service';
@@ -14,14 +14,15 @@ export class SideMenuComponent implements OnInit, OnDestroy {
   @Output() formSelected = new EventEmitter<GeneratedForm>();
   @Output() toggleSidebar = new EventEmitter<void>();
 
+  // Local state for component-specific data
   forms: GeneratedForm[] = [];
   loading = false;
   error = '';
   searchQuery = '';
   
-  // Pagination
+  // Pagination - reduced for side menu (latest 4 only)
   currentPage = 1;
-  pageSize = 10;
+  pageSize = 4; // Reduced to 4 for side menu
   totalPages = 0;
   totalCount = 0;
   
@@ -47,6 +48,40 @@ export class SideMenuComponent implements OnInit, OnDestroy {
       this.currentPage = 1;
       this.performSearch();
     });
+
+    // Subscribe to forms refresh events from service
+    this.formsService.formsRefresh$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        // Auto-refresh forms when service signals change
+        if (!this.searchQuery.trim()) {
+          this.syncWithService();
+        }
+      });
+
+    // Initial sync with service
+    this.syncWithService();
+  }
+
+  /**
+   * Sync local forms with FormsService signals
+   */
+  private syncWithService(): void {
+    // Use the dedicated sideMenuFormsComputed signal for latest 4 records
+    const sideMenuForms = this.formsService.sideMenuFormsComputed();
+    const serviceLoading = this.formsService.loading();
+    const serviceError = this.formsService.error();
+
+    if (!this.searchQuery.trim()) {
+      // Only sync if not searching - use side menu specific forms (latest 4)
+      this.forms = sideMenuForms;
+      this.totalCount = sideMenuForms.length;
+      this.totalPages = 1; // Side menu doesn't need pagination for 4 items
+    }
+    
+    // Always sync loading and error states
+    this.loading = serviceLoading;
+    this.error = serviceError;
   }
 
   ngOnDestroy(): void {
@@ -55,6 +90,13 @@ export class SideMenuComponent implements OnInit, OnDestroy {
   }
 
   loadForms(): void {
+    // For side menu, prefer using signals for latest 4 records
+    if (!this.searchQuery.trim()) {
+      this.syncWithService();
+      return;
+    }
+
+    // Only use API call for search functionality
     this.loading = true;
     this.error = '';
     
@@ -62,13 +104,16 @@ export class SideMenuComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: PaginatedFormsResponse) => {
-          this.forms = response.forms;
-          this.totalPages = response.totalPages;
-          this.totalCount = response.count;
+          this.forms = response.forms || [];
+          this.totalPages = response.totalPages || 0;
+          this.totalCount = response.count || 0;
           this.loading = false;
         },
         error: (error) => {
           this.error = 'Failed to load forms. Please try again.';
+          this.forms = []; // Ensure forms is always an array
+          this.totalPages = 0;
+          this.totalCount = 0;
           this.loading = false;
           console.error('Error loading forms:', error);
         }
@@ -92,13 +137,16 @@ export class SideMenuComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: PaginatedFormsResponse) => {
-          this.forms = response.forms;
-          this.totalPages = response.totalPages;
-          this.totalCount = response.count;
+          this.forms = response.forms || [];
+          this.totalPages = response.totalPages || 0;
+          this.totalCount = response.count || 0;
           this.loading = false;
         },
         error: (error) => {
           this.error = 'Search failed. Please try again.';
+          this.forms = []; // Ensure forms is always an array
+          this.totalPages = 0;
+          this.totalCount = 0;
           this.loading = false;
           console.error('Error searching forms:', error);
         }
@@ -122,7 +170,8 @@ export class SideMenuComponent implements OnInit, OnDestroy {
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => {
-            this.loadForms(); // Reload the list
+            // No need to manually reload - service signals will handle the update
+            console.log('Form deleted successfully');
           },
           error: (error) => {
             this.error = 'Failed to delete form. Please try again.';

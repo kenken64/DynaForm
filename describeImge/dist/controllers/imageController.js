@@ -78,6 +78,50 @@ class ImageController {
             });
         }
     }
+    async summarizeText(req, res) {
+        try {
+            const { text, model } = req.body;
+            if (!text) {
+                res.status(400).json({
+                    error: 'Text is required for summarization'
+                });
+                return;
+            }
+            const selectedModel = model || config_1.config.DEFAULT_MODEL_NAME;
+            const prompt = `Summarize the following text: ${text}`;
+            console.log(`Received request for text summarization with model: ${selectedModel}`);
+            const ollamaResult = await services_1.ollamaService.generate(prompt, selectedModel);
+            res.json({
+                summary: ollamaResult.response,
+                modelUsed: ollamaResult.model,
+                createdAt: ollamaResult.created_at,
+                timings: {
+                    totalDuration: ollamaResult.total_duration,
+                    promptEvalDuration: ollamaResult.prompt_eval_duration,
+                    evalDuration: ollamaResult.eval_duration,
+                },
+                tokenCounts: {
+                    promptEvalCount: ollamaResult.prompt_eval_count,
+                    evalCount: ollamaResult.eval_count,
+                }
+            });
+        }
+        catch (error) {
+            if (error.ollamaError) {
+                res.status(error.status || 500).json({
+                    error: 'Failed to get summary from Ollama.',
+                    ollamaDetails: error.ollamaError,
+                    message: error.message
+                });
+            }
+            else {
+                res.status(500).json({
+                    error: 'Internal server error.',
+                    message: error.message
+                });
+            }
+        }
+    }
 }
 exports.ImageController = ImageController;
 exports.imageController = new ImageController();

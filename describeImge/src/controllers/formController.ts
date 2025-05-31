@@ -138,6 +138,38 @@ export class FormController {
       });
     }
   }
+
+  async updateForm(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const formData = req.body;
+      
+      const updatedForm = await formService.updateForm(id, formData);
+
+      if (!updatedForm) {
+        res.status(404).json({
+          success: false,
+          error: 'Form not found',
+          message: `No form found with ID: ${id}`
+        });
+        return;
+      }
+
+      res.status(200).json({
+        success: true,
+        message: 'Form updated successfully',
+        form: updatedForm
+      });
+
+    } catch (error: any) {
+      console.error('Error updating form:', error);
+      res.status(500).json({ 
+        success: false,
+        error: 'Failed to update form', 
+        message: error.message 
+      });
+    }
+  }
 }
 
 export const formController = new FormController();

@@ -1,0 +1,88 @@
+/* Dashboard Header Styles */
+.dashboard-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 999; /* Lower than side menu z-index */
+  height: 64px; /* Match side menu header height exactly */
+  display: flex;
+  align-items: center;
+}
+
+.header-content {
+  max-width: none; /* Remove max-width constraint */
+  width: 100%;
+  padding: 16px 24px; /* Match side menu header padding */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.app-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.header-left h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.app-subtitle {
+  font-size: 14px;
+  opacity: 0.9;
+  font-weight: 300;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.user-info {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.logout-button {
+  color: white !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  transition: all 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header-content {
+    padding: 12px 16px; /* Match side menu responsive padding */
+  }
+
+  .header-left h1 {
+    font-size: 20px;
+  }
+
+  .app-subtitle {
+    display: none;
+  }
+
+  .user-info {
+    display: none;
+  }
+}

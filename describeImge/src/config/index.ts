@@ -14,7 +14,10 @@ export const config = {
   
   // Ollama Configuration
   get OLLAMA_BASE_URL() { return process.env.OLLAMA_BASE_URL || 'http://localhost:11434'; },
-  get DEFAULT_MODEL_NAME() { return process.env.DEFAULT_QWEN_MODEL_NAME || 'qwen:7b'; },
+  get DEFAULT_MODEL_NAME() { return process.env.DEFAULT_QWEN_MODEL_NAME || 'qwen2.5vl:latest'; },
+  
+  // Ollama Timeout Configuration
+  OLLAMA_TIMEOUT_MS: 120000, // 2 minutes timeout for image processing
   
   // File Upload Configuration
   MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB

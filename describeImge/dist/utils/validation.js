@@ -7,6 +7,9 @@ exports.validateFormData = validateFormData;
 exports.validateEmail = validateEmail;
 const mongodb_1 = require("mongodb");
 function isValidObjectId(id) {
+    if (typeof id !== 'string') {
+        return false;
+    }
     return mongodb_1.ObjectId.isValid(id);
 }
 function validateRequiredFields(data, requiredFields) {

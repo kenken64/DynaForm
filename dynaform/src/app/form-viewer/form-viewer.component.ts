@@ -2,8 +2,11 @@ import { Component, Input, Output, EventEmitter, OnInit, AfterViewInit } from '@
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { AuthService } from '../auth/auth.service';
-import { FormDataSubmission, FormDataResponse } from '../interfaces/form.interface';
+import { FormsService } from '../services/forms.service';
+import { FormDataSubmission, FormDataResponse, GeneratedForm } from '../interfaces/form.interface';
+import { EditTitleDialogComponent, EditTitleDialogData } from '../forms-list/edit-title-dialog.component';
 
 @Component({
   selector: 'app-form-viewer',
@@ -17,6 +20,10 @@ export class FormViewerComponent implements OnInit, AfterViewInit {
   formData: any = null;
   loading = false;
   error = '';
+  
+  // View management
+  currentView: 'form' | 'confirmation' = 'form';
+  confirmationData: any = null;
   
   // Dynamic form properties (cloned from dashboard)
   dynamicForm!: FormGroup;
@@ -38,7 +45,9 @@ export class FormViewerComponent implements OnInit, AfterViewInit {
     private route: ActivatedRoute,
     private router: Router,
     private fb: FormBuilder,
-    public authService: AuthService
+    private dialog: MatDialog,
+    private formsService: FormsService,
+    private authService: AuthService
   ) {
     // Initialize empty form to prevent template errors
     this.dynamicForm = this.fb.group({});
@@ -460,7 +469,20 @@ export class FormViewerComponent implements OnInit, AfterViewInit {
       next: (response: FormDataResponse) => {
         this.isSavingFormData = false;
         console.log('Form data saved successfully:', response);
-        alert(`Form data ${response.isNewSubmission ? 'submitted' : 'updated'} successfully!`);
+        
+        // Prepare confirmation data
+        this.confirmationData = {
+          formId: this.formId,
+          formTitle: this.formTitle || 'Untitled Form',
+          submissionId: response.formId || 'unknown', // Use formId from response
+          submittedAt: response.submittedAt || new Date().toISOString(),
+          isUpdate: !response.isNewSubmission,
+          filledFields: submissionData.submissionMetadata.filledFields,
+          totalFields: submissionData.submissionMetadata.totalFields
+        };
+        
+        // Switch to confirmation view
+        this.currentView = 'confirmation';
       },
       error: (error) => {
         this.isSavingFormData = false;
@@ -470,8 +492,63 @@ export class FormViewerComponent implements OnInit, AfterViewInit {
     });
   }
 
-  logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/login']);
+  // Dialog-based title editing
+  editFormTitle(): void {
+    if (!this.formData) return;
+
+    const dialogData: EditTitleDialogData = {
+      currentTitle: this.formData.metadata.formName || 'Untitled Form',
+      formId: this.formData._id
+    };
+
+    const dialogRef = this.dialog.open(EditTitleDialogComponent, {
+      width: '400px',
+      data: dialogData,
+      disableClose: false
+    });
+
+    dialogRef.afterClosed().subscribe(newTitle => {
+      if (newTitle && newTitle !== this.formData.metadata.formName) {
+        this.updateFormTitle(newTitle);
+      }
+    });
+  }
+
+  private updateFormTitle(newTitle: string): void {
+    const updateData = {
+      metadata: {
+        ...this.formData.metadata,
+        formName: newTitle
+      }
+    };
+
+    this.formsService.updateForm(this.formData._id, updateData).subscribe({
+      next: (updatedForm) => {
+        // Update the local form data
+        this.formData.metadata.formName = updatedForm.metadata.formName;
+        this.formTitle = updatedForm.metadata.formName;
+      },
+      error: (error) => {
+        console.error('Error updating form title:', error);
+        alert('Failed to update form title. Please try again.');
+      }
+    });
+  }
+
+  // Confirmation page navigation methods
+  onBackToForm(): void {
+    this.currentView = 'form';
+    this.confirmationData = null;
+  }
+
+  onViewFormData(): void {
+    // Navigate to view submitted form data (could open a dialog or navigate to another page)
+    console.log('View form data clicked for submission:', this.confirmationData?.submissionId);
+    // For now, just go back to form view
+    this.onBackToForm();
+  }
+
+  onGoToFormsList(): void {
+    this.goBackToForms();
   }
 }

@@ -7,11 +7,13 @@ class FormController {
         try {
             const formRequest = req.body;
             const result = await services_1.formService.saveForm(formRequest);
-            res.status(201).json({
+            res.status(200).json({
                 success: true,
                 message: 'Form saved successfully',
-                formId: result.formId,
-                savedAt: result.savedAt
+                data: {
+                    formId: result.formId,
+                    savedAt: result.savedAt
+                }
             });
         }
         catch (error) {
@@ -34,7 +36,7 @@ class FormController {
                 page: result.page,
                 pageSize: result.pageSize,
                 totalPages: result.totalPages,
-                forms: result.data
+                data: result.data
             });
         }
         catch (error) {
@@ -119,6 +121,34 @@ class FormController {
             res.status(500).json({
                 success: false,
                 error: 'Failed to delete form',
+                message: error.message
+            });
+        }
+    }
+    async updateForm(req, res) {
+        try {
+            const { id } = req.params;
+            const formData = req.body;
+            const updatedForm = await services_1.formService.updateForm(id, formData);
+            if (!updatedForm) {
+                res.status(404).json({
+                    success: false,
+                    error: 'Form not found',
+                    message: `No form found with ID: ${id}`
+                });
+                return;
+            }
+            res.status(200).json({
+                success: true,
+                message: 'Form updated successfully',
+                form: updatedForm
+            });
+        }
+        catch (error) {
+            console.error('Error updating form:', error);
+            res.status(500).json({
+                success: false,
+                error: 'Failed to update form',
                 message: error.message
             });
         }

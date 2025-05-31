@@ -9,14 +9,16 @@ const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 exports.config = {
     // Application Configuration
-    NODE_ENV: process.env.NODE_ENV || 'development',
-    PORT: parseInt(process.env.PORT || '3000', 10),
+    get NODE_ENV() { return process.env.NODE_ENV || 'development'; },
+    get PORT() { return parseInt(process.env.PORT || '3000', 10); },
     // MongoDB Configuration
-    MONGODB_URI: process.env.MONGODB_URI || 'mongodb://localhost:27017',
-    MONGODB_DB_NAME: process.env.MONGODB_DB_NAME || 'doc2formjson',
+    get MONGODB_URI() { return process.env.MONGODB_URI || 'mongodb://localhost:27017'; },
+    get MONGODB_DB_NAME() { return process.env.MONGODB_DB_NAME || 'doc2formjson'; },
     // Ollama Configuration
-    OLLAMA_BASE_URL: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
-    DEFAULT_MODEL_NAME: process.env.DEFAULT_QWEN_MODEL_NAME || 'qwen:7b',
+    get OLLAMA_BASE_URL() { return process.env.OLLAMA_BASE_URL || 'http://localhost:11434'; },
+    get DEFAULT_MODEL_NAME() { return process.env.DEFAULT_QWEN_MODEL_NAME || 'qwen2.5vl:latest'; },
+    // Ollama Timeout Configuration
+    OLLAMA_TIMEOUT_MS: 120000, // 2 minutes timeout for image processing
     // File Upload Configuration
     MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB
     JSON_LIMIT: '50mb',

@@ -1,32 +1,15 @@
 <div class="app-container">
   <!-- Dashboard Header -->
-  <header class="dashboard-header">
-    <div class="header-content">
-      <div class="header-left">
-        <mat-icon class="app-icon">assignment</mat-icon>
-        <h1>DynaForm</h1>
-        <span class="app-subtitle">Dynamic Form Generator</span>
-      </div>
-      <div class="header-right">
-        <span class="user-info">Welcome, {{ authService.getCurrentUser()?.username }}</span>
-        <button mat-button (click)="logout()" class="logout-button">
-          <mat-icon>logout</mat-icon>
-          Logout
-        </button>
-      </div>
-    </div>
-  </header>
+  <app-header subtitle="Dynamic Form Generator"></app-header>
 
   <!-- Main Form View -->
   <div *ngIf="currentView === 'form'" class="main-content">
     <mat-stepper>
   <mat-step label="Step 1" state="phone">
-    <br>
-    <div style="margin-top: 24px;">
+    <div class="step-content">
       <!-- Custom File Input Container with Drag & Drop -->
-      <div class="file-input-container" style="margin-bottom: 16px;">
-        <label for="pdf-file-input" class="file-input-label" 
-               style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">
+      <div class="file-input-container">
+        <label for="pdf-file-input" class="file-input-label">
           Select PDF File
         </label>
         
@@ -35,39 +18,38 @@
              [class.drag-over]="isDragOver"
              (dragover)="onDragOver($event)"
              (dragleave)="onDragLeave($event)"
-             (drop)="onDrop($event)"
-             style="border: 2px dashed #ccc; border-radius: 8px; padding: 20px; text-align: center; background-color: #fafafa; transition: all 0.3s ease;">
+             (drop)="onDrop($event)">
           
           <div class="file-input-wrapper" 
-               [class.has-file]="selectedFile"
-               style="position: relative; display: inline-block; width: 100%;">
-            <input id="pdf-file-input"
+               [class.has-file]="selectedFile">
+            <input #fileInput
+                   id="pdf-file-input"
                    type="file" 
                    (change)="onFileSelected($event)" 
-                   accept="application/pdf"
-                   style="position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer;" />
+                   accept="application/pdf" />
             <button type="button" 
                     mat-stroked-button 
                     class="file-select-button"
-                    style="width: 100%; text-align: left; justify-content: flex-start;">
-              <mat-icon style="margin-right: 8px;">
+                    [class.has-file]="selectedFile"
+                    (click)="fileInput.click()">
+              <mat-icon>
                 {{ selectedFile ? 'check_circle' : 'attach_file' }}
               </mat-icon>
               {{ selectedFile ? selectedFile.name : 'Choose PDF file...' }}
-              <span *ngIf="selectedFile" style="margin-left: auto; color: #666; font-size: 12px;">
+              <span *ngIf="selectedFile" class="file-size-info">
                 ({{ (selectedFile.size / 1024 / 1024).toFixed(2) }} MB)
               </span>
             </button>
           </div>
           
           <!-- Drag & Drop Instructions -->
-          <p *ngIf="!selectedFile" style="margin: 12px 0 0 0; color: #666; font-size: 13px;">
-            <mat-icon style="vertical-align: middle; margin-right: 4px; font-size: 16px;">cloud_upload</mat-icon>
+          <p *ngIf="!selectedFile" class="drag-drop-instructions">
+            <mat-icon>cloud_upload</mat-icon>
             Or drag and drop a PDF file here
           </p>
         </div>
         
-        <mat-hint style="color: #666; font-size: 12px; margin-top: 4px;">
+        <mat-hint class="file-hint">
           Please select a PDF file to continue (max 10MB)
         </mat-hint>
       </div>
@@ -89,18 +71,18 @@
       
       <!-- Upload Message -->
       <div *ngIf="uploadMessage" class="upload-message">
-        <p style="margin: 0;">{{ uploadMessage }}</p>
+        <p>{{ uploadMessage }}</p>
       </div>
       
       <!-- Next Button with Validation -->
-      <div style="text-align: center; margin-top: 8px;">
+      <div class="upload-button">
         <button mat-raised-button 
                 color="primary"
                 matStepperNext 
                 (click)="uploadPdf()"
                 [disabled]="!selectedFile || isUploadingPdf">
-          <mat-spinner *ngIf="isUploadingPdf" diameter="20" style="margin-right: 8px;"></mat-spinner>
-          <mat-icon *ngIf="!isUploadingPdf" style="margin-right: 8px;">cloud_upload</mat-icon>
+          <mat-spinner *ngIf="isUploadingPdf" diameter="20"></mat-spinner>
+          <mat-icon *ngIf="!isUploadingPdf">cloud_upload</mat-icon>
           {{ isUploadingPdf ? 'Uploading...' : 'Upload & Continue' }}
         </button>
       </div>
@@ -112,32 +94,33 @@
       </p>
       
       <!-- Upload Progress Text -->
-      <p *ngIf="isUploadingPdf" class="helper-text" style="color: #2196f3;">
+      <p *ngIf="isUploadingPdf" class="helper-text">
         <mat-icon>cloud_upload</mat-icon>
         Please wait while your PDF is being processed...
       </p>
     </div>
   </mat-step>
   <mat-step label="Step 2" state="chat">
-    <br>
-    <div>
+    <div class="step-content">
       <!-- Show form preview if available -->
       <div *ngIf="generatedImageUrl" class="form-preview-container">
-        <img src="{{ generatedImageUrl }}" alt="Form Preview" width="500" height="600" />
-        <p style="color: #666; margin-top: 8px;">Form preview generated from your PDF</p>
+        <img [src]="generatedImageUrl" alt="Form Preview" />
+        <p>Form preview generated from your PDF</p>
       </div>
       
       <!-- Show message if no preview available -->
-      <div *ngIf="!generatedImageUrl" style="background: #fff3cd; border: 1px solid #ffc107; padding: 20px; text-align: center; border-radius: 4px; margin-bottom: 20px;">
-        <mat-icon style="color: #ff9800; font-size: 48px; margin-bottom: 16px;">warning</mat-icon>
-        <p style="margin: 0; font-size: 16px;"><strong>No form preview available</strong></p>
-        <p style="margin: 8px 0 0 0; color: #666;">Please go back to Step 1 and upload a PDF file first.</p>
+      <div *ngIf="!generatedImageUrl" class="no-file-warning">
+        <mat-icon>warning</mat-icon>
+        <div>
+          <p><strong>No form preview available</strong></p>
+          <p>Please go back to Step 1 and upload a PDF file first.</p>
+        </div>
       </div>
       
       <!-- Navigation Buttons -->
       <div class="navigation-buttons">
         <button mat-button matStepperPrevious>
-          <mat-icon style="margin-right: 8px;">arrow_back</mat-icon>
+          <mat-icon>arrow_back</mat-icon>
           Back
         </button>
         <button mat-raised-button 
@@ -145,7 +128,7 @@
                 matStepperNext 
                 (click)="fetchImageAndDescribe()"
                 [disabled]="!generatedImageUrl">
-          <mat-icon style="margin-right: 8px;">auto_awesome</mat-icon>
+          <mat-icon>auto_awesome</mat-icon>
           Analyze Form
         </button>
       </div>
@@ -157,30 +140,30 @@
       </p>
     </div>
   </mat-step>  <mat-step label="Step 3">
-    <br>
-    <!-- Show spinner while loading -->
-    <div *ngIf="isFetchingForm" class="loading-container">
-      <mat-spinner diameter="50" class="centered-spinner"></mat-spinner>
-      <p>Analyzing form structure...</p>
-    </div>
-
-    <!-- Show error message if there's an error -->
-    <div *ngIf="error && !isFetchingForm" class="error-container">
-      <mat-error>{{ error }}</mat-error>
-      <button mat-button color="warn" (click)="fetchImageAndDescribe()" style="margin-top: 16px;">
-        <mat-icon>refresh</mat-icon>
-        Try Again
-      </button>
-    </div>
-
-    <!-- Dynamic Form Rendering -->
-    <div class="form-container" *ngIf="dynamicForm && !isFetchingForm && !error && fields.length > 0">
-      <!-- Form Title Display - Above the card -->
-      <div *ngIf="formTitle" class="form-title-container">
-        <h2 class="form-title">{{ formTitle }}</h2>
+    <div class="step-content">
+      <!-- Show spinner while loading -->
+      <div *ngIf="isFetchingForm" class="loading-container">
+        <mat-spinner diameter="50" class="centered-spinner"></mat-spinner>
+        <p>Analyzing form structure...</p>
       </div>
-      
-      <form [formGroup]="dynamicForm" (ngSubmit)="onSubmit()" class="material-form">
+
+      <!-- Show error message if there's an error -->
+      <div *ngIf="error && !isFetchingForm" class="error-container">
+        <mat-error>{{ error }}</mat-error>
+        <button mat-button color="warn" (click)="fetchImageAndDescribe()">
+          <mat-icon>refresh</mat-icon>
+          Try Again
+        </button>
+      </div>
+
+      <!-- Dynamic Form Rendering -->
+      <div class="form-container" *ngIf="dynamicForm && !isFetchingForm && !error && fields.length > 0">
+        <!-- Form Title Display - Above the card -->
+        <div *ngIf="formTitle" class="form-title-container">
+          <h2 class="form-title">{{ formTitle }}</h2>
+        </div>
+        
+        <form [formGroup]="dynamicForm" (ngSubmit)="onSubmit()" class="material-form">
 
         <!-- Clean field rendering for all fields -->
         <div *ngFor="let field of fields; let i = index">
@@ -279,17 +262,18 @@
           </div>
         </div>
 
-        <div style="text-align: center; margin-top: 20px;">
+        <div class="upload-button">
           <button mat-raised-button 
                   color="primary" 
                   type="submit"
                   [disabled]="isSavingForm">
-            <mat-spinner *ngIf="isSavingForm" diameter="20" style="margin-right: 8px;"></mat-spinner>
-            <mat-icon *ngIf="!isSavingForm" style="margin-right: 8px;">save</mat-icon>
+            <mat-spinner *ngIf="isSavingForm" diameter="20"></mat-spinner>
+            <mat-icon *ngIf="!isSavingForm">save</mat-icon>
             {{ isSavingForm ? 'Saving...' : 'Save Form' }}
           </button>
         </div>
-      </form>
+        </form>
+      </div>
     </div>
   </mat-step>
   <!-- Icon overrides. -->

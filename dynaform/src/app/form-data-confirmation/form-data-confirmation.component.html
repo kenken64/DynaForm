@@ -1,0 +1,74 @@
+<div class="confirmation-container">
+  <div class="confirmation-card">
+    <!-- Success Icon -->
+    <div class="success-icon">
+      <mat-icon>{{ isUpdate ? 'update' : 'check_circle' }}</mat-icon>
+    </div>
+    
+    <!-- Success Message -->
+    <h2 class="confirmation-title">{{ successTitle }}</h2>
+    
+    <!-- Form Details -->
+    <div class="form-details">
+      <div class="detail-item">
+        <span class="detail-label">Form Name:</span>
+        <span class="detail-value">{{ formTitle }}</span>
+      </div>
+      
+      <div class="detail-item">
+        <span class="detail-label">Submission ID:</span>
+        <span class="detail-value submission-id">{{ submissionId }}</span>
+      </div>
+      
+      <div class="detail-item">
+        <span class="detail-label">{{ isUpdate ? 'Updated' : 'Submitted' }} At:</span>
+        <span class="detail-value">{{ formattedDate }}</span>
+      </div>
+
+      <div class="detail-item">
+        <span class="detail-label">Completion:</span>
+        <div class="completion-info">
+          <span class="detail-value">{{ filledFields }} / {{ totalFields }} fields ({{ completionPercentage }}%)</span>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="completionPercentage"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button mat-raised-button 
+              color="primary" 
+              (click)="onViewFormData()"
+              class="action-button">
+        <mat-icon>visibility</mat-icon>
+        View Submission
+      </button>
+      
+      <button mat-stroked-button 
+              color="primary" 
+              (click)="onBackToForm()"
+              class="action-button">
+        <mat-icon>edit</mat-icon>
+        Edit Form
+      </button>
+
+      <button mat-button 
+              (click)="onGoToFormsList()"
+              class="action-button">
+        <mat-icon>list</mat-icon>
+        All Form Data
+      </button>
+    </div>
+    
+    <!-- Additional Info -->
+    <div class="info-section">
+      <mat-icon class="info-icon">info</mat-icon>
+      <p class="info-text">
+        Your form data has been {{ actionMessage }} and saved to the database. 
+        You can view all submissions in the Form Data Management section.
+      </p>
+    </div>
+  </div>
+</div>

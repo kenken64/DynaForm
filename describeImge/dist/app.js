@@ -17,6 +17,13 @@ function createApp() {
     app.use(middleware_1.corsMiddleware);
     // Routes
     app.use(routes_1.default);
+    // 404 handler for unknown routes
+    app.use((req, res) => {
+        res.status(404).json({
+            success: false,
+            error: 'Endpoint not found'
+        });
+    });
     // Error handling middleware (must be last)
     app.use(middleware_1.errorHandler);
     return app;

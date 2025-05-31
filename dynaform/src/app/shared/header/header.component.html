@@ -1,0 +1,16 @@
+<header class="dashboard-header">
+  <div class="header-content">
+    <div class="header-left">
+      <mat-icon class="app-icon">assignment</mat-icon>
+      <h1>DynaForm</h1>
+      <span class="app-subtitle">{{ subtitle || 'Form Viewer' }}</span>
+    </div>
+    <div class="header-right">
+      <span class="user-info">Welcome, {{ authService.getCurrentUser()?.username }}</span>
+      <button mat-button (click)="logout()" class="logout-button">
+        <mat-icon>logout</mat-icon>
+        Logout
+      </button>
+    </div>
+  </div>
+</header>

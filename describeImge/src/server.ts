@@ -563,6 +563,48 @@ app.get('/api/forms-data/submissions/:formId', async (req: Request, res: Respons
     }
 });
 
+// --- Get All Form Data Submissions (across all forms) ---
+app.get('/api/form-data', async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { formId } = req.query;
+        const page = parseInt(req.query.page as string) || 1;
+        const pageSize = parseInt(req.query.pageSize as string) || 10;
+        const skip = (page - 1) * pageSize;
+
+        const collection = db.collection('forms_data');
+        
+        // Build filter - if formId is provided, filter by it
+        const filter: any = formId ? { formId: formId } : {};
+        
+        // Get total count
+        const totalCount = await collection.countDocuments(filter);
+        
+        // Get paginated submissions
+        const submissions = await collection
+            .find(filter)
+            .sort({ 'submissionMetadata.submittedAt': -1 })
+            .skip(skip)
+            .limit(pageSize)
+            .toArray();
+
+        res.status(200).json({
+            success: true,
+            count: totalCount,
+            page: page,
+            pageSize: pageSize,
+            totalPages: Math.ceil(totalCount / pageSize),
+            submissions: submissions
+        });
+
+    } catch (error: any) {
+        console.error('Error retrieving all form data submissions:', error);
+        res.status(500).json({ 
+            error: 'Failed to retrieve form data submissions', 
+            message: error.message 
+        });
+    }
+});
+
 // Health check endpoint
 app.get('/api/healthcheck', (req: Request, res: Response) => {
     res.status(200).json({ 

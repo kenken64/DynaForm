@@ -20,16 +20,22 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatRippleModule } from '@angular/material/core';
+import { MatDialogModule } from '@angular/material/dialog';
 import { DatePipe, TitleCasePipe } from '@angular/common';
 import { FormConfirmationComponent } from './form-confirmation/form-confirmation.component';
 import { FormViewerComponent } from './form-viewer/form-viewer.component';
 import { FormsListComponent } from './forms-list/forms-list.component';
+import { EditTitleDialogComponent } from './forms-list/edit-title-dialog.component';
 import { LoginComponent } from './auth/login/login.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { SideMenuComponent } from './side-menu/side-menu.component';
 import { AuthService } from './auth/auth.service';
 import { AuthGuard } from './auth/auth.guard';
 import { FormsService } from './services/forms.service';
+import { HeaderComponent } from './shared/header/header.component';
+import { FormDataListComponent } from './form-data-list/form-data-list.component';
+import { FormDataViewerComponent } from './form-data-viewer/form-data-viewer.component';
+import { FormDataConfirmationComponent } from './form-data-confirmation/form-data-confirmation.component';
 
 @NgModule({
   declarations: [
@@ -37,9 +43,14 @@ import { FormsService } from './services/forms.service';
     FormConfirmationComponent,
     FormViewerComponent,
     FormsListComponent,
+    EditTitleDialogComponent,
     LoginComponent,
     DashboardComponent,
-    SideMenuComponent
+    SideMenuComponent,
+    HeaderComponent,
+    FormDataListComponent,
+    FormDataViewerComponent,
+    FormDataConfirmationComponent
   ],
   imports: [
     BrowserModule,
@@ -59,7 +70,8 @@ import { FormsService } from './services/forms.service';
     MatSelectModule,
     MatOptionModule,
     MatCardModule,
-    MatRippleModule
+    MatRippleModule,
+    MatDialogModule
   ],
   providers: [
     provideHttpClient(withInterceptorsFromDi()),

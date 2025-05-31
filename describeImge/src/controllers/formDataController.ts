@@ -36,7 +36,7 @@ export class FormDataController {
     try {
       const { formId } = req.params;
       const { userId } = req.query;
-
+      console.log('Retrieving form data for formId:', formId, 'and userId:', userId);
       const formData = await formDataService.getFormData(formId, userId as string);
 
       if (!formData) {
@@ -112,6 +112,72 @@ export class FormDataController {
       res.status(500).json({ 
         success: false,
         error: 'Failed to retrieve form data', 
+        message: error.message 
+      });
+    }
+  }
+  
+  async deleteFormData(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      
+      if (!id) {
+        res.status(400).json({
+          success: false,
+          error: 'Form data ID is required'
+        });
+        return;
+      }
+
+      const deleted = await formDataService.deleteFormData(id);
+
+      if (!deleted) {
+        res.status(404).json({
+          success: false,
+          error: 'Form data not found',
+          message: `No form data found with ID: ${id}`
+        });
+        return;
+      }
+
+      res.status(200).json({
+        success: true,
+        message: 'Form data deleted successfully'
+      });
+
+    } catch (error: any) {
+      console.error('Error deleting form data:', error);
+      res.status(500).json({ 
+        success: false,
+        error: 'Failed to delete form data', 
+        message: error.message 
+      });
+    }
+  }
+  
+  async searchFormData(req: Request, res: Response): Promise<void> {
+    try {
+      const searchQuery = req.query.search as string || '';
+      const page = parseInt(req.query.page as string) || 1;
+      const pageSize = parseInt(req.query.pageSize as string) || 10;
+
+      const result = await formDataService.searchFormData(searchQuery, page, pageSize);
+
+      res.status(200).json({
+        success: result.success,
+        count: result.count,
+        page: result.page,
+        pageSize: result.pageSize,
+        totalPages: result.totalPages,
+        submissions: result.data,
+        searchQuery: searchQuery
+      });
+
+    } catch (error: any) {
+      console.error('Error searching form data:', error);
+      res.status(500).json({ 
+        success: false,
+        error: 'Failed to search form data', 
         message: error.message 
       });
     }

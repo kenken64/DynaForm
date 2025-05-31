@@ -1,21 +1,6 @@
 <div class="app-container">
   <!-- Dashboard Header -->
-  <header class="dashboard-header">
-    <div class="header-content">
-      <div class="header-left">
-        <mat-icon class="app-icon">assignment</mat-icon>
-        <h1>DynaForm</h1>
-        <span class="app-subtitle">Generated Forms</span>
-      </div>
-      <div class="header-right">
-        <span class="user-info">Welcome, {{ authService.getCurrentUser()?.username }}</span>
-        <button mat-button (click)="logout()" class="logout-button">
-          <mat-icon>logout</mat-icon>
-          Logout
-        </button>
-      </div>
-    </div>
-  </header>
+  <app-header subtitle="Generated Forms"></app-header>
 
   <!-- Main Content -->
   <div class="main-content">
@@ -94,7 +79,19 @@
           <div mat-card-avatar class="form-avatar">
             <mat-icon>description</mat-icon>
           </div>
-          <mat-card-title>{{ form.metadata.formName || 'Untitled Form' }}</mat-card-title>
+          
+          <!-- Form Title with Edit Button -->
+          <div class="title-section">
+            <mat-card-title>{{ form.metadata.formName || 'Untitled Form' }}</mat-card-title>
+            <button 
+              mat-icon-button 
+              class="edit-title-btn"
+              (click)="editFormTitle(form); $event.stopPropagation()"
+              aria-label="Edit form title">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </div>
+          
           <mat-card-subtitle>
             <span class="created-date">
               <mat-icon>schedule</mat-icon>

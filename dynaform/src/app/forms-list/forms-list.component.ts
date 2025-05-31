@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { FormsService } from '../services/forms.service';
-import { AuthService } from '../auth/auth.service';
 import { GeneratedForm, PaginatedFormsResponse } from '../interfaces/form.interface';
+import { EditTitleDialogComponent, EditTitleDialogData } from './edit-title-dialog.component';
 
 @Component({
   selector: 'app-forms-list',
@@ -17,14 +18,14 @@ export class FormsListComponent implements OnInit {
   
   // Pagination
   currentPage = 1;
-  pageSize = 10;
+  pageSize = 12;
   totalCount = 0;
   totalPages = 0;
 
   constructor(
     private formsService: FormsService,
     private router: Router,
-    public authService: AuthService
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -85,6 +86,49 @@ export class FormsListComponent implements OnInit {
     }
   }
 
+  // Dialog-based title editing
+  editFormTitle(form: GeneratedForm): void {
+    const dialogData: EditTitleDialogData = {
+      currentTitle: form.metadata.formName || 'Untitled Form',
+      formId: form._id
+    };
+
+    const dialogRef = this.dialog.open(EditTitleDialogComponent, {
+      width: '400px',
+      data: dialogData,
+      disableClose: false
+    });
+
+    dialogRef.afterClosed().subscribe(newTitle => {
+      if (newTitle && newTitle !== form.metadata.formName) {
+        this.updateFormTitle(form, newTitle);
+      }
+    });
+  }
+
+  private updateFormTitle(form: GeneratedForm, newTitle: string): void {
+    const updateData = {
+      metadata: {
+        ...form.metadata,
+        formName: newTitle
+      }
+    };
+
+    this.formsService.updateForm(form._id, updateData).subscribe({
+      next: (updatedForm) => {
+        // Update the local form data
+        const index = this.forms.findIndex(f => f._id === form._id);
+        if (index !== -1) {
+          this.forms[index] = updatedForm;
+        }
+      },
+      error: (error) => {
+        console.error('Error updating form title:', error);
+        alert('Failed to update form title. Please try again.');
+      }
+    });
+  }
+
   // Pagination methods
   nextPage(): void {
     if (this.currentPage < this.totalPages) {
@@ -136,10 +180,5 @@ export class FormsListComponent implements OnInit {
 
   trackByFormId(index: number, form: GeneratedForm): string {
     return form._id;
-  }
-
-  logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/login']);
   }
 }

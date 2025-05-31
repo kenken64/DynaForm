@@ -1,11 +1,10 @@
 import { Component, AfterViewInit } from '@angular/core';
 import { FormBuilder, Validators, FormGroup, FormControl } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { AuthService } from '../auth/auth.service';
 import { PdfUploadService } from '../pdf-upload.service';
 import { DescribeImageService } from '../describe-image.service';
 import { FormsService } from '../services/forms.service';
-import { GeneratedForm } from '../interfaces/form.interface';
+import { GeneratedForm, FieldConfiguration } from '../interfaces/form.interface';
 import { environment } from '../../environments/environment';
 
 @Component({
@@ -58,15 +57,10 @@ export class DashboardComponent implements AfterViewInit {
     private fb: FormBuilder, 
     private describeService: DescribeImageService,
     private http: HttpClient,
-    public authService: AuthService,
     private formsService: FormsService // Inject FormsService
   ) { 
     // Initialize empty form to prevent template errors
     this.dynamicForm = this.fb.group({});
-  }
-
-  logout(): void {
-    this.authService.logout();
   }
 
   // Utility method to clean up duplicate words in titles
@@ -720,10 +714,35 @@ export class DashboardComponent implements AfterViewInit {
     // Save to backend
     this.isSavingForm = true;
     
-    this.http.post('http://localhost:3000/api/save-form', saveFormData).subscribe({
+    this.http.post('/api/forms', saveFormData).subscribe({
       next: (response: any) => {
         this.isSavingForm = false;
         console.log('Form saved successfully:', response);
+        
+        // Convert fieldConfigurations to proper format
+        const formattedFieldConfigurations: Record<string, FieldConfiguration> = {};
+        Object.keys(this.fieldConfigurations).forEach(fieldName => {
+          const configs = this.fieldConfigurations[fieldName];
+          formattedFieldConfigurations[fieldName] = {
+            mandatory: configs.includes('mandatory'),
+            validation: configs.includes('validation')
+          };
+        });
+        
+        // Create the form object that was saved
+        const savedForm: GeneratedForm = {
+          _id: response.formId,
+          formData: formFields,
+          fieldConfigurations: formattedFieldConfigurations,
+          metadata: {
+            formName: this.formTitle || 'Generated Form',
+            createdAt: new Date().toISOString(),
+            version: '1.0.0'
+          }
+        };
+
+        // Add to FormsService cache to trigger auto-refresh
+        this.formsService.addFormToCache(savedForm);
         
         // Store saved form data and show confirmation page
         this.savedFormData = {

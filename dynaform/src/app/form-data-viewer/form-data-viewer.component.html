@@ -1,0 +1,158 @@
+<div class="app-container">
+  <!-- Shared Header Component -->
+  <app-header subtitle="Form Submission Viewer"></app-header>
+  
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Navigation and Action Bar -->
+    <div class="action-bar">
+    <div class="nav-section">
+      <button mat-icon-button (click)="goBack()" class="back-button">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="page-info">
+        <h2 class="page-title">Form Submission Details</h2>
+        <p class="page-description" *ngIf="submission">
+          {{ submission.formTitle || 'Untitled Form' }}
+        </p>
+      </div>
+    </div>
+    
+    <div class="action-buttons" *ngIf="submission">
+      <button mat-raised-button (click)="exportSubmission()">
+        <mat-icon>download</mat-icon>
+        Export
+      </button>
+      <button mat-raised-button color="warn" (click)="deleteSubmission()">
+        <mat-icon>delete</mat-icon>
+        Delete
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-progress-spinner diameter="50" mode="indeterminate"></mat-progress-spinner>
+    <p>Loading form submission...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="error-container">
+    <mat-icon color="warn">error</mat-icon>
+    <p>{{ error }}</p>
+    <button mat-button color="primary" (click)="loadSubmission(submissionId!)">
+      Try Again
+    </button>
+  </div>
+
+  <!-- Submission Content -->
+  <div *ngIf="!loading && !error && submission" class="submission-content">
+    
+    <!-- Submission Metadata -->
+    <mat-card class="metadata-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>info</mat-icon>
+        <mat-card-title>Submission Information</mat-card-title>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <div class="metadata-grid">
+          <div class="metadata-item">
+            <span class="metadata-label">Form Title:</span>
+            <span class="metadata-value">{{ submission.formTitle || 'Untitled Form' }}</span>
+          </div>
+          
+          <div class="metadata-item">
+            <span class="metadata-label">Submitted By:</span>
+            <span class="metadata-value">{{ submission.userInfo.submittedBy }}</span>
+          </div>
+          
+          <div class="metadata-item">
+            <span class="metadata-label">User ID:</span>
+            <span class="metadata-value">{{ submission.userInfo.userId }}</span>
+          </div>
+          
+          <div class="metadata-item" *ngIf="submission.userInfo.username">
+            <span class="metadata-label">Username:</span>
+            <span class="metadata-value">{{ submission.userInfo.username }}</span>
+          </div>
+          
+          <div class="metadata-item">
+            <span class="metadata-label">Submitted At:</span>
+            <span class="metadata-value">{{ formatDate(submission.submissionMetadata.submittedAt) }}</span>
+          </div>
+          
+          <div class="metadata-item">
+            <span class="metadata-label">Last Updated:</span>
+            <span class="metadata-value">{{ formatDate(submission.updatedAt) }}</span>
+          </div>
+          
+          <div class="metadata-item">
+            <span class="metadata-label">Fields Completed:</span>
+            <span class="metadata-value">
+              {{ submission.submissionMetadata.filledFields }} / {{ submission.submissionMetadata.totalFields }}
+              ({{ ((submission.submissionMetadata.filledFields / submission.submissionMetadata.totalFields) * 100).toFixed(1) }}%)
+            </span>
+          </div>
+          
+          <div class="metadata-item" *ngIf="submission.submissionMetadata.formVersion">
+            <span class="metadata-label">Form Version:</span>
+            <span class="metadata-value">{{ submission.submissionMetadata.formVersion }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Form Data -->
+    <mat-card class="form-data-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>description</mat-icon>
+        <mat-card-title>Form Data</mat-card-title>
+        <mat-card-subtitle>
+          Submitted form field values
+        </mat-card-subtitle>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <div *ngIf="getFormDataEntries().length === 0" class="empty-form-data">
+          <mat-icon>inbox</mat-icon>
+          <p>No form data available</p>
+        </div>
+        
+        <div *ngIf="getFormDataEntries().length > 0" class="form-data-list">
+          <div *ngFor="let entry of getFormDataEntries()" class="form-field">
+            <div class="field-header">
+              <span class="field-label">{{ entry.key }}</span>
+              <span class="field-type" *ngIf="isComplexValue(entry.value)">
+                (Complex Value)
+              </span>
+            </div>
+            
+            <div class="field-value" [class.complex-value]="isComplexValue(entry.value)">
+              <pre *ngIf="isComplexValue(entry.value)">{{ formatValue(entry.value) }}</pre>
+              <span *ngIf="!isComplexValue(entry.value)">{{ formatValue(entry.value) }}</span>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Raw JSON Data (Collapsible) -->
+    <mat-card class="raw-data-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>code</mat-icon>
+        <mat-card-title>Raw JSON Data</mat-card-title>
+        <mat-card-subtitle>
+          Complete submission data in JSON format
+        </mat-card-subtitle>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <div class="raw-json-container">
+          <pre class="raw-json">{{ submission | json }}</pre>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+</div>

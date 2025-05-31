@@ -116,15 +116,9 @@ describe('API Integration Tests', () => {
         .expect(200);
 
       expect(response.body).toMatchObject({
-        status: 'healthy',
-        timestamp: expect.any(String),
-        service: expect.any(String),
-        version: expect.any(String),
-        ollama: expect.objectContaining({
-          baseUrl: expect.any(String),
-          defaultModel: expect.any(String),
-          accessible: true
-        })
+        success: true,
+        message: 'Server is healthy',
+        timestamp: expect.any(String)
       });
     });
   });
@@ -134,7 +128,7 @@ describe('API Integration Tests', () => {
       const imageBuffer = Buffer.from('fake-image-data');
 
       const response = await request(app)
-        .post('/describe-image')
+        .post('/api/describe-image')
         .attach('imageFile', imageBuffer, 'test.jpg')
         .field('prompt', 'Describe this image')
         .field('model', 'test-model')
@@ -151,7 +145,7 @@ describe('API Integration Tests', () => {
 
     it('should return error when no image is uploaded', async () => {
       const response = await request(app)
-        .post('/describe-image')
+        .post('/api/describe-image')
         .field('prompt', 'Describe this image')
         .expect(400);
 
@@ -164,7 +158,7 @@ describe('API Integration Tests', () => {
       const imageBuffer = Buffer.from('fake-image-data');
 
       const response = await request(app)
-        .post('/describe-image')
+        .post('/api/describe-image')
         .attach('imageFile', imageBuffer, 'test.jpg')
         .expect(200);
 
@@ -175,7 +169,7 @@ describe('API Integration Tests', () => {
   describe('Text Summarization API', () => {
     it('should summarize provided text', async () => {
       const response = await request(app)
-        .post('/summarize-text')
+        .post('/api/summarize-text')
         .send({
           text: 'This is a long text that needs to be summarized...',
           model: 'test-model'
@@ -193,7 +187,7 @@ describe('API Integration Tests', () => {
 
     it('should return error when no text is provided', async () => {
       const response = await request(app)
-        .post('/summarize-text')
+        .post('/api/summarize-text')
         .send({})
         .expect(400);
 

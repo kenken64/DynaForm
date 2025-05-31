@@ -108,6 +108,26 @@ export class FormService {
     };
   }
 
+  async updateForm(id: string, updateData: Partial<GeneratedForm>): Promise<GeneratedForm | null> {
+    const collection = this.getCollection();
+    
+    // If updating metadata, ensure we preserve existing metadata fields
+    if (updateData.metadata) {
+      updateData.metadata = {
+        ...updateData.metadata,
+        updatedAt: new Date().toISOString()
+      };
+    }
+
+    const result = await collection.findOneAndUpdate(
+      { _id: new ObjectId(id) },
+      { $set: updateData },
+      { returnDocument: 'after' }
+    );
+
+    return result || null;
+  }
+
   async deleteForm(id: string): Promise<boolean> {
     const collection = this.getCollection();
     const result = await collection.deleteOne({ _id: new ObjectId(id) });

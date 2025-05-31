@@ -17,7 +17,8 @@ function calculatePagination(totalCount, options) {
 }
 function validatePaginationParams(page, pageSize) {
     const validatedPage = Math.max(1, parseInt(page || '1', 10) || 1);
-    const validatedPageSize = Math.min(100, Math.max(1, parseInt(pageSize || '10', 10) || 10));
+    const parsedPageSize = parseInt(pageSize || '10', 10);
+    const validatedPageSize = Math.min(100, Math.max(1, isNaN(parsedPageSize) ? 10 : parsedPageSize));
     return {
         page: validatedPage,
         pageSize: validatedPageSize
