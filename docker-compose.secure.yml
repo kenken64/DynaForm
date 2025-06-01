@@ -19,7 +19,8 @@ services:
       args:
         - BUILDKIT_INLINE_CACHE=0
         - BUILD_TIMESTAMP=${BUILD_TIMESTAMP:-default}
-    container_name: doc2formjson-mongodb    restart: unless-stopped
+    container_name: doc2formjson-mongodb
+    restart: unless-stopped
     ports:
       - "27018:27017" # Map external port 27018 to internal MongoDB port 27017
     secrets: # Added secrets block for mongodb service
