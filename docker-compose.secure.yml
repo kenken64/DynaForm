@@ -106,7 +106,6 @@ services:
       - MONGODB_PORT=27017
       - MONGODB_DATABASE=doc2formjson
       - MONGODB_USERNAME=doc2formapp
-      - MONGODB_PASSWORD_FILE=/run/secrets/mongodb_app_password
     secrets:
       - mongodb_app_password
     restart: unless-stopped

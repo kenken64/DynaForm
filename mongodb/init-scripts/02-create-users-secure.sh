@@ -22,8 +22,8 @@ until mongo --eval "print(\"MongoDB is ready\")" > /dev/null 2>&1; do
 done
 
 # Read passwords from secrets
-APP_PASSWORD=$(read_secret "mongodb_app_password" "apppassword123")
-READER_PASSWORD=$(read_secret "mongodb_reader_password" "readerpassword123")
+APP_PASSWORD=$(read_secret "mongo_app_password" "apppassword123")
+READER_PASSWORD=$(read_secret "mongo_reader_password" "readerpassword123")
 
 echo "Creating application users with secure passwords..."
 

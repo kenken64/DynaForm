@@ -1,102 +1,123 @@
-# MongoDB Secure Password Management
+# MongoDB Security Guide for Doc2FormJSON
 
-This document explains how to use Docker Secrets for secure MongoDB password management in the Doc2FormJSON application.
+This guide explains the secure password management implementation for MongoDB in the Doc2FormJSON application.
 
-## 🔐 Security Features
+## 🔐 Security Implementation Overview
 
-- **Docker Secrets**: Passwords are stored in secure files and mounted as secrets
-- **No Hardcoded Credentials**: No passwords in source code or environment variables
-- **Runtime Security**: Passwords are only available to containers that need them
-- **Git Safe**: Secrets directory is automatically excluded from version control
+The secure configuration uses Docker Secrets to manage MongoDB passwords, avoiding plaintext credentials in Docker Compose files.
+
+### Security Features
+
+1. **Docker Secrets Integration**: Passwords stored in encrypted files
+2. **Environment Variable Fallbacks**: Backward compatibility support
+3. **Runtime Password Loading**: Passwords read securely at container startup
+4. **Git Ignore Protection**: Secrets directory excluded from version control
+5. **Permission Controls**: Restricted file permissions (600) for password files
 
 ## 📁 File Structure
 
 ```
-secrets/
-├── mongo_root_password.txt      # MongoDB root admin password
-├── mongo_app_password.txt       # Application user password
-└── mongo_reader_password.txt    # Read-only user password
-
-docker-compose.secure.yml        # Secure Docker Compose configuration
-setup-mongodb-security.sh        # Security setup script
-start-secure.sh                  # Secure startup script
+├── secrets/                          # Docker secrets directory
+│   ├── mongo_root_password.txt       # MongoDB root password
+│   ├── mongo_app_password.txt        # Application user password
+│   └── mongo_reader_password.txt     # Read-only user password
+├── docker-compose.secure.yml         # Secure Docker Compose configuration
+├── setup-mongodb-security.sh         # Security setup script
+├── start-secure.sh                   # Secure startup script
+└── mongodb/
+    └── init-scripts/
+        └── 02-create-users-secure.sh # Secure user creation script
 ```
 
 ## 🚀 Quick Start
 
 ### 1. Generate Secure Passwords
 
-Run the security setup script to generate secure passwords:
-
 ```bash
+# Run the security setup script
 ./setup-mongodb-security.sh
 ```
 
-This script will:
-- Generate strong random passwords (32 characters)
-- Save them to secure files with proper permissions (600)
-- Add secrets/ to .gitignore
-- Create environment templates
+This creates:
+- Secure random passwords (32 characters each)
+- Password files in `./secrets/` directory
+- Proper file permissions (600)
+- Git ignore entries
 
 ### 2. Start with Secure Configuration
 
 ```bash
+# Start all services with secure MongoDB
 ./start-secure.sh
 ```
 
 Or manually:
-
 ```bash
 docker-compose -f docker-compose.secure.yml up --build
 ```
 
-## 🔧 How It Works
+## 🔧 Configuration Details
 
 ### Docker Secrets Configuration
 
-The secure Docker Compose file defines secrets:
+The secure Docker Compose file (`docker-compose.secure.yml`) defines secrets:
 
 ```yaml
 secrets:
-  mongodb_root_password:
+  mongo_root_password:
     file: ./secrets/mongo_root_password.txt
-  mongodb_app_password:
+  mongo_app_password:
     file: ./secrets/mongo_app_password.txt
-  mongodb_reader_password:
+  mongo_reader_password:
     file: ./secrets/mongo_reader_password.txt
 ```
 
-### MongoDB Service
-
-MongoDB reads the root password from the secret:
+### MongoDB Service Configuration
 
 ```yaml
-mongodb:
-  environment:
-    - MONGO_INITDB_ROOT_PASSWORD_FILE=/run/secrets/mongodb_root_password
-  secrets:
-    - mongodb_root_password
-    - mongodb_app_password
-    - mongodb_reader_password
+services:
+  mongodb:
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD_FILE=/run/secrets/mongo_root_password
+      - MONGO_INITDB_DATABASE=doc2formjson
+    secrets:
+      - mongo_root_password
+      - mongo_app_password
+      - mongo_reader_password
 ```
 
 ### API Service Configuration
 
-The API service reads the application password from secrets:
+The Node.js API service reads passwords securely:
 
 ```yaml
-doc2formjson-api:
-  environment:
-    - MONGODB_HOST=mongodb
-    - MONGODB_USERNAME=doc2formapp
-    - MONGODB_PASSWORD_FILE=/run/secrets/mongodb_app_password
-  secrets:
-    - mongodb_app_password
+services:
+  doc2formjson-api:
+    environment:
+      - MONGODB_HOST=mongodb
+      - MONGODB_PORT=27017
+      - MONGODB_DATABASE=doc2formjson
+      - MONGODB_USERNAME=doc2formapp
+      - MONGODB_PASSWORD_FILE=/run/secrets/mongo_app_password
+    secrets:
+      - mongo_app_password
 ```
 
-### Application Code
+## 🔑 Password Management
 
-The configuration module automatically handles password reading:
+### Automatic Password Generation
+
+The setup script generates cryptographically secure passwords:
+
+```bash
+# Generate 32-character base64 password
+openssl rand -base64 32 | tr -d "=+/" | cut -c1-32
+```
+
+### Password Reading in Application
+
+The API service configuration includes secure password handling:
 
 ```typescript
 // Helper function to read Docker secrets
@@ -116,45 +137,28 @@ function readDockerSecret(secretName: string): string | null {
 function buildMongoDBURI(): string {
   const passwordFromSecret = readDockerSecret('mongodb_app_password');
   const password = passwordFromSecret || process.env.MONGODB_PASSWORD || 'fallback';
-  // ... construct URI
+  
+  if (passwordFromSecret) {
+    console.log('🔐 Using MongoDB password from Docker secret');
+  }
+  
+  return `mongodb://${username}:${password}@${host}:${port}/${database}`;
 }
 ```
-
-## 🔄 Fallback Behavior
-
-The system gracefully falls back if secrets are not available:
-
-1. **Docker Secrets** (Production) - Read from `/run/secrets/`
-2. **Environment Variables** (Development) - Read from `process.env`
-3. **Default Values** (Local Development) - Use hardcoded defaults
-
-## 📊 Connection Information
-
-### Secure Configuration
-
-- **Application Connection**: Uses Docker secrets for password
-- **Admin Connection**: `mongodb://admin:[secret]@localhost:27017/admin`
-- **Application User**: `doc2formapp` with read/write access
-- **Reader User**: `doc2formreader` with read-only access
-
-### Development Fallback
-
-- **Connection String**: `mongodb://doc2formapp:apppassword123@localhost:27017/doc2formjson`
 
 ## 🛡️ Security Best Practices
 
 ### File Permissions
 
+Password files have restricted permissions:
 ```bash
-# Secrets directory and files have restricted permissions
-chmod 700 secrets/
-chmod 600 secrets/*.txt
+chmod 600 secrets/*.txt  # Owner read/write only
+chmod 700 secrets/       # Owner access only
 ```
 
-### Version Control
+### Git Protection
 
-The `.gitignore` automatically excludes:
-
+The `.gitignore` file excludes sensitive data:
 ```gitignore
 # MongoDB Secrets
 secrets/
@@ -162,108 +166,137 @@ secrets/
 .env.local
 ```
 
+### Environment Variables
+
+For development, you can use environment variables:
+```bash
+# Development only - not recommended for production
+export MONGODB_PASSWORD="your-dev-password"
+```
+
 ### Production Deployment
 
-1. **Generate unique passwords** for each environment
-2. **Use Docker Swarm secrets** for orchestrated deployments
-3. **Enable MongoDB authentication** and SSL/TLS
-4. **Regular password rotation** (update secrets and restart services)
-5. **Monitor access logs** and audit user permissions
-
-## 🔧 Troubleshooting
-
-### Secrets Not Found
-
-```bash
-# Check if secrets directory exists
-ls -la secrets/
-
-# Regenerate secrets if needed
-./setup-mongodb-security.sh
-```
-
-### Permission Denied
-
-```bash
-# Fix file permissions
-chmod 600 secrets/*.txt
-chmod 700 secrets/
-```
-
-### Container Can't Read Secrets
-
-1. Verify Docker Compose secrets section
-2. Check container mounts: `docker exec container ls /run/secrets/`
-3. Ensure secret files exist and have correct names
-
-### Connection Issues
-
-1. Check logs: `docker logs doc2formjson-mongodb`
-2. Verify password in secret file matches what's expected
-3. Test connection manually: `mongo mongodb://user:password@localhost:27017/database`
-
-## 📈 Monitoring
-
-### Health Checks
-
-All services include health checks:
-
-```bash
-# Check service health
-docker ps
-
-# Detailed health information
-docker inspect --format='{{.State.Health}}' doc2formjson-mongodb
-```
-
-### Logs
-
-```bash
-# MongoDB logs
-docker logs doc2formjson-mongodb
-
-# API service logs
-docker logs doc2formjson-api
-
-# Check secret mounting
-docker exec doc2formjson-api ls -la /run/secrets/
-```
+For production:
+1. Use external secret management (AWS Secrets Manager, Azure Key Vault, etc.)
+2. Enable MongoDB authentication and SSL/TLS
+3. Use network security (VPC, firewalls)
+4. Regular password rotation
+5. Monitor access logs
 
 ## 🔄 Password Rotation
 
 To rotate passwords:
 
-1. **Generate new passwords**: Run `./setup-mongodb-security.sh`
-2. **Update database users**: Connect to MongoDB and update user passwords
-3. **Restart services**: `docker-compose -f docker-compose.secure.yml restart`
+1. **Generate new passwords:**
+   ```bash
+   ./setup-mongodb-security.sh
+   # Answer 'y' to regenerate passwords
+   ```
 
-## 🎯 Environment-Specific Configuration
+2. **Update database users:**
+   ```bash
+   # Connect to MongoDB and update passwords
+   ./mongodb-manager.sh connect
+   ```
 
-### Development
+3. **Restart services:**
+   ```bash
+   docker-compose -f docker-compose.secure.yml down
+   docker-compose -f docker-compose.secure.yml up --build
+   ```
 
+## 🚨 Troubleshooting
+
+### Common Issues
+
+1. **Secret files not found:**
+   ```bash
+   # Ensure secrets directory exists and has files
+   ls -la secrets/
+   ```
+
+2. **Permission denied:**
+   ```bash
+   # Fix file permissions
+   chmod 600 secrets/*.txt
+   chmod 700 secrets/
+   ```
+
+3. **Container startup failures:**
+   ```bash
+   # Check container logs
+   docker logs doc2formjson-mongodb
+   ```
+
+4. **Authentication failures:**
+   ```bash
+   # Verify secret file contents
+   cat secrets/mongo_app_password.txt
+   ```
+
+### Debug Mode
+
+To debug secret loading:
 ```bash
-# Use regular compose for development
-docker-compose up
+# Check if secrets are mounted in container
+docker exec doc2formjson-mongodb ls -la /run/secrets/
 ```
 
-### Staging/Production
+## 🔍 Verification
+
+### Test MongoDB Connection
 
 ```bash
-# Always use secure configuration
-docker-compose -f docker-compose.secure.yml up
+# Test connection with secure credentials
+./test-mongodb-integration.sh
 ```
+
+### Manual Verification
+
+```bash
+# Read password from secret file
+PASSWORD=$(cat secrets/mongo_app_password.txt)
+
+# Test connection
+docker exec doc2formjson-mongodb mongo \
+  "mongodb://doc2formapp:$PASSWORD@localhost:27017/doc2formjson" \
+  --eval "db.runCommand({ping: 1})"
+```
+
+## 📊 Migration from Insecure Configuration
+
+To migrate from hardcoded passwords:
+
+1. **Backup existing data:**
+   ```bash
+   ./mongodb-manager.sh backup
+   ```
+
+2. **Run security setup:**
+   ```bash
+   ./setup-mongodb-security.sh
+   ```
+
+3. **Switch to secure configuration:**
+   ```bash
+   docker-compose down
+   ./start-secure.sh
+   ```
+
+4. **Verify data integrity:**
+   ```bash
+   ./mongodb-manager.sh stats
+   ```
+
+## 🎯 Benefits
+
+- **🔒 Enhanced Security**: No plaintext passwords in configuration
+- **🔄 Easy Rotation**: Simple password update process
+- **🚀 Production Ready**: Industry-standard secret management
+- **🔍 Audit Trail**: Clear security implementation
+- **📝 Backward Compatible**: Falls back to environment variables
+- **🛡️ Git Safe**: Secrets automatically excluded from version control
 
 ---
 
-## ✅ Checklist
-
-- [ ] Secrets generated with `./setup-mongodb-security.sh`
-- [ ] File permissions set correctly (700/600)
-- [ ] Secrets directory in .gitignore
-- [ ] Services start with `./start-secure.sh`
-- [ ] MongoDB authentication working
-- [ ] API connects successfully
-- [ ] No passwords in logs or environment variables
-- [ ] Backup procedures include secret management
-
-**🔐 Your MongoDB is now secured with Docker Secrets!**
+**Security Note**: This implementation provides a foundation for secure password management. For enterprise deployments, consider integrating with external secret management services and implementing additional security layers such as network encryption, access controls, and monitoring.

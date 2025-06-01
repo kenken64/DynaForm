@@ -380,3 +380,37 @@ chmod +x setup-ollama-models.sh
 | `start.ps1` | `start.sh` | Standard start with build |
 | `start-detached.ps1` | `start-detached.sh` | Standard start detached |
 | `setup-ollama-models.ps1` | `setup-ollama-models.sh` | Setup Ollama models only |
+
+### Secure MongoDB Configuration 🔐
+
+For production deployments, use the secure configuration that implements Docker secrets for password management:
+
+```bash
+# Setup secure MongoDB configuration (one-time setup)
+./setup-mongodb-security.sh
+
+# Start with secure configuration
+./start-secure.sh
+
+# Test secure configuration
+./test-secure-config.sh
+
+# Test MongoDB connection
+node test-mongodb-connection.js
+```
+
+**Security Features:**
+- 🔒 **Docker Secrets**: Passwords stored as Docker secrets, not environment variables
+- 🔑 **Role-based Access**: Separate users for admin, application, and read-only access
+- 📁 **Secure Storage**: Password files with restricted permissions (600)
+- 🛡️ **No Plain Text**: No passwords in Docker Compose files or environment variables
+- 📝 **Comprehensive Logging**: Security audit trail and configuration validation
+
+**Files Created:**
+- `secrets/mongo_root_password.txt` - MongoDB admin password
+- `secrets/mongo_app_password.txt` - Application user password  
+- `secrets/mongo_reader_password.txt` - Read-only user password
+- `docker-compose.secure.yml` - Secure Docker Compose configuration
+
+See [MONGODB_SECURITY_GUIDE.md](./MONGODB_SECURITY_GUIDE.md) for detailed security documentation.
+See [TESTING_SECURE_CONFIG.md](./TESTING_SECURE_CONFIG.md) for testing instructions.

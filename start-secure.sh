@@ -52,7 +52,7 @@ print_success "Build timestamp: $BUILD_TIMESTAMP"
 print_header "🚀 Starting Services with Docker Secrets"
 
 echo "Starting services with secure configuration..."
-docker-compose -f docker-compose.secure.yml up --build
+docker compose -f docker-compose.secure.yml up --build
 
 print_success "All services started successfully with secure MongoDB!"
 
