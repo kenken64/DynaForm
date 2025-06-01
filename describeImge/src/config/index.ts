@@ -24,16 +24,39 @@ function buildMongoDBURI(): string {
   const database = process.env.MONGODB_DATABASE || 'doc2formjson';
   const username = process.env.MONGODB_USERNAME || 'doc2formapp';
   
-  // Try to get password from Docker secret first, then environment variable
-  const passwordFromSecret = readDockerSecret('mongodb_app_password');
-  const password = passwordFromSecret || process.env.MONGODB_PASSWORD || 'apppassword123';
+  let password: string;
   
-  if (passwordFromSecret) {
-    console.log('🔐 Using MongoDB password from Docker secret');
-  } else if (process.env.MONGODB_PASSWORD) {
-    console.log('⚠️  Using MongoDB password from environment variable');
+  // Try to get password from MONGODB_PASSWORD_FILE first (Docker Compose secret)
+  if (process.env.MONGODB_PASSWORD_FILE) {
+    try {
+      password = readFileSync(process.env.MONGODB_PASSWORD_FILE, 'utf8').trim();
+      console.log('🔐 Using MongoDB password from Docker secret file');
+    } catch (error) {
+      console.warn(`Could not read password from file ${process.env.MONGODB_PASSWORD_FILE}:`, error);
+      // Fall back to Docker secret method
+      const passwordFromSecret = readDockerSecret('mongodb_app_password');
+      password = passwordFromSecret || process.env.MONGODB_PASSWORD || 'apppassword123';
+      
+      if (passwordFromSecret) {
+        console.log('🔐 Using MongoDB password from Docker secret (fallback)');
+      } else if (process.env.MONGODB_PASSWORD) {
+        console.log('⚠️  Using MongoDB password from environment variable (fallback)');
+      } else {
+        console.log('⚠️  Using default MongoDB password - change in production! (fallback)');
+      }
+    }
   } else {
-    console.log('⚠️  Using default MongoDB password - change in production!');
+    // Fall back to original method: Docker secret, then environment variable, then default
+    const passwordFromSecret = readDockerSecret('mongodb_app_password');
+    password = passwordFromSecret || process.env.MONGODB_PASSWORD || 'apppassword123';
+    
+    if (passwordFromSecret) {
+      console.log('🔐 Using MongoDB password from Docker secret');
+    } else if (process.env.MONGODB_PASSWORD) {
+      console.log('⚠️  Using MongoDB password from environment variable');
+    } else {
+      console.log('⚠️  Using default MongoDB password - change in production!');
+    }
   }
   
   return `mongodb://${username}:${password}@${host}:${port}/${database}`;

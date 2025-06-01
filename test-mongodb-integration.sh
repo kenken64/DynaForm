@@ -62,7 +62,7 @@ test_mongodb_connection() {
     # Test application user connection
     print_info "Testing application user connection..."
     if docker exec $CONTAINER_NAME mongo \
-        "mongodb://$APP_USER:$APP_PASSWORD@localhost:27017/$DB_NAME" \
+        "mongodb://$APP_USER:$APP_PASSWORD@localhost:27018/$DB_NAME" \
         --eval "db.runCommand({ping: 1})" > /dev/null 2>&1; then
         print_success "Application user connection successful"
     else
@@ -77,7 +77,7 @@ test_database_schema() {
     
     print_info "Checking collections..."
     local collections=$(docker exec $CONTAINER_NAME mongo \
-        "mongodb://$APP_USER:$APP_PASSWORD@localhost:27017/$DB_NAME" \
+        "mongodb://$APP_USER:$APP_PASSWORD@localhost:27018/$DB_NAME" \
         --quiet --eval "db.getCollectionNames().join(', ')")
     
     echo "Collections found: $collections"
@@ -100,7 +100,7 @@ test_indexes() {
     
     print_info "Checking indexes on form_submissions collection..."
     docker exec $CONTAINER_NAME mongo \
-        "mongodb://$APP_USER:$APP_PASSWORD@localhost:27017/$DB_NAME" \
+        "mongodb://$APP_USER:$APP_PASSWORD@localhost:27018/$DB_NAME" \
         --eval "
             db.form_submissions.getIndexes().forEach(function(index) {
                 print('Index: ' + JSON.stringify(index.key) + ' - ' + (index.name || 'unnamed'));
@@ -142,7 +142,7 @@ EOF
 )
     
     docker exec $CONTAINER_NAME mongo \
-        "mongodb://$APP_USER:$APP_PASSWORD@localhost:27017/$DB_NAME" \
+        "mongodb://$APP_USER:$APP_PASSWORD@localhost:27018/$DB_NAME" \
         --eval "
             var result = db.form_submissions.insertOne($test_data);
             print('Test data inserted with ID: ' + result.insertedId);
@@ -160,7 +160,7 @@ test_search_functionality() {
     # Search by form title
     print_info "Searching by form title..."
     local title_results=$(docker exec $CONTAINER_NAME mongo \
-        "mongodb://$APP_USER:$APP_PASSWORD@localhost:27017/$DB_NAME" \
+        "mongodb://$APP_USER:$APP_PASSWORD@localhost:27018/$DB_NAME" \
         --quiet --eval "db.form_submissions.find({formTitle: /Test/i}).count()")
     
     echo "Found $title_results submissions with 'Test' in title"
@@ -168,7 +168,7 @@ test_search_functionality() {
     # Search by user
     print_info "Searching by user..."
     local user_results=$(docker exec $CONTAINER_NAME mongo \
-        "mongodb://$APP_USER:$APP_PASSWORD@localhost:27017/$DB_NAME" \
+        "mongodb://$APP_USER:$APP_PASSWORD@localhost:27018/$DB_NAME" \
         --quiet --eval "db.form_submissions.find({'userInfo.submittedBy': /John/i}).count()")
     
     echo "Found $user_results submissions by users with 'John' in name"
@@ -176,7 +176,7 @@ test_search_functionality() {
     # Full text search
     print_info "Testing full text search..."
     local text_results=$(docker exec $CONTAINER_NAME mongo \
-        "mongodb://$APP_USER:$APP_PASSWORD@localhost:27017/$DB_NAME" \
+        "mongodb://$APP_USER:$APP_PASSWORD@localhost:27018/$DB_NAME" \
         --quiet --eval "db.form_submissions.find({\$text: {\$search: 'test'}}).count()")
     
     echo "Found $text_results submissions containing 'test'"
@@ -225,7 +225,7 @@ show_statistics() {
     print_header "Database Statistics"
     
     docker exec $CONTAINER_NAME mongo \
-        "mongodb://$APP_USER:$APP_PASSWORD@localhost:27017/$DB_NAME" \
+        "mongodb://$APP_USER:$APP_PASSWORD@localhost:27018/$DB_NAME" \
         --eval "
             print('=== Database Statistics ===');
             print('Database: ' + db.getName());
@@ -260,7 +260,7 @@ cleanup_test_data() {
     
     print_info "Removing test submissions..."
     docker exec $CONTAINER_NAME mongo \
-        "mongodb://$APP_USER:$APP_PASSWORD@localhost:27017/$DB_NAME" \
+        "mongodb://$APP_USER:$APP_PASSWORD@localhost:27018/$DB_NAME" \
         --eval "
             var result = db.form_submissions.deleteMany({'submissionMetadata.source': 'integration-test'});
             print('Removed ' + result.deletedCount + ' test submissions');

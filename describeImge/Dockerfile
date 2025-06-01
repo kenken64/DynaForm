@@ -23,7 +23,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install all dependencies (including dev dependencies for building)
-RUN npm ci
+RUN npm install
 
 # Copy the rest of the application code
 COPY . .
@@ -48,7 +48,7 @@ EXPOSE 3000
 # Define environment variables
 ENV NODE_ENV=production
 ENV PORT=3000
-ENV OLLAMA_BASE_URL=http://localhost:11434
+ENV OLLAMA_BASE_URL=http://localhost:11435
 ENV DEFAULT_QWEN_MODEL_NAME=qwen2.5vl:latest
 
 # Health check

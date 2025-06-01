@@ -4,7 +4,7 @@ exports.formDataService = exports.FormDataService = void 0;
 const connection_1 = require("../database/connection");
 class FormDataService {
     getCollection() {
-        return (0, connection_1.getDatabase)().collection('forms_data');
+        return (0, connection_1.getDatabase)().collection('form_submissions');
     }
     async saveFormData(formDataSubmission, requestInfo) {
         const { formId, formTitle, formData, userInfo, submissionMetadata } = formDataSubmission;
@@ -137,6 +137,8 @@ class FormDataService {
             .skip(skip)
             .limit(pageSize)
             .toArray();
+        console.log(`Search results for query "${searchQuery}":`, formDataEntries.length, 'entries found.');
+        console.log(formDataEntries);
         return {
             success: true,
             count: totalCount,

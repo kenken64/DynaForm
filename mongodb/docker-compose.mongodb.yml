@@ -16,7 +16,7 @@ services:
     container_name: doc2formjson-mongodb
     restart: unless-stopped
     ports:
-      - "27017:27017"
+      - "27018:27018"
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=password123

@@ -61,7 +61,7 @@ The initialization script creates the following collections with proper indexing
 For the application to connect to MongoDB:
 
 ```
-mongodb://doc2formapp:apppassword123@mongodb:27017/doc2formjson
+mongodb://doc2formapp:apppassword123@mongodb:27018/doc2formjson
 ```
 
 ## Usage
@@ -90,7 +90,7 @@ cd mongodb
 docker build -t doc2formjson-mongodb .
 docker run -d \
   --name mongodb \
-  -p 27017:27017 \
+  -p 27018:27018 \
   -v mongodb_data:/data/db \
   -v mongodb_logs:/data/logs \
   doc2formjson-mongodb
@@ -121,10 +121,10 @@ docker inspect --format='{{.State.Health}}' doc2formjson-mongodb
 
 ```bash
 # Using MongoDB shell
-mongo mongodb://admin:password123@localhost:27017/admin
+mongo mongodb://admin:password123@localhost:27018/admin
 
 # Using application credentials
-mongo mongodb://doc2formapp:apppassword123@localhost:27017/doc2formjson
+mongo mongodb://doc2formapp:apppassword123@localhost:27018/doc2formjson
 ```
 
 ### From Application
@@ -132,7 +132,7 @@ mongo mongodb://doc2formapp:apppassword123@localhost:27017/doc2formjson
 The Node.js API service connects using the environment variable:
 
 ```javascript
-const mongoUri = process.env.MONGODB_URI || 'mongodb://doc2formapp:apppassword123@mongodb:27017/doc2formjson';
+const mongoUri = process.env.MONGODB_URI || 'mongodb://doc2formapp:apppassword123@mongodb:27018/doc2formjson';
 ```
 
 ## Security Notes
@@ -160,7 +160,7 @@ const mongoUri = process.env.MONGODB_URI || 'mongodb://doc2formapp:apppassword12
 
 3. **Connection refused**
    - Ensure MongoDB is running: `docker ps`
-   - Check if port 27017 is available
+   - Check if port 27018 is available
    - Verify network connectivity
 
 4. **Data not persisting**

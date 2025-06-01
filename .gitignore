@@ -40,3 +40,12 @@ describeImge/node_modules
 dynaform/node_modules
 node_modules/
 .cache/
+
+# MongoDB Secrets
+secrets/
+.env.secrets
+*.env.secrets
+*password*.txt
+
+# Backup files
+*.backup.*
