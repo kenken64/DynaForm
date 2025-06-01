@@ -19,10 +19,9 @@ services:
       args:
         - BUILDKIT_INLINE_CACHE=0
         - BUILD_TIMESTAMP=${BUILD_TIMESTAMP:-default}
-    container_name: doc2formjson-mongodb
-    restart: unless-stopped
+    container_name: doc2formjson-mongodb    restart: unless-stopped
     ports:
-      - "27018:27018" # Changed host port
+      - "27018:27017" # Map external port 27018 to internal MongoDB port 27017
     secrets: # Added secrets block for mongodb service
       - mongodb_root_password
       - mongodb_app_password
@@ -103,10 +102,9 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - OLLAMA_BASE_URL=http://ollama-gpu:11434
-      - DEFAULT_QWEN_MODEL_NAME=qwen2.5vl:latest
+      - OLLAMA_BASE_URL=http://ollama-gpu:11434      - DEFAULT_QWEN_MODEL_NAME=qwen2.5vl:latest
       - MONGODB_HOST=mongodb
-      - MONGODB_PORT=27018
+      - MONGODB_PORT=27017
       - MONGODB_DATABASE=doc2formjson
       - MONGODB_USERNAME=doc2formapp
       - MONGODB_PASSWORD_FILE=/run/secrets/mongodb_app_password # Use secret file
