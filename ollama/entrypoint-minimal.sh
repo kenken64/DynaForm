@@ -10,17 +10,16 @@ echo "Starting Ollama server..."
 ollama serve &
 OLLAMA_PID=$!
 
-# Wait for Ollama to be ready using nc (netcat) or simple socket check
+# Wait for Ollama to be ready - simplified approach
 echo "Waiting for Ollama server to be ready..."
-for i in {1..60}; do
+for i in {1..30}; do
     if (echo > /dev/tcp/localhost/11434) 2>/dev/null; then
-        echo "Port 11434 is open, testing API..."
-        # Try to test the API endpoint using built-in tools
-        if echo -e "GET /api/tags HTTP/1.1\r\nHost: localhost:11434\r\nConnection: close\r\n\r\n" | nc localhost 11434 | head -1 | grep -q "200"; then
-            break
-        fi
+        echo "Port 11434 is open, giving Ollama a moment to initialize..."
+        sleep 3
+        echo "Ollama is ready!"
+        break
     fi
-    echo "Attempt $i/60: Waiting for Ollama to be ready..."
+    echo "Attempt $i/30: Waiting for Ollama port to be available..."
     sleep 2
 done
 

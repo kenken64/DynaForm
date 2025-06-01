@@ -14,20 +14,20 @@ function Write-Header {
 
 function Write-Success {
     param([string]$Message)
-    Write-Host "✅ $Message" -ForegroundColor Green
+    Write-Host "[OK] $Message" -ForegroundColor Green
 }
 
 function Write-Warning {
     param([string]$Message)
-    Write-Host "⚠️  $Message" -ForegroundColor Yellow
+    Write-Host "[WARNING] $Message" -ForegroundColor Yellow
 }
 
 function Write-Error {
     param([string]$Message)
-    Write-Host "❌ $Message" -ForegroundColor Red
+    Write-Host "[ERROR] $Message" -ForegroundColor Red
 }
 
-Write-Header "🔐 Starting Doc2FormJSON with Secure MongoDB"
+Write-Header "Starting Doc2FormJSON with Secure MongoDB"
 
 # Check if secrets exist
 if (-not (Test-Path "./secrets") -or -not (Test-Path "./secrets/mongo_root_password.txt")) {
@@ -42,11 +42,12 @@ if (-not (Test-Path "./secrets") -or -not (Test-Path "./secrets/mongo_root_passw
 Write-Success "MongoDB secrets found"
 
 # Build timestamp for cache busting
-$env:BUILD_TIMESTAMP = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
-Write-Success "Build timestamp: $($env:BUILD_TIMESTAMP)"
+$env:BUILD_TIMESTAMP = (Get-Date).ToString("yyyyMMddHHmmss")
+$timestampValue = $env:BUILD_TIMESTAMP
+Write-Success "Build timestamp: $timestampValue"
 
 # Start with secure configuration
-Write-Header "🚀 Starting Services with Docker Secrets"
+Write-Header "Starting Services with Docker Secrets"
 
 Write-Host "Starting services with secure configuration..." -ForegroundColor White
 try {
@@ -70,7 +71,7 @@ $OLLAMA_READY = $false
 
 while ($RETRY_COUNT -lt $MAX_RETRIES) {
     $RETRY_COUNT++
-    Write-Host "Checking Ollama (attempt $RETRY_COUNT/$MAX_RETRIES)..." -ForegroundColor Yellow
+    Write-Host "Checking Ollama ($RETRY_COUNT/$MAX_RETRIES)..." -ForegroundColor Yellow
 
     try {
         $response = Invoke-RestMethod -Uri "http://localhost:11434/api/tags" -Method GET -TimeoutSec 5 -ErrorAction SilentlyContinue
@@ -143,12 +144,12 @@ else {
 }
 
 Write-Host ""
-Write-Header "📋 Connection Information"
-Write-Host "🌐 Frontend: http://localhost:4201" -ForegroundColor White
-Write-Host "🔌 API: http://localhost:3000" -ForegroundColor White
-Write-Host "🗄️  MongoDB: mongodb://localhost:27018" -ForegroundColor White
+Write-Header "Connection Information"
+Write-Host "Frontend: http://localhost:4201" -ForegroundColor White
+Write-Host "API: http://localhost:3000" -ForegroundColor White
+Write-Host "MongoDB: mongodb://localhost:27018" -ForegroundColor White
 Write-Host ""
-Write-Host "🔐 MongoDB credentials are managed securely via Docker secrets" -ForegroundColor White
-Write-Host "📁 Secrets directory: ./secrets/" -ForegroundColor White
+Write-Host "MongoDB credentials are managed securely via Docker secrets" -ForegroundColor White
+Write-Host "Secrets directory: ./secrets/" -ForegroundColor White
 Write-Host ""
 Write-Warning "Remember: Never commit the secrets/ directory to version control!"

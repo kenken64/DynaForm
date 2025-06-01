@@ -1,13 +1,14 @@
 <div class="app-container">
   <!-- Side Menu -->
   <app-side-menu 
+    *ngIf="showSideMenu"
     [isCollapsed]="isSideMenuCollapsed"
     (formSelected)="onFormSelected($event)"
     (toggleSidebar)="toggleSideMenu()">
   </app-side-menu>
 
   <!-- Main Content -->
-  <div class="main-content" [ngClass]="{'expanded': isSideMenuCollapsed}">
+  <div class="main-content" [ngClass]="{'expanded': isSideMenuCollapsed, 'full-width': !showSideMenu}">
     <router-outlet></router-outlet>
   </div>
 </div>

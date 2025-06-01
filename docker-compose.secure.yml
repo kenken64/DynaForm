@@ -62,7 +62,7 @@ services:
         - BUILD_TIMESTAMP=${BUILD_TIMESTAMP:-default}
     pull_policy: build
     ports:
-      - "11435:11434" # Changed host port
+      - "11434:11434" # Changed host port
     environment:
       - OLLAMA_HOST=0.0.0.0:11434
       - OLLAMA_ORIGINS=*
@@ -93,8 +93,7 @@ services:
       context: ./describeImge
       no_cache: true
       args:
-        - BUILDKIT_INLINE_CACHE=0
-        - BUILD_TIMESTAMP=${BUILD_TIMESTAMP:-default}
+        - BUILDKIT_INLINE_CACHE=0        - BUILD_TIMESTAMP=${BUILD_TIMESTAMP:-default}
     pull_policy: build
     ports:
       - "3000:3000"
@@ -103,7 +102,8 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - OLLAMA_BASE_URL=http://ollama-gpu:11434      - DEFAULT_QWEN_MODEL_NAME=qwen2.5vl:latest
+      - OLLAMA_BASE_URL=http://ollama-gpu:11434
+      - DEFAULT_QWEN_MODEL_NAME=qwen2.5vl:latest
       - MONGODB_HOST=mongodb
       - MONGODB_PORT=27017
       - MONGODB_DATABASE=doc2formjson

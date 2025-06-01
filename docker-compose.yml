@@ -18,10 +18,13 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=password123
       - MONGO_INITDB_DATABASE=doc2formjson
+      - MONGODB_APP_USERNAME=doc2formapp
+      - MONGODB_APP_PASSWORD=apppassword123
     volumes:
       - mongodb_data:/data/db
       - mongodb_logs:/data/logs
       - ./mongodb/mongod.conf:/etc/mongod.conf:ro
+      - ./mongodb/init-scripts:/docker-entrypoint-initdb.d
     networks:
       - doc2formjson-network
     healthcheck:
@@ -65,11 +68,11 @@ services:
       resources:
         limits:
           memory: 4G
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [ gpu ]
+        # reservations:
+        #   devices:
+        #     - driver: nvidia
+        #       count: 1
+        #       capabilities: [ gpu ]
     healthcheck:
       test: [ "CMD", "test", "-f", "/tmp/ollama_ready" ]
       interval: 30s
@@ -95,7 +98,7 @@ services:
       - PORT=3000
       - OLLAMA_BASE_URL=http://ollama-gpu:11434
       - DEFAULT_QWEN_MODEL_NAME=qwen2.5vl:latest
-      - MONGODB_URI=mongodb://doc2formapp:apppassword123@mongodb:27017/doc2formjson
+      - MONGODB_URI=mongodb://doc2formapp:apppassword123@mongodb:27017/doc2formjson # Updated to include credentials
     restart: unless-stopped
     depends_on:
       - ollama-gpu
