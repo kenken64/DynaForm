@@ -1,0 +1,348 @@
+/* Register Component Styles */
+
+.register-container {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.register-card-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  width: 100%;
+}
+
+.register-card {
+  width: 100%;
+  max-width: 450px;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+}
+
+.register-card mat-card-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.register-card mat-card-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.register-card mat-card-subtitle {
+  font-size: 1rem;
+  color: #666;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.register-button {
+  height: 48px;
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 1rem;
+  position: relative;
+  width: 100%;
+}
+
+/* Comprehensive register button styling to ensure visibility */
+.register-button.mat-mdc-raised-button.mat-primary {
+  background-color: #667eea !important;
+  color: white !important;
+}
+
+.register-button.mat-mdc-raised-button.mat-primary:hover:not([disabled]) {
+  background-color: #5a6fd8 !important;
+  color: white !important;
+}
+
+.register-button .mat-mdc-button-touch-target {
+  color: white !important;
+}
+
+.register-button .mdc-button__label {
+  color: white !important;
+}
+
+.register-button .mat-mdc-button-ripple {
+  color: white !important;
+}
+
+.register-button span {
+  color: white !important;
+}
+
+.register-button .mat-button-wrapper {
+  color: white !important;
+}
+
+/* Additional overrides for Angular Material */
+.register-button.mat-primary {
+  background-color: #667eea !important;
+  color: white !important;
+}
+
+.register-button.mat-primary .mdc-button__label {
+  color: white !important;
+}
+
+.register-button.mat-primary span {
+  color: white !important;
+}
+
+.register-button:disabled {
+  opacity: 0.6;
+}
+
+.button-spinner {
+  margin-right: 8px;
+  color: white !important;
+}
+
+.button-spinner ::ng-deep circle {
+  stroke: white !important;
+}
+
+.button-spinner ::ng-deep .mat-spinner-circle {
+  stroke: white !important;
+}
+
+.register-button .mat-spinner {
+  color: white !important;
+}
+
+.register-button .mat-spinner circle {
+  stroke: white !important;
+}
+
+.login-link {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: #666;
+}
+
+.login-link button {
+  font-weight: 600;
+}
+
+.success-message {
+  background-color: #e8f5e8;
+  border: 1px solid #4caf50;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #2e7d32;
+}
+
+.success-message mat-icon {
+  color: #4caf50;
+}
+
+.error-message {
+  background-color: #ffebee;
+  border: 1px solid #f44336;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #c62828;
+}
+
+.error-message mat-icon {
+  color: #f44336;
+}
+
+/* Form field styling */
+.mat-mdc-form-field {
+  --mdc-filled-text-field-container-color: rgba(255, 255, 255, 0.8);
+  --mdc-outlined-text-field-outline-color: rgba(0, 0, 0, 0.2);
+  --mdc-outlined-text-field-hover-outline-color: rgba(0, 0, 0, 0.4);
+  --mdc-outlined-text-field-focus-outline-color: #667eea;
+}
+
+.mat-mdc-form-field.mat-focused .mat-mdc-form-field-focus-overlay {
+  opacity: 0.05;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  .register-card-container {
+    padding: 10px;
+  }
+  
+  .register-card {
+    padding: 1.5rem;
+  }
+  
+  .register-card mat-card-title {
+    font-size: 1.5rem;
+  }
+}
+
+/* Animation */
+.register-card {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Passkey Setup Styles */
+.passkey-setup {
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.passkey-info {
+  margin-bottom: 2rem;
+}
+
+.passkey-icon {
+  font-size: 4rem;
+  height: 4rem;
+  width: 4rem;
+  color: #667eea;
+  margin-bottom: 1rem;
+}
+
+.passkey-info h3 {
+  margin: 1rem 0;
+  color: #333;
+  font-weight: 500;
+}
+
+.passkey-info p {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.passkey-benefits {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.benefit-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.benefit-item mat-icon {
+  color: #667eea;
+  font-size: 1.25rem;
+  height: 1.25rem;
+  width: 1.25rem;
+}
+
+.passkey-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.setup-passkey-button {
+  width: 100%;
+  height: 48px;
+  font-size: 1rem;
+  font-weight: 500;
+  background: #667eea !important;
+  color: white !important;
+  border: none;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  transition: all 0.3s ease;
+}
+
+.setup-passkey-button:hover:not(:disabled) {
+  background: #5a6fd8 !important;
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+  transform: translateY(-2px);
+}
+
+.setup-passkey-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.setup-passkey-button mat-icon {
+  margin-right: 0.5rem;
+  color: white !important;
+}
+
+.setup-passkey-button .mdc-button__label {
+  color: white !important;
+}
+
+.setup-passkey-button span {
+  color: white !important;
+}
+
+.skip-button {
+  width: 100%;
+  height: 40px;
+  color: #666;
+  border: 1px solid #ddd;
+  transition: all 0.3s ease;
+}
+
+.skip-button:hover:not(:disabled) {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.back-button {
+  width: 100%;
+  height: 40px;
+  color: #999;
+  transition: all 0.3s ease;
+}
+
+.back-button:hover:not(:disabled) {
+  color: #667eea;
+}
+
+.back-button mat-icon {
+  margin-right: 0.5rem;
+}

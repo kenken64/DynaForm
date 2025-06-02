@@ -1,21 +1,25 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './auth/login/login.component';
+import { RegisterComponent } from './auth/register/register.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { FormsListComponent } from './forms-list/forms-list.component';
 import { FormViewerComponent } from './form-viewer/form-viewer.component';
 import { FormDataListComponent } from './form-data-list/form-data-list.component';
 import { FormDataViewerComponent } from './form-data-viewer/form-data-viewer.component';
+import { RecipientsComponent } from './recipients/recipients.component';
 import { AuthGuard } from './auth/auth.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
   { path: 'forms', component: FormsListComponent, canActivate: [AuthGuard] },
   { path: 'forms/:id', component: FormViewerComponent, canActivate: [AuthGuard] },
   { path: 'form-data', component: FormDataListComponent, canActivate: [AuthGuard] },
   { path: 'form-data/:id', component: FormDataViewerComponent, canActivate: [AuthGuard] },
+  { path: 'recipients', component: RecipientsComponent, canActivate: [AuthGuard] },
   { path: '**', redirectTo: '/dashboard' }
 ];
 

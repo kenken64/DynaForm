@@ -1,24 +1,25 @@
 import { Router } from 'express';
 import { formController } from '../controllers';
+import { verifyToken } from '../middleware/auth';
 
 const router = Router();
 
-// POST /api/forms - Save a new form
-router.post('/', formController.saveForm);
+// POST /api/forms - Save a new form (requires authentication)
+router.post('/', verifyToken, formController.saveForm);
 
-// GET /api/forms - Get all forms with pagination
-router.get('/', formController.getForms);
+// GET /api/forms - Get user's forms with pagination (requires authentication)
+router.get('/', verifyToken, formController.getForms);
 
-// GET /api/forms/search - Search forms
-router.get('/search', formController.searchForms);
+// GET /api/forms/search - Search user's forms (requires authentication)
+router.get('/search', verifyToken, formController.searchForms);
 
-// GET /api/forms/:id - Get a specific form by ID
-router.get('/:id', formController.getFormById);
+// GET /api/forms/:id - Get a specific form by ID (requires authentication)
+router.get('/:id', verifyToken, formController.getFormById);
 
-// PUT /api/forms/:id - Update a form by ID
-router.put('/:id', formController.updateForm);
+// PUT /api/forms/:id - Update a form by ID (requires authentication)
+router.put('/:id', verifyToken, formController.updateForm);
 
-// DELETE /api/forms/:id - Delete a form by ID
-router.delete('/:id', formController.deleteForm);
+// DELETE /api/forms/:id - Delete a form by ID (requires authentication)
+router.delete('/:id', verifyToken, formController.deleteForm);
 
 export default router;

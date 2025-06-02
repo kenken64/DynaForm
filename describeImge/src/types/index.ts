@@ -53,6 +53,7 @@ export interface GeneratedForm {
     formName?: string;
     version: string;
     updatedAt?: string;
+    createdBy: string; // User ID of the form creator
   };
 }
 
@@ -95,4 +96,30 @@ export interface SavedFormDataSubmission extends FormDataSubmission {
     [key: string]: any;
   };
   updatedAt: string;
+}
+
+// Recipient Interfaces
+export interface Recipient {
+  _id?: any;
+  name: string;
+  jobTitle: string;
+  email: string;
+  companyName: string;
+  createdAt?: string;
+  updatedAt?: string;
+  createdBy?: string;
+}
+
+export interface CreateRecipientRequest {
+  name: string;
+  jobTitle: string;
+  email: string;
+  companyName: string;
+}
+
+export interface UpdateRecipientRequest {
+  name?: string;
+  jobTitle?: string;
+  email?: string;
+  companyName?: string;
 }

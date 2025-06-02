@@ -1,5 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 
+// Export auth middleware
+export { verifyToken, requireRole, optionalAuth, AuthMiddleware } from './auth';
+
 export function corsMiddleware(req: Request, res: Response, next: NextFunction): void {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');

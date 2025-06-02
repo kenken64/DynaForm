@@ -1,8 +1,9 @@
 import { Injectable, signal, computed } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { GeneratedForm, FormsResponse, PaginatedFormsResponse } from '../interfaces/form.interface';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -41,7 +42,7 @@ export class FormsService {
   private formsRefreshSubject = new BehaviorSubject<void>(undefined);
   readonly formsRefresh$ = this.formsRefreshSubject.asObservable();
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private authService: AuthService) {
     // Load initial forms data
     this.refreshForms();
   }
@@ -114,7 +115,10 @@ export class FormsService {
       params = params.set('pageSize', pageSize.toString());
     }
 
-    return this.http.get<any>(`${this.apiUrl}/forms`, { params })
+    return this.http.get<any>(`${this.apiUrl}/forms`, { 
+      params,
+      headers: this.getAuthHeaders()
+    })
       .pipe(
         map(response => {
           // Transform the response to match our pagination interface
@@ -141,7 +145,9 @@ export class FormsService {
    * Get a single form by ID
    */
   getForm(id: string): Observable<GeneratedForm> {
-    return this.http.get<any>(`${this.apiUrl}/forms/${id}`)
+    return this.http.get<any>(`${this.apiUrl}/forms/${id}`, {
+      headers: this.getAuthHeaders()
+    })
       .pipe(
         map(response => response.form || response.data || response), // Handle different response structures
         catchError(this.handleError)
@@ -152,7 +158,9 @@ export class FormsService {
    * Delete a form by ID
    */
   deleteForm(id: string): Observable<{success: boolean, message: string}> {
-    return this.http.delete<{success: boolean, message: string}>(`${this.apiUrl}/forms/${id}`)
+    return this.http.delete<{success: boolean, message: string}>(`${this.apiUrl}/forms/${id}`, {
+      headers: this.getAuthHeaders()
+    })
       .pipe(
         tap(() => {
           // Automatically remove from cache when deleted successfully
@@ -175,7 +183,10 @@ export class FormsService {
       params = params.set('pageSize', pageSize.toString());
     }
 
-    return this.http.get<any>(`${this.apiUrl}/forms/search`, { params })
+    return this.http.get<any>(`${this.apiUrl}/forms/search`, { 
+      params,
+      headers: this.getAuthHeaders()
+    })
       .pipe(
         map(response => {
           const totalForms = response.count || 0;
@@ -198,10 +209,25 @@ export class FormsService {
   }
 
   /**
+   * Save a new form
+   */
+  saveForm(formData: any): Observable<{ success: boolean; data: { formId: string; savedAt: string } }> {
+    return this.http.post<any>(`${this.apiUrl}/forms`, formData, {
+      headers: this.getAuthHeaders()
+    })
+      .pipe(
+        map(response => response),
+        catchError(this.handleError)
+      );
+  }
+
+  /**
    * Update a form (e.g., form title)
    */
   updateForm(id: string, formData: Partial<GeneratedForm>): Observable<GeneratedForm> {
-    return this.http.put<any>(`${this.apiUrl}/forms/${id}`, formData)
+    return this.http.put<any>(`${this.apiUrl}/forms/${id}`, formData, {
+      headers: this.getAuthHeaders()
+    })
       .pipe(
         map(response => response.form || response.data || response),
         tap((updatedForm) => {
@@ -210,6 +236,13 @@ export class FormsService {
         }),
         catchError(this.handleError)
       );
+  }
+
+  /**
+   * Get authentication headers for API requests
+   */
+  private getAuthHeaders(): HttpHeaders {
+    return this.authService.getAuthHeaders();
   }
 
   private handleError(error: any): Observable<never> {

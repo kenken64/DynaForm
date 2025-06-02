@@ -71,6 +71,20 @@ export const config = {
     return parseInt(process.env.PORT || '3000', 10);
   },
   
+  // JWT Configuration
+  get JWT_SECRET() {
+    return process.env.JWT_SECRET || 'demo-secret-key-change-in-production';
+  },
+  get JWT_REFRESH_SECRET() {
+    return process.env.JWT_REFRESH_SECRET || 'demo-refresh-secret-key-change-in-production';
+  },
+  get JWT_EXPIRES_IN() {
+    return process.env.JWT_EXPIRES_IN || '24h';
+  },
+  get JWT_REFRESH_EXPIRES_IN() {
+    return process.env.JWT_REFRESH_EXPIRES_IN || '7d';
+  },
+  
   // MongoDB Configuration with secure password handling
   get MONGODB_URI() {
     // Check if full URI is provided (backward compatibility)

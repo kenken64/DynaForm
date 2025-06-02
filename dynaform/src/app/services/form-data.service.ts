@@ -7,6 +7,7 @@ import {
   FormDataResponse, 
   FormDataRetrievalResponse 
 } from '../interfaces/form.interface';
+import { AuthService } from '../auth/auth.service';
 
 export interface FormDataEntry {
   _id: string;
@@ -56,7 +57,7 @@ export class FormDataService {
   readonly hasData = computed(() => this.allFormData().length > 0);
   readonly totalCount = computed(() => this.allFormData().length);
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   // Get all form data submissions with pagination (using real backend API)
   getAllFormData(page: number = 1, pageSize: number = 10): Observable<FormDataListResponse> {
@@ -67,7 +68,10 @@ export class FormDataService {
       .set('page', page.toString())
       .set('pageSize', pageSize.toString());
     console.log(this.baseUrl);
-    return this.http.get<any>(`${this.baseUrl}/forms-data`, { params }).pipe(
+    return this.http.get<any>(`${this.baseUrl}/forms-data`, { 
+      params,
+      headers: this.authService.getAuthHeaders()
+    }).pipe(
       map(response => {
         console.log('Get all form data response:', response);
         return {
@@ -102,7 +106,10 @@ export class FormDataService {
       .set('pageSize', pageSize.toString())
       .set('search', query);
     
-    return this.http.get<any>(`${this.baseUrl}/forms-data/search`, { params }).pipe(
+    return this.http.get<any>(`${this.baseUrl}/forms-data/search`, { 
+      params,
+      headers: this.authService.getAuthHeaders()
+    }).pipe(
       map(response => {
         console.log('Search response:', response);
         return {
@@ -129,7 +136,9 @@ export class FormDataService {
 
   // Get specific form data by ID
   getFormDataById(id: string): Observable<FormDataEntry> {
-    return this.http.get<any>(`${this.baseUrl}/forms-data/${id}`).pipe(
+    return this.http.get<any>(`${this.baseUrl}/forms-data/${id}`, {
+      headers: this.authService.getAuthHeaders()
+    }).pipe(
       map(response => {
         console.log('Get form data by ID response:', response);
         if (!response.success || !response.formData) {
@@ -147,7 +156,9 @@ export class FormDataService {
 
   // Delete form data submission
   deleteFormData(id: string): Observable<{success: boolean, message: string}> {
-    return this.http.delete<{success: boolean, message: string}>(`${this.baseUrl}/forms-data/${id}`).pipe(
+    return this.http.delete<{success: boolean, message: string}>(`${this.baseUrl}/forms-data/${id}`, {
+      headers: this.authService.getAuthHeaders()
+    }).pipe(
       tap(() => {
         // Remove from local state
         const currentData = this.allFormDataSignal();
@@ -215,6 +226,24 @@ export class FormDataService {
       .join('\n');
     
     return csvContent;
+  }
+
+  // Submit form data
+  submitFormData(formData: FormDataSubmission): Observable<FormDataResponse> {
+    const url = `${this.baseUrl}/forms-data`;
+    const headers = this.authService.getAuthHeaders();
+
+    return this.http.post<FormDataResponse>(url, formData, { headers }).pipe(
+      map(response => {
+        console.log('Submit form data response:', response);
+        return response;
+      }),
+      catchError(error => {
+        console.error('Error submitting form data:', error);
+        this.errorSignal.set('Failed to submit form data');
+        return throwError(() => error);
+      })
+    );
   }
 
 }

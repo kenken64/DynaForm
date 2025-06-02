@@ -5,7 +5,8 @@ import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog';
 import { AuthService } from '../auth/auth.service';
 import { FormsService } from '../services/forms.service';
-import { FormDataSubmission, FormDataResponse, GeneratedForm } from '../interfaces/form.interface';
+import { FormDataService } from '../services/form-data.service';
+import { FormDataSubmission, FormDataResponse, GeneratedForm, FieldConfiguration } from '../interfaces/form.interface';
 import { EditTitleDialogComponent, EditTitleDialogData } from '../forms-list/edit-title-dialog.component';
 
 @Component({
@@ -15,6 +16,7 @@ import { EditTitleDialogComponent, EditTitleDialogData } from '../forms-list/edi
 })
 export class FormViewerComponent implements OnInit, AfterViewInit {
   @Input() formId: string = '';
+  @Input() showHeader: boolean = true; // Control whether to show header
   @Output() backToMain = new EventEmitter<void>();
   
   formData: any = null;
@@ -47,7 +49,8 @@ export class FormViewerComponent implements OnInit, AfterViewInit {
     private fb: FormBuilder,
     private dialog: MatDialog,
     private formsService: FormsService,
-    private authService: AuthService
+    private authService: AuthService,
+    private formDataService: FormDataService
   ) {
     // Initialize empty form to prevent template errors
     this.dynamicForm = this.fb.group({});
@@ -76,28 +79,24 @@ export class FormViewerComponent implements OnInit, AfterViewInit {
     this.loading = true;
     this.error = '';
 
-    this.http.get(`http://localhost:3000/api/forms/${this.formId}`).subscribe({
-      next: (response: any) => {
+    this.formsService.getForm(this.formId).subscribe({
+      next: (formData: any) => {
         this.loading = false;
-        if (response.success) {
-          this.formData = response.form;
+        this.formData = formData;
+        
+        // Extract form data and build dynamic form
+        if (this.formData && this.formData.formData) {
+          this.fields = this.formData.formData;
+          this.formTitle = this.formData.originalJson?.title || this.formData.metadata?.formName || null;
+          this.fieldConfigurations = this.formData.fieldConfigurations || {};
           
-          // Extract form data and build dynamic form
-          if (this.formData && this.formData.formData) {
-            this.fields = this.formData.formData;
-            this.formTitle = this.formData.originalJson?.title || this.formData.metadata?.formName || null;
-            this.fieldConfigurations = this.formData.fieldConfigurations || {};
-            
-            // Build the interactive form
-            this.buildForm();
-            
-            // Force enable all controls after building
-            setTimeout(() => {
-              this.forceEnableAllControls();
-            }, 100);
-          }
-        } else {
-          this.error = 'Form not found';
+          // Build the interactive form
+          this.buildForm();
+          
+          // Force enable all controls after building
+          setTimeout(() => {
+            this.forceEnableAllControls();
+          }, 100);
         }
       },
       error: (error) => {
@@ -390,10 +389,19 @@ export class FormViewerComponent implements OnInit, AfterViewInit {
       updatedFields.push(updatedField);
     });
     
+    // Transform fieldConfigurations to match the interface
+    const transformedFieldConfigurations: Record<string, FieldConfiguration> = {};
+    Object.entries(this.fieldConfigurations).forEach(([fieldName, configArray]) => {
+      transformedFieldConfigurations[fieldName] = {
+        mandatory: configArray.includes('mandatory'),
+        validation: configArray.includes('validation')
+      };
+    });
+
     // Prepare data for backend update
     const updateFormData = {
       formData: updatedFields,
-      fieldConfigurations: this.fieldConfigurations,
+      fieldConfigurations: transformedFieldConfigurations,
       originalJson: this.formData.originalJson,
       metadata: {
         ...this.formData.metadata,
@@ -406,7 +414,7 @@ export class FormViewerComponent implements OnInit, AfterViewInit {
     // Save updated form to backend
     this.isSavingForm = true;
     
-    this.http.put(`http://localhost:3000/api/forms/${this.formId}`, updateFormData).subscribe({
+    this.formsService.updateForm(this.formId, updateFormData).subscribe({
       next: (response: any) => {
         this.isSavingForm = false;
         console.log('Form updated successfully:', response);
@@ -465,7 +473,7 @@ export class FormViewerComponent implements OnInit, AfterViewInit {
     // Save form data submission to backend
     this.isSavingFormData = true;
     
-    this.http.post<FormDataResponse>('http://localhost:3000/api/forms-data', submissionData).subscribe({
+    this.formDataService.submitFormData(submissionData).subscribe({
       next: (response: FormDataResponse) => {
         this.isSavingFormData = false;
         console.log('Form data saved successfully:', response);

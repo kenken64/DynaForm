@@ -85,7 +85,10 @@ class FormDataController {
             const { formId } = req.query;
             const page = parseInt(req.query.page) || 1;
             const pageSize = parseInt(req.query.pageSize) || 10;
-            const result = await services_1.formDataService.getAllFormData(formId, page, pageSize);
+            const userId = req.user?.userId; // Get user ID from auth middleware
+            // Temporarily allow access without authentication for testing
+            console.log('getAllFormData called with userId:', userId);
+            const result = await services_1.formDataService.getAllFormData(formId, page, pageSize, userId);
             res.status(200).json({
                 success: result.success,
                 count: result.count,
@@ -142,7 +145,10 @@ class FormDataController {
             const searchQuery = req.query.search || '';
             const page = parseInt(req.query.page) || 1;
             const pageSize = parseInt(req.query.pageSize) || 10;
-            const result = await services_1.formDataService.searchFormData(searchQuery, page, pageSize);
+            const userId = req.user?.userId; // Get user ID from auth middleware
+            // Temporarily allow access without authentication for testing
+            console.log('searchFormData called with userId:', userId);
+            const result = await services_1.formDataService.searchFormData(searchQuery, page, pageSize, userId);
             res.status(200).json({
                 success: result.success,
                 count: result.count,

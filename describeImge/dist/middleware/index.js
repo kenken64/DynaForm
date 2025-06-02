@@ -1,7 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.AuthMiddleware = exports.optionalAuth = exports.requireRole = exports.verifyToken = void 0;
 exports.corsMiddleware = corsMiddleware;
 exports.errorHandler = errorHandler;
+// Export auth middleware
+var auth_1 = require("./auth");
+Object.defineProperty(exports, "verifyToken", { enumerable: true, get: function () { return auth_1.verifyToken; } });
+Object.defineProperty(exports, "requireRole", { enumerable: true, get: function () { return auth_1.requireRole; } });
+Object.defineProperty(exports, "optionalAuth", { enumerable: true, get: function () { return auth_1.optionalAuth; } });
+Object.defineProperty(exports, "AuthMiddleware", { enumerable: true, get: function () { return auth_1.AuthMiddleware; } });
 function corsMiddleware(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');

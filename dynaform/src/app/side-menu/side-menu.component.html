@@ -41,6 +41,15 @@
       <mat-icon>table_view</mat-icon>
       <span *ngIf="!isCollapsed">Form Data</span>
     </div>
+    
+    <div 
+      class="nav-item"
+      [class.active]="isActiveRoute('/recipients')"
+      (click)="navigateTo('/recipients')"
+      matRipple>
+      <mat-icon>people</mat-icon>
+      <span *ngIf="!isCollapsed">Recipients</span>
+    </div>
   </div>
 
   <!-- Divider -->
@@ -181,6 +190,15 @@
       matRipple
       title="Form Data">
       <mat-icon>table_view</mat-icon>
+    </div>
+    
+    <div 
+      class="nav-icon"
+      [class.active]="isActiveRoute('/recipients')"
+      (click)="navigateTo('/recipients')"
+      matRipple
+      title="Recipients">
+      <mat-icon>people</mat-icon>
     </div>
   </div>
 </div>

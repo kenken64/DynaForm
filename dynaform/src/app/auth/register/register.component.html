@@ -1,0 +1,134 @@
+<div class="register-container">
+  <div class="register-card-container">
+    <mat-card class="register-card">
+      <mat-card-header>
+        <mat-card-title>{{ registrationStep === 1 ? 'Create Account' : 'Setup Passkey' }}</mat-card-title>
+        <mat-card-subtitle>
+          {{ registrationStep === 1 ? 'Join DynaForm to start creating dynamic forms' : 'Secure your account with a passkey' }}
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <!-- Success Message -->
+        <mat-card *ngIf="successMessage" class="success-message">
+          <mat-icon>check_circle</mat-icon>
+          <span>{{ successMessage }}</span>
+        </mat-card>
+
+        <!-- Error Message -->
+        <mat-card *ngIf="errorMessage" class="error-message">
+          <mat-icon>error</mat-icon>
+          <span>{{ errorMessage }}</span>
+        </mat-card>
+
+        <!-- Step 1: User Information Form -->
+        <div *ngIf="registrationStep === 1">
+          <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+            <!-- Full Name Field -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Full Name</mat-label>
+              <input matInput formControlName="fullName" placeholder="Enter your full name" autocomplete="name">
+              <mat-icon matSuffix>person</mat-icon>
+              <mat-error *ngIf="getFieldError('fullName')">{{ getFieldError('fullName') }}</mat-error>
+            </mat-form-field>
+
+            <!-- Email Field -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Email Address</mat-label>
+              <input matInput type="email" formControlName="email" placeholder="Enter your email" autocomplete="email">
+              <mat-icon matSuffix>email</mat-icon>
+              <mat-error *ngIf="getFieldError('email')">{{ getFieldError('email') }}</mat-error>
+            </mat-form-field>
+
+            <!-- Username Field -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Username</mat-label>
+              <input matInput formControlName="username" placeholder="Choose a username" autocomplete="username">
+              <mat-icon matSuffix>account_circle</mat-icon>
+              <mat-error *ngIf="getFieldError('username')">{{ getFieldError('username') }}</mat-error>
+            </mat-form-field>
+
+            <!-- Continue Button -->
+            <button 
+              mat-raised-button 
+              color="primary" 
+              type="submit" 
+              class="register-button"
+              [disabled]="loading || !registerForm.valid">
+              <mat-spinner *ngIf="loading" diameter="20" class="button-spinner"></mat-spinner>
+              <span *ngIf="!loading">Continue</span>
+              <span *ngIf="loading">Creating Account...</span>
+            </button>
+
+            <!-- Login Link -->
+            <div class="login-link">
+              <span>Already have an account? </span>
+              <button type="button" mat-button color="primary" (click)="goToLogin()">
+                Sign In
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Step 2: Passkey Setup -->
+        <div *ngIf="registrationStep === 2" class="passkey-setup">
+          <div class="passkey-info">
+            <mat-icon class="passkey-icon">fingerprint</mat-icon>
+            <h3>Secure Your Account</h3>
+            <p>A passkey provides secure, password-free authentication using your device's biometric sensor or security key.</p>
+            
+            <div class="passkey-benefits">
+              <div class="benefit-item">
+                <mat-icon>security</mat-icon>
+                <span>More secure than passwords</span>
+              </div>
+              <div class="benefit-item">
+                <mat-icon>speed</mat-icon>
+                <span>Faster sign-in experience</span>
+              </div>
+              <div class="benefit-item">
+                <mat-icon>no_accounts</mat-icon>
+                <span>No passwords to remember</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="passkey-actions">
+            <!-- Setup Passkey Button -->
+            <button 
+              mat-raised-button 
+              color="primary" 
+              class="setup-passkey-button"
+              (click)="setupPasskey()"
+              [disabled]="loading">
+              <mat-spinner *ngIf="loading" diameter="20" class="button-spinner"></mat-spinner>
+              <mat-icon *ngIf="!loading">fingerprint</mat-icon>
+              <span *ngIf="!loading">Setup Passkey</span>
+              <span *ngIf="loading">Setting up...</span>
+            </button>
+
+            <!-- Skip Button -->
+            <button 
+              mat-button 
+              color="accent" 
+              class="skip-button"
+              (click)="skipPasskey()"
+              [disabled]="loading">
+              Skip for now
+            </button>
+
+            <!-- Back Button -->
+            <button 
+              mat-button 
+              class="back-button"
+              (click)="goBack()"
+              [disabled]="loading">
+              <mat-icon>arrow_back</mat-icon>
+              Back
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

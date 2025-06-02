@@ -6,7 +6,16 @@ class FormController {
     async saveForm(req, res) {
         try {
             const formRequest = req.body;
-            const result = await services_1.formService.saveForm(formRequest);
+            const userId = req.user?.userId; // Get user ID from auth middleware
+            if (!userId) {
+                res.status(401).json({
+                    success: false,
+                    error: 'Authentication required',
+                    message: 'User ID not found in request'
+                });
+                return;
+            }
+            const result = await services_1.formService.saveForm(formRequest, userId);
             res.status(200).json({
                 success: true,
                 message: 'Form saved successfully',
@@ -29,7 +38,16 @@ class FormController {
         try {
             const page = parseInt(req.query.page) || 1;
             const pageSize = parseInt(req.query.pageSize) || 10;
-            const result = await services_1.formService.getForms(page, pageSize);
+            const userId = req.user?.userId; // Get user ID from auth middleware
+            if (!userId) {
+                res.status(401).json({
+                    success: false,
+                    error: 'Authentication required',
+                    message: 'User ID not found in request'
+                });
+                return;
+            }
+            const result = await services_1.formService.getForms(page, pageSize, userId);
             res.status(200).json({
                 success: result.success,
                 count: result.count,
@@ -51,12 +69,21 @@ class FormController {
     async getFormById(req, res) {
         try {
             const { id } = req.params;
-            const form = await services_1.formService.getFormById(id);
+            const userId = req.user?.userId; // Get user ID from auth middleware
+            if (!userId) {
+                res.status(401).json({
+                    success: false,
+                    error: 'Authentication required',
+                    message: 'User ID not found in request'
+                });
+                return;
+            }
+            const form = await services_1.formService.getFormById(id, userId);
             if (!form) {
                 res.status(404).json({
                     success: false,
                     error: 'Form not found',
-                    message: `No form found with ID: ${id}`
+                    message: `No form found with ID: ${id} or you don't have permission to access it`
                 });
                 return;
             }
@@ -79,7 +106,16 @@ class FormController {
             const searchQuery = req.query.search || '';
             const page = parseInt(req.query.page) || 1;
             const pageSize = parseInt(req.query.pageSize) || 10;
-            const result = await services_1.formService.searchForms(searchQuery, page, pageSize);
+            const userId = req.user?.userId; // Get user ID from auth middleware
+            if (!userId) {
+                res.status(401).json({
+                    success: false,
+                    error: 'Authentication required',
+                    message: 'User ID not found in request'
+                });
+                return;
+            }
+            const result = await services_1.formService.searchForms(searchQuery, page, pageSize, userId);
             res.status(200).json({
                 success: result.success,
                 count: result.count,
@@ -102,12 +138,21 @@ class FormController {
     async deleteForm(req, res) {
         try {
             const { id } = req.params;
-            const deleted = await services_1.formService.deleteForm(id);
+            const userId = req.user?.userId; // Get user ID from auth middleware
+            if (!userId) {
+                res.status(401).json({
+                    success: false,
+                    error: 'Authentication required',
+                    message: 'User ID not found in request'
+                });
+                return;
+            }
+            const deleted = await services_1.formService.deleteForm(id, userId);
             if (!deleted) {
                 res.status(404).json({
                     success: false,
                     error: 'Form not found',
-                    message: `No form found with ID: ${id}`
+                    message: `No form found with ID: ${id} or you don't have permission to delete it`
                 });
                 return;
             }
@@ -129,12 +174,21 @@ class FormController {
         try {
             const { id } = req.params;
             const formData = req.body;
-            const updatedForm = await services_1.formService.updateForm(id, formData);
+            const userId = req.user?.userId; // Get user ID from auth middleware
+            if (!userId) {
+                res.status(401).json({
+                    success: false,
+                    error: 'Authentication required',
+                    message: 'User ID not found in request'
+                });
+                return;
+            }
+            const updatedForm = await services_1.formService.updateForm(id, formData, userId);
             if (!updatedForm) {
                 res.status(404).json({
                     success: false,
                     error: 'Form not found',
-                    message: `No form found with ID: ${id}`
+                    message: `No form found with ID: ${id} or you don't have permission to update it`
                 });
                 return;
             }

@@ -3,66 +3,44 @@
     <div class="login-header">
       <mat-icon class="login-icon">assignment</mat-icon>
       <h1>DynaForm</h1>
-      <p>Dynamic Form Generator</p>
+      <p>Dynamic Forms, Powered by Intelligence</p>
     </div>
 
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-      <!-- Username Field -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Username</mat-label>
-        <input matInput 
-               formControlName="username" 
-               placeholder="Enter your username"
-               autocomplete="username">
-        <mat-icon matSuffix>person</mat-icon>
-        <mat-error *ngIf="username?.touched && username?.hasError('required')">
-          Username is required
-        </mat-error>
-      </mat-form-field>
-
-      <!-- Password Field -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Password</mat-label>
-        <input matInput 
-               type="password"
-               formControlName="password" 
-               placeholder="Enter your password"
-               autocomplete="current-password">
-        <mat-icon matSuffix>lock</mat-icon>
-        <mat-error *ngIf="password?.touched && password?.hasError('required')">
-          Password is required
-        </mat-error>
-        <mat-error *ngIf="password?.touched && password?.hasError('minlength')">
-          Password must be at least 6 characters
-        </mat-error>
-      </mat-form-field>
-
+    <div class="login-content">
       <!-- Error Message -->
       <div *ngIf="errorMessage" class="error-message">
         <mat-icon>error</mat-icon>
         <span>{{ errorMessage }}</span>
       </div>
 
-      <!-- Login Button -->
-      <button mat-raised-button 
-              color="primary" 
-              type="submit"
-              class="login-button"
-              [disabled]="isLoading">
-        <mat-spinner *ngIf="isLoading" diameter="20" class="login-spinner"></mat-spinner>
-        <mat-icon *ngIf="!isLoading">login</mat-icon>
-        {{ isLoading ? 'Signing in...' : 'Sign In' }}
-      </button>
-
-      <!-- Demo Credentials -->
-      <div class="demo-credentials">
-        <mat-divider></mat-divider>
-        <p class="demo-title">Demo Credentials</p>
-        <div class="demo-info">
-          <p><strong>Username:</strong> admin</p>
-          <p><strong>Password:</strong> password</p>
-        </div>
+      <!-- Primary Passkey Authentication -->
+      <div class="passkey-section">
+        <p class="passkey-description">Sign in securely with your passkey, biometric authentication, or security key</p>
+        <button mat-raised-button 
+                color="primary"
+                type="button"
+                class="passkey-button primary"
+                [disabled]="isLoading"
+                (click)="signInWithPasskey()">
+          <mat-spinner *ngIf="isLoading" diameter="20" class="login-spinner"></mat-spinner>
+          <mat-icon *ngIf="!isLoading">fingerprint</mat-icon>
+          {{ isLoading ? 'Authenticating...' : 'Sign In with Passkey' }}
+        </button>
       </div>
-    </form>
+
+      <!-- Register Link -->
+      <div class="register-section">
+        <mat-divider></mat-divider>
+        <p class="register-title">Don't have an account?</p>
+        <button mat-raised-button 
+                type="button"
+                color="accent"
+                class="passkey-button secondary"
+                (click)="goToRegister()">
+          <mat-icon>person_add</mat-icon>
+          Create Account
+        </button>
+      </div>
+    </div>
   </div>
 </div>

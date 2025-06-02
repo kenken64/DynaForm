@@ -1,10 +1,15 @@
 .login-container {
   min-height: 100vh;
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 20px;
+  box-sizing: border-box;
 }
 
 .login-card {
@@ -15,6 +20,8 @@
   width: 100%;
   max-width: 400px;
   animation: slideUp 0.6s ease-out;
+  position: relative;
+  z-index: 1;
 }
 
 @keyframes slideUp {
@@ -93,31 +100,84 @@
 
 .login-spinner {
   margin-right: 8px;
+  color: white !important;
 }
 
-.demo-credentials {
+/* Passkey Section */
+.passkey-section {
+  margin-top: 24px;
   text-align: center;
-  padding-top: 20px;
 }
 
-.demo-title {
+.passkey-title {
   margin: 16px 0 12px 0;
   font-weight: 500;
   color: #666;
   font-size: 14px;
 }
 
-.demo-info {
-  background: #f5f5f5;
-  border-radius: 8px;
-  padding: 16px;
-  margin: 0;
+.passkey-button {
+  width: 100%;
+  height: 48px;
+  font-weight: 500;
+  border: 2px solid #667eea;
+  color: #667eea;
+  background: white;
+  transition: all 0.3s ease;
 }
 
-.demo-info p {
-  margin: 4px 0;
-  font-size: 13px;
-  color: #555;
+.passkey-button:hover:not([disabled]) {
+  background: #f8f9ff;
+  border-color: #5a6fd8;
+  color: #5a6fd8;
+}
+
+.passkey-button mat-icon {
+  margin-right: 8px;
+}
+
+/* Register Section */
+.register-section {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.register-title {
+  margin: 16px 0 12px 0;
+  font-weight: 500;
+  color: #666;
+  font-size: 14px;
+}
+
+.passkey-button.secondary {
+  width: 100%;
+  height: 56px;
+  font-weight: 500;
+  font-size: 16px;
+  background: #f44336 !important;
+  border: none !important;
+  color: white !important;
+  transition: all 0.3s ease;
+}
+
+.passkey-button.secondary:hover:not([disabled]) {
+  background: #d32f2f !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+}
+
+.passkey-button.secondary mat-icon {
+  margin-right: 8px;
+  font-size: 24px;
+  color: white !important;
+}
+
+.passkey-button.secondary .mdc-button__label {
+  color: white !important;
+}
+
+.passkey-button.secondary span {
+  color: white !important;
 }
 
 /* Responsive Design */
@@ -153,13 +213,111 @@
 /* Button styling */
 .mat-mdc-raised-button.mat-primary {
   background-color: #667eea;
+  color: white !important;
 }
 
 .mat-mdc-raised-button.mat-primary:hover:not([disabled]) {
   background-color: #5a6fd8;
+  color: white !important;
 }
 
 .mat-mdc-raised-button:disabled {
   background-color: #e0e0e0;
   color: #9e9e9e;
+}
+
+.login-button {
+  width: 100%;
+  height: 48px;
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.login-button .mat-button-wrapper {
+  color: white !important;
+}
+
+.login-button mat-icon {
+  color: white !important;
+}
+
+.login-button .login-spinner {
+  color: white !important;
+}
+
+/* Additional button text color overrides for Angular Material */
+.login-button span {
+  color: white !important;
+}
+
+.login-button .mdc-button__label {
+  color: white !important;
+}
+
+.login-button .mat-mdc-button-touch-target {
+  color: white !important;
+}
+
+/* Ensure spinner is white */
+.login-button .mat-mdc-progress-spinner circle {
+  stroke: white !important;
+}
+
+.login-button .mat-spinner circle {
+  stroke: white !important;
+}
+
+/* Override any potential theme conflicts */
+.mat-mdc-raised-button.mat-primary .mdc-button__label {
+  color: white !important;
+}
+
+.mat-mdc-raised-button.mat-primary span {
+  color: white !important;
+}
+
+/* Updated styles for passkey-only login */
+.login-content {
+  width: 100%;
+}
+
+.passkey-description {
+  margin: 0 0 20px 0;
+  font-size: 14px;
+  color: #666;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.passkey-button.primary {
+  width: 100%;
+  height: 56px;
+  font-weight: 500;
+  font-size: 16px;
+  background: #667eea !important;
+  border: none !important;
+  color: white !important;
+  transition: all 0.3s ease;
+}
+
+.passkey-button.primary:hover:not([disabled]) {
+  background: #5a6fd8 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.passkey-button.primary mat-icon {
+  margin-right: 8px;
+  font-size: 24px;
+  color: white !important;
+}
+
+.passkey-button.primary .mdc-button__label {
+  color: white !important;
+}
+
+.passkey-button.primary span {
+  color: white !important;
 }

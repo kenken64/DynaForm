@@ -1,0 +1,23 @@
+.recipient-dialog {
+  min-width: 400px;
+}
+
+.recipient-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 0;
+}
+
+.full-width {
+  width: 100%;
+}
+
+mat-dialog-actions {
+  margin-top: 20px;
+  gap: 12px;
+}
+
+mat-dialog-actions button {
+  min-width: 80px;
+}

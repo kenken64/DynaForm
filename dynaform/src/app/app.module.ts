@@ -21,12 +21,16 @@ import { MatOptionModule } from '@angular/material/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatTableModule } from '@angular/material/table';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { DatePipe, TitleCasePipe } from '@angular/common';
 import { FormConfirmationComponent } from './form-confirmation/form-confirmation.component';
 import { FormViewerComponent } from './form-viewer/form-viewer.component';
 import { FormsListComponent } from './forms-list/forms-list.component';
 import { EditTitleDialogComponent } from './forms-list/edit-title-dialog.component';
 import { LoginComponent } from './auth/login/login.component';
+import { RegisterComponent } from './auth/register/register.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { SideMenuComponent } from './side-menu/side-menu.component';
 import { AuthService } from './auth/auth.service';
@@ -36,6 +40,8 @@ import { HeaderComponent } from './shared/header/header.component';
 import { FormDataListComponent } from './form-data-list/form-data-list.component';
 import { FormDataViewerComponent } from './form-data-viewer/form-data-viewer.component';
 import { FormDataConfirmationComponent } from './form-data-confirmation/form-data-confirmation.component';
+import { RecipientsComponent } from './recipients/recipients.component';
+import { RecipientDialogComponent } from './recipient-dialog/recipient-dialog.component';
 
 @NgModule({
   declarations: [
@@ -45,12 +51,15 @@ import { FormDataConfirmationComponent } from './form-data-confirmation/form-dat
     FormsListComponent,
     EditTitleDialogComponent,
     LoginComponent,
+    RegisterComponent,
     DashboardComponent,
     SideMenuComponent,
     HeaderComponent,
     FormDataListComponent,
     FormDataViewerComponent,
-    FormDataConfirmationComponent
+    FormDataConfirmationComponent,
+    RecipientsComponent,
+    RecipientDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -71,7 +80,10 @@ import { FormDataConfirmationComponent } from './form-data-confirmation/form-dat
     MatOptionModule,
     MatCardModule,
     MatRippleModule,
-    MatDialogModule
+    MatDialogModule,
+    MatTableModule,
+    MatSnackBarModule,
+    MatTooltipModule
   ],
   providers: [
     provideHttpClient(withInterceptorsFromDi()),

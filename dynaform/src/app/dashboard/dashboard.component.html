@@ -301,6 +301,7 @@
   <div *ngIf="currentView === 'viewer'">
     <app-form-viewer
       [formId]="viewerFormId"
+      [showHeader]="false"
       (backToMain)="onBackToMain()">
     </app-form-viewer>
   </div>

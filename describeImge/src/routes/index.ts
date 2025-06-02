@@ -2,6 +2,8 @@ import { Router } from 'express';
 import imageRoutes from './imageRoutes';
 import formRoutes from './formRoutes';
 import formDataRoutes from './formDataRoutes';
+import recipientRoutes from './recipientRoutes';
+import authRoutes from './authRoutes';
 
 const router = Router();
 
@@ -9,6 +11,8 @@ const router = Router();
 router.use('/api', imageRoutes);
 router.use('/api/forms', formRoutes);
 router.use('/api/forms-data', formDataRoutes);
+router.use('/api/recipients', recipientRoutes);
+router.use('/api/auth', authRoutes);
 
 // Keep health check at root level for monitoring tools
 router.get('/health', (req, res) => {

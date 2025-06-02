@@ -47,14 +47,19 @@ class FormDataService {
         }
         return await collection.findOne(filter);
     }
-    async getFormSubmissions(formId, page = 1, pageSize = 10) {
+    async getFormSubmissions(formId, page = 1, pageSize = 10, userId) {
         const collection = this.getCollection();
         const skip = (page - 1) * pageSize;
+        // Build filter
+        const filter = { formId: formId };
+        if (userId) {
+            filter['userInfo.userId'] = userId;
+        }
         // Get total count
-        const totalCount = await collection.countDocuments({ formId: formId });
+        const totalCount = await collection.countDocuments(filter);
         // Get paginated submissions
         const submissions = await collection
-            .find({ formId: formId })
+            .find(filter)
             .sort({ 'submissionMetadata.submittedAt': -1 })
             .skip(skip)
             .limit(pageSize)
@@ -68,11 +73,17 @@ class FormDataService {
             data: submissions
         };
     }
-    async getAllFormData(formId, page = 1, pageSize = 10) {
+    async getAllFormData(formId, page = 1, pageSize = 10, userId) {
         const collection = this.getCollection();
         const skip = (page - 1) * pageSize;
-        // Build filter - if formId is provided, filter by it
-        const filter = formId ? { formId: formId } : {};
+        // Build filter - if formId is provided, filter by it, if userId is provided, filter by it
+        const filter = {};
+        if (formId) {
+            filter.formId = formId;
+        }
+        if (userId) {
+            filter['userInfo.userId'] = userId;
+        }
         // Get total count
         const totalCount = await collection.countDocuments(filter);
         // Get paginated submissions
@@ -109,11 +120,15 @@ class FormDataService {
             throw new Error(`Failed to delete form data with ID: ${id}`);
         }
     }
-    async searchFormData(searchQuery, page = 1, pageSize = 10) {
+    async searchFormData(searchQuery, page = 1, pageSize = 10, userId) {
         const collection = this.getCollection();
         const skip = (page - 1) * pageSize;
         // Create search filter - search across form title, user info, and form field values
         let searchFilter = {};
+        // Add user filter if provided
+        if (userId) {
+            searchFilter['userInfo.userId'] = userId;
+        }
         if (searchQuery) {
             const basicSearchConditions = [
                 { 'formTitle': { $regex: searchQuery, $options: 'i' } },
@@ -124,9 +139,21 @@ class FormDataService {
             ];
             // Add form data field searches
             const formDataSearchConditions = this.generateFormDataSearchConditions(searchQuery);
-            searchFilter = {
+            const searchConditions = {
                 $or: [...basicSearchConditions, ...formDataSearchConditions]
             };
+            // Combine user filter and search filter
+            if (userId) {
+                searchFilter = {
+                    $and: [
+                        { 'userInfo.userId': userId },
+                        searchConditions
+                    ]
+                };
+            }
+            else {
+                searchFilter = searchConditions;
+            }
         }
         // Get total count for search
         const totalCount = await collection.countDocuments(searchFilter);

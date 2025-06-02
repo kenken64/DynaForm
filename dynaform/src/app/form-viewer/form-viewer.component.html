@@ -1,6 +1,6 @@
 <div class="app-container">
-  <!-- Dashboard Header -->
-  <app-header subtitle="Form Viewer"></app-header>
+  <!-- Dashboard Header - Only show if showHeader is true -->
+  <app-header subtitle="Form Viewer" *ngIf="showHeader"></app-header>
 
   <!-- Main Content -->
   <div class="main-content">

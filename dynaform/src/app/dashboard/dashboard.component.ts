@@ -714,7 +714,7 @@ export class DashboardComponent implements AfterViewInit {
     // Save to backend
     this.isSavingForm = true;
     
-    this.http.post('/api/forms', saveFormData).subscribe({
+    this.formsService.saveForm(saveFormData).subscribe({
       next: (response: any) => {
         this.isSavingForm = false;
         console.log('Form saved successfully:', response);
@@ -731,7 +731,7 @@ export class DashboardComponent implements AfterViewInit {
         
         // Create the form object that was saved
         const savedForm: GeneratedForm = {
-          _id: response.formId,
+          _id: response.data.formId,
           formData: formFields,
           fieldConfigurations: formattedFieldConfigurations,
           metadata: {
@@ -746,7 +746,7 @@ export class DashboardComponent implements AfterViewInit {
         
         // Store saved form data and show confirmation page
         this.savedFormData = {
-          formId: response.formId,
+          formId: response.data.formId,
           formName: this.formTitle || 'Generated Form',
           savedAt: new Date().toISOString()
         };
