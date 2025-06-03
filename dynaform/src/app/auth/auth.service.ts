@@ -178,9 +178,25 @@ export class AuthService {
       }
 
       return false;
-    } catch (error) {
-      console.error('Passkey authentication error:', error);
-      throw error;
+    } catch (error: any) {
+      // Handle HTTP errors more gracefully
+      if (error?.status === 401) {
+        // 401 Unauthorized - authentication failed, don't log as error
+        console.log('Passkey authentication failed: Invalid credentials');
+        return false;
+      } else if (error?.status >= 400 && error?.status < 500) {
+        // Other client errors
+        console.log('Passkey authentication failed:', error?.error?.message || 'Client error');
+        return false;
+      } else if (error?.name === 'NotAllowedError') {
+        // User cancelled the passkey prompt
+        console.log('Passkey authentication cancelled by user');
+        return false;
+      } else {
+        // Only log unexpected errors
+        console.error('Unexpected passkey authentication error:', error);
+        throw new Error('Authentication failed due to an unexpected error');
+      }
     }
   }
 

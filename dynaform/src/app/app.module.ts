@@ -42,6 +42,7 @@ import { FormDataViewerComponent } from './form-data-viewer/form-data-viewer.com
 import { FormDataConfirmationComponent } from './form-data-confirmation/form-data-confirmation.component';
 import { RecipientsComponent } from './recipients/recipients.component';
 import { RecipientDialogComponent } from './recipient-dialog/recipient-dialog.component';
+import { DebugFormsComponent } from './debug-forms.component';
 
 @NgModule({
   declarations: [
@@ -59,7 +60,8 @@ import { RecipientDialogComponent } from './recipient-dialog/recipient-dialog.co
     FormDataViewerComponent,
     FormDataConfirmationComponent,
     RecipientsComponent,
-    RecipientDialogComponent
+    RecipientDialogComponent,
+    DebugFormsComponent
   ],
   imports: [
     BrowserModule,

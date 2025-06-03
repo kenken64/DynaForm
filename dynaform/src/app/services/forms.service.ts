@@ -43,25 +43,53 @@ export class FormsService {
   readonly formsRefresh$ = this.formsRefreshSubject.asObservable();
 
   constructor(private http: HttpClient, private authService: AuthService) {
-    // Load initial forms data
-    this.refreshForms();
+    console.log('FormsService: Constructor called');
+    console.log('FormsService: Auth state at init:', this.authService.isAuthenticated());
+    console.log('FormsService: Current user at init:', this.authService.getCurrentUser());
+    
+    // Delay the initial load to allow authentication to initialize
+    setTimeout(() => {
+      console.log('FormsService: Delayed init - Auth state:', this.authService.isAuthenticated());
+      console.log('FormsService: Delayed init - Current user:', this.authService.getCurrentUser());
+      
+      // Only load forms if authenticated
+      if (this.authService.isAuthenticated()) {
+        console.log('FormsService: User is authenticated, loading forms');
+        this.refreshForms();
+      } else {
+        console.log('FormsService: User not authenticated, skipping initial load');
+        // Subscribe to authentication changes
+        this.authService.isAuthenticated$.subscribe(isAuth => {
+          console.log('FormsService: Auth state changed:', isAuth);
+          if (isAuth) {
+            console.log('FormsService: Now authenticated, loading forms');
+            this.refreshForms();
+          }
+        });
+      }
+    }, 100);
   }
 
   /**
    * Refresh forms data and update signals
    */
   refreshForms(): void {
+    console.log('FormsService: refreshForms called');
+    console.log('FormsService: Auth state during refresh:', this.authService.isAuthenticated());
+    
     this.loadingSignal.set(true);
     this.errorSignal.set('');
     
     this.getForms(1, 50).subscribe({
       next: (response) => {
+        console.log('FormsService: getForms success, received forms:', response.forms?.length || 0);
         this.formsSignal.set(response.forms);
         this.formsCountSignal.set(response.totalCount);
         this.loadingSignal.set(false);
         this.formsRefreshSubject.next();
       },
       error: (error) => {
+        console.error('FormsService: getForms error:', error);
         this.errorSignal.set('Failed to load forms');
         this.loadingSignal.set(false);
         console.error('Error refreshing forms:', error);
@@ -106,6 +134,8 @@ export class FormsService {
    * Get all forms with optional pagination
    */
   getForms(page?: number, pageSize?: number): Observable<PaginatedFormsResponse> {
+    console.log('FormsService: getForms called with page:', page, 'pageSize:', pageSize);
+    
     let params = new HttpParams();
     
     if (page !== undefined) {
@@ -115,19 +145,26 @@ export class FormsService {
       params = params.set('pageSize', pageSize.toString());
     }
 
+    const headers = this.getAuthHeaders();
+    console.log('FormsService: Auth headers:', {
+      'Authorization': headers.get('Authorization') ? 'Bearer [TOKEN]' : 'Missing',
+      'Content-Type': headers.get('Content-Type')
+    });
+
     return this.http.get<any>(`${this.apiUrl}/forms`, { 
       params,
-      headers: this.getAuthHeaders()
+      headers: headers
     })
       .pipe(
         map(response => {
+          console.log('FormsService: Raw API response:', response);
           // Transform the response to match our pagination interface
           const totalForms = response.count || 0;
           const currentPageSize = pageSize || 10;
           const currentPage = page || 1;
           const totalPages = Math.ceil(totalForms / currentPageSize);
           
-          return {
+          const transformedResponse = {
             success: response.success,
             count: response.count || 0,
             totalCount: response.count || 0,
@@ -136,8 +173,14 @@ export class FormsService {
             pageSize: currentPageSize,
             forms: response.data || response.forms || [] // Handle both 'data' and 'forms' fields
           };
+          
+          console.log('FormsService: Transformed response:', transformedResponse);
+          return transformedResponse;
         }),
-        catchError(this.handleError)
+        catchError(error => {
+          console.error('FormsService: getForms error:', error);
+          return this.handleError(error);
+        })
       );
   }
 

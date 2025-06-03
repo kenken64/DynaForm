@@ -36,6 +36,10 @@ export class SideMenuComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    console.log('SideMenuComponent: ngOnInit called');
+    console.log('SideMenuComponent: Initial auth state:', this.formsService['authService'].isAuthenticated());
+    console.log('SideMenuComponent: Current user:', this.formsService['authService'].getCurrentUser());
+    
     this.loadForms();
     
     // Setup search with debounce
@@ -53,6 +57,7 @@ export class SideMenuComponent implements OnInit, OnDestroy {
     this.formsService.formsRefresh$
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
+        console.log('SideMenuComponent: Forms refresh event received');
         // Auto-refresh forms when service signals change
         if (!this.searchQuery.trim()) {
           this.syncWithService();
@@ -60,6 +65,7 @@ export class SideMenuComponent implements OnInit, OnDestroy {
       });
 
     // Initial sync with service
+    console.log('SideMenuComponent: Calling initial syncWithService');
     this.syncWithService();
   }
 
@@ -67,16 +73,23 @@ export class SideMenuComponent implements OnInit, OnDestroy {
    * Sync local forms with FormsService signals
    */
   private syncWithService(): void {
+    console.log('SideMenuComponent: syncWithService called');
+    
     // Use the dedicated sideMenuFormsComputed signal for latest 4 records
     const sideMenuForms = this.formsService.sideMenuFormsComputed();
     const serviceLoading = this.formsService.loading();
     const serviceError = this.formsService.error();
+
+    console.log('SideMenuComponent: Forms from service:', sideMenuForms.length);
+    console.log('SideMenuComponent: Service loading:', serviceLoading);
+    console.log('SideMenuComponent: Service error:', serviceError);
 
     if (!this.searchQuery.trim()) {
       // Only sync if not searching - use side menu specific forms (latest 4)
       this.forms = sideMenuForms;
       this.totalCount = sideMenuForms.length;
       this.totalPages = 1; // Side menu doesn't need pagination for 4 items
+      console.log('SideMenuComponent: Updated forms array:', this.forms.length);
     }
     
     // Always sync loading and error states

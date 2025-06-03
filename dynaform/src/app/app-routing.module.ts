@@ -9,6 +9,7 @@ import { FormDataListComponent } from './form-data-list/form-data-list.component
 import { FormDataViewerComponent } from './form-data-viewer/form-data-viewer.component';
 import { RecipientsComponent } from './recipients/recipients.component';
 import { AuthGuard } from './auth/auth.guard';
+import { DebugFormsComponent } from './debug-forms.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
@@ -20,6 +21,7 @@ const routes: Routes = [
   { path: 'form-data', component: FormDataListComponent, canActivate: [AuthGuard] },
   { path: 'form-data/:id', component: FormDataViewerComponent, canActivate: [AuthGuard] },
   { path: 'recipients', component: RecipientsComponent, canActivate: [AuthGuard] },
+  { path: 'debug-forms', component: DebugFormsComponent, canActivate: [AuthGuard] },
   { path: '**', redirectTo: '/dashboard' }
 ];
 
