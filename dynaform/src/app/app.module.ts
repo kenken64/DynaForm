@@ -24,10 +24,18 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatTableModule } from '@angular/material/table';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatRadioModule } from '@angular/material/radio';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { DatePipe, TitleCasePipe } from '@angular/common';
 import { FormConfirmationComponent } from './form-confirmation/form-confirmation.component';
 import { FormViewerComponent } from './form-viewer/form-viewer.component';
 import { FormsListComponent } from './forms-list/forms-list.component';
+import { FormEditorComponent } from './form-editor/form-editor.component';
 import { EditTitleDialogComponent } from './forms-list/edit-title-dialog.component';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
@@ -42,6 +50,7 @@ import { FormDataViewerComponent } from './form-data-viewer/form-data-viewer.com
 import { FormDataConfirmationComponent } from './form-data-confirmation/form-data-confirmation.component';
 import { RecipientsComponent } from './recipients/recipients.component';
 import { RecipientDialogComponent } from './recipient-dialog/recipient-dialog.component';
+import { RecipientGroupDialogComponent } from './recipient-group-dialog/recipient-group-dialog.component';
 import { DebugFormsComponent } from './debug-forms.component';
 
 @NgModule({
@@ -50,6 +59,7 @@ import { DebugFormsComponent } from './debug-forms.component';
     FormConfirmationComponent,
     FormViewerComponent,
     FormsListComponent,
+    FormEditorComponent,
     EditTitleDialogComponent,
     LoginComponent,
     RegisterComponent,
@@ -61,6 +71,7 @@ import { DebugFormsComponent } from './debug-forms.component';
     FormDataConfirmationComponent,
     RecipientsComponent,
     RecipientDialogComponent,
+    RecipientGroupDialogComponent,
     DebugFormsComponent
   ],
   imports: [
@@ -85,7 +96,14 @@ import { DebugFormsComponent } from './debug-forms.component';
     MatDialogModule,
     MatTableModule,
     MatSnackBarModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatButtonToggleModule,
+    MatAutocompleteModule,
+    MatChipsModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatRadioModule,
+    DragDropModule
   ],
   providers: [
     provideHttpClient(withInterceptorsFromDi()),

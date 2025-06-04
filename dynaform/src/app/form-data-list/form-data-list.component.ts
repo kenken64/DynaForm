@@ -72,8 +72,11 @@ export class FormDataListComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.error = '';
     
-    // Try to use user-specific endpoints first for better performance
-    const useUserSpecificEndpoints = true; // Can be toggled based on backend support
+    // Check if we have proper authentication - if not, fall back to general endpoints with client-side filtering
+    const hasValidAuth = this.authService.isAuthenticated() && this.authService.getAuthHeaders().get('Authorization') !== 'Bearer null';
+    const useUserSpecificEndpoints = hasValidAuth;
+    
+    console.log('Authentication status:', { hasValidAuth, useUserSpecificEndpoints });
     
     if (this.searchTerm.trim()) {
       const searchObservable = useUserSpecificEndpoints
@@ -90,21 +93,22 @@ export class FormDataListComponent implements OnInit, OnDestroy {
               // Server-side filtering - use response directly
               this.formSubmissions = response.submissions;
               this.totalCount = response.totalCount;
-              this.totalPages = response.totalPages;
+              this.totalPages = Math.ceil(response.totalCount / this.pageSize);
               this.isClientSideFiltering = false;
             } else {
-              // Client-side filtering fallback
+              // Client-side filtering - filter results to current user
               this.formSubmissions = this.filterUserSubmissions(response.submissions);
               this.updatePaginationCounts(this.formSubmissions.length, response.submissions.length, response.totalCount);
+              this.isClientSideFiltering = true;
             }
             
             console.log(`Search completed: ${this.formSubmissions.length} submissions, ${this.totalPages} pages`);
             this.loading = false;
           },
           error: (error) => {
-            // If user-specific endpoint fails, fallback to general search with client filtering
-            if (useUserSpecificEndpoints && error.status === 404) {
-              console.log('User-specific search endpoint not available, falling back to client-side filtering');
+            // If user-specific endpoint fails, try fallback to general endpoint
+            if (useUserSpecificEndpoints && (error.status === 401 || error.status === 403)) {
+              console.log('User-specific endpoint failed, falling back to general endpoint with client-side filtering');
               this.loadFormDataWithClientFiltering();
             } else {
               this.error = 'Failed to search form data. Please try again.';
@@ -126,23 +130,25 @@ export class FormDataListComponent implements OnInit, OnDestroy {
             
             if (useUserSpecificEndpoints) {
               // Server-side filtering - use response directly
+              console.log(response);
               this.formSubmissions = response.submissions;
               this.totalCount = response.totalCount;
-              this.totalPages = response.totalPages;
+              this.totalPages = Math.ceil(response.totalCount / this.pageSize);
               this.isClientSideFiltering = false;
             } else {
-              // Client-side filtering fallback
+              // Client-side filtering - filter results to current user
               this.formSubmissions = this.filterUserSubmissions(response.submissions);
               this.updatePaginationCounts(this.formSubmissions.length, response.submissions.length, response.totalCount);
+              this.isClientSideFiltering = true;
             }
             
             console.log(`Data loaded: ${this.formSubmissions.length} submissions, ${this.totalPages} pages`);
             this.loading = false;
           },
           error: (error) => {
-            // If user-specific endpoint fails, fallback to general API with client filtering
-            if (useUserSpecificEndpoints && error.status === 404) {
-              console.log('User-specific endpoint not available, falling back to client-side filtering');
+            // If user-specific endpoint fails, try fallback to general endpoint
+            if (useUserSpecificEndpoints && (error.status === 401 || error.status === 403)) {
+              console.log('User-specific endpoint failed, falling back to general endpoint with client-side filtering');
               this.loadFormDataWithClientFiltering();
             } else {
               this.error = 'Failed to load form data. Please try again.';
@@ -156,6 +162,9 @@ export class FormDataListComponent implements OnInit, OnDestroy {
 
   // Fallback method for client-side filtering when server-side filtering is not available
   private loadFormDataWithClientFiltering(): void {
+    console.log('Using client-side filtering fallback');
+    this.isClientSideFiltering = true;
+    
     if (this.searchTerm.trim()) {
       this.formDataService.searchFormData(this.searchTerm, this.currentPage, this.pageSize)
         .pipe(takeUntil(this.destroy$))
@@ -236,6 +245,15 @@ export class FormDataListComponent implements OnInit, OnDestroy {
            submission.userInfo.submittedBy === this.currentUser.email;
   }
 
+  // Update pagination counts for client-side filtering
+  private updatePaginationCounts(filteredCount: number, originalCount: number, totalCount: number): void {
+    // For client-side filtering, we need to estimate pagination based on filtered results
+    this.totalCount = filteredCount; // Use filtered count as total for user
+    this.totalPages = Math.ceil(filteredCount / this.pageSize);
+    
+    console.log(`Pagination updated: ${filteredCount} filtered items, ${this.totalPages} pages (original: ${originalCount}/${totalCount})`);
+  }
+
   onSearch() {
     this.currentPage = 1;
     this.loadFormData();
@@ -268,6 +286,11 @@ export class FormDataListComponent implements OnInit, OnDestroy {
 
   getPageNumbers(): number[] {
     const pages: number[] = [];
+    
+    if (this.totalPages <= 1) {
+      return pages;
+    }
+    
     const startPage = Math.max(1, this.currentPage - 2);
     const endPage = Math.min(this.totalPages, this.currentPage + 2);
     
@@ -360,41 +383,7 @@ export class FormDataListComponent implements OnInit, OnDestroy {
 
   // Check if pagination should be shown
   shouldShowPagination(): boolean {
-    // Only show pagination if we have more than one page of actual data
-    // and we're not doing client-side filtering that would break pagination
-    return this.totalPages > 1 && this.totalCount > this.pageSize;
-  }
-
-  // Update pagination counts with proper logic for client-side filtering
-  private updatePaginationCounts(filteredCount: number, originalCount: number, serverTotalCount: number): void {
-    // When doing client-side filtering, we can't rely on server pagination
-    // We need to show all filtered results on a single page to avoid confusion
-    
-    if (filteredCount !== originalCount && originalCount > 0) {
-      // Client-side filtering is happening - disable pagination for accuracy
-      console.log(`Client-side filtering detected: ${filteredCount}/${originalCount} submissions match current user`);
-      
-      this.isClientSideFiltering = true;
-      
-      // Set pagination to show all filtered results
-      this.totalCount = filteredCount;
-      this.totalPages = 1;
-      this.currentPage = 1;
-      
-    } else if (filteredCount === originalCount) {
-      // No filtering needed or all results belong to user - use server pagination
-      this.isClientSideFiltering = false;
-      this.totalCount = serverTotalCount;
-      this.totalPages = Math.max(1, Math.ceil(this.totalCount / this.pageSize));
-      
-    } else {
-      // Edge case: no results found
-      this.isClientSideFiltering = false;
-      this.totalCount = 0;
-      this.totalPages = 1;
-      this.currentPage = 1;
-    }
-    
-    console.log(`Pagination updated: totalCount=${this.totalCount}, totalPages=${this.totalPages}, currentPage=${this.currentPage}, clientFiltering=${this.isClientSideFiltering}`);
+    // Show pagination if we have more than one page OR if we have data that could span multiple pages
+    return this.totalCount > this.pageSize && !this.isClientSideFiltering;
   }
 }

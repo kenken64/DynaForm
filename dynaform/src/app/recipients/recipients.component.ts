@@ -5,9 +5,12 @@ import { Subject } from 'rxjs';
 import { takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
 import { Recipient } from '../interfaces/recipient.interface';
+import { RecipientGroup } from '../interfaces/recipient-group.interface';
 import { RecipientService } from '../services/recipient.service';
+import { RecipientGroupService } from '../services/recipient-group.service';
 import { AuthService, User } from '../auth/auth.service';
 import { RecipientDialogComponent } from '../recipient-dialog/recipient-dialog.component';
+import { RecipientGroupDialogComponent, RecipientGroupDialogData } from '../recipient-group-dialog/recipient-group-dialog.component';
 
 @Component({
   selector: 'app-recipients',
@@ -18,8 +21,12 @@ export class RecipientsComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   
   recipients: Recipient[] = [];
+  recipientGroups: RecipientGroup[] = [];
   loading = false;
   error = '';
+  
+  // Current view mode
+  viewMode: 'recipients' | 'groups' = 'recipients';
   
   // Pagination
   currentPage = 1;
@@ -36,12 +43,14 @@ export class RecipientsComponent implements OnInit, OnDestroy {
   
   // Table columns to display
   displayedColumns: string[] = ['name', 'jobTitle', 'email', 'companyName', 'actions'];
+  groupDisplayedColumns: string[] = ['aliasName', 'description', 'recipientCount', 'actions'];
 
   // Expose Math to template
   Math = Math;
 
   constructor(
     private recipientService: RecipientService,
+    private recipientGroupService: RecipientGroupService,
     private authService: AuthService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar
@@ -67,11 +76,16 @@ export class RecipientsComponent implements OnInit, OnDestroy {
       .subscribe(searchTerm => {
         this.searchTerm = searchTerm || '';
         this.currentPage = 1; // Reset to first page on search
-        this.loadRecipients();
+        if (this.viewMode === 'recipients') {
+          this.loadRecipients();
+        } else {
+          this.loadRecipientGroups();
+        }
       });
 
     // Load initial data
     this.loadRecipients();
+    this.loadRecipientGroups();
   }
 
   ngOnDestroy() {
@@ -235,6 +249,208 @@ export class RecipientsComponent implements OnInit, OnDestroy {
 
   shouldShowPagination(): boolean {
     return this.totalCount > this.pageSize;
+  }
+
+  // Load recipient groups
+  loadRecipientGroups(): void {
+    this.loading = true;
+    this.error = '';
+
+    this.recipientGroupService.getRecipientGroups(this.currentPage, this.pageSize, this.searchTerm)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          this.recipientGroups = response.groups || [];
+          this.totalCount = response.totalCount || 0;
+          this.totalPages = response.totalPages || 0;
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('Error loading recipient groups:', error);
+          this.error = 'Failed to load recipient groups. Please try again.';
+          this.loading = false;
+        }
+      });
+  }
+
+  // Open create group dialog
+  openCreateGroupDialog(): void {
+    const dialogData: RecipientGroupDialogData = {
+      isEdit: false
+    };
+
+    const dialogRef = this.dialog.open(RecipientGroupDialogComponent, {
+      width: '600px',
+      data: dialogData,
+      disableClose: false
+    });
+
+    dialogRef.afterClosed().subscribe((result: Partial<RecipientGroup>) => {
+      if (result) {
+        this.createRecipientGroup(result);
+      }
+    });
+  }
+
+  // Open edit group dialog
+  openEditGroupDialog(group: RecipientGroup): void {
+    if (!group._id) {
+      this.showSnackBar('Invalid group selected', 'error');
+      return;
+    }
+
+    // Fetch the complete group details including recipient information
+    this.recipientGroupService.getRecipientGroup(group._id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          if (response.success && response.group) {
+            const dialogData: RecipientGroupDialogData = {
+              group: response.group,
+              isEdit: true
+            };
+
+            const dialogRef = this.dialog.open(RecipientGroupDialogComponent, {
+              width: '600px',
+              data: dialogData,
+              disableClose: false
+            });
+
+            dialogRef.afterClosed().subscribe((result: Partial<RecipientGroup>) => {
+              if (result && group._id) {
+                this.updateRecipientGroup(group._id, result);
+              }
+            });
+          } else {
+            this.showSnackBar('Failed to load group details', 'error');
+          }
+        },
+        error: (error) => {
+          console.error('Error loading group details:', error);
+          this.showSnackBar('Failed to load group details', 'error');
+        }
+      });
+  }
+
+  // Create recipient group
+  createRecipientGroup(groupData: Partial<RecipientGroup>): void {
+    if (!groupData.aliasName || !groupData.recipientIds || groupData.recipientIds.length === 0) {
+      this.showSnackBar('Please provide valid group data', 'error');
+      return;
+    }
+
+    const createData = {
+      aliasName: groupData.aliasName,
+      description: groupData.description || '',
+      recipientIds: groupData.recipientIds
+    };
+
+    this.recipientGroupService.createRecipientGroup(createData)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.showSnackBar('Recipient group created successfully', 'success');
+            this.loadRecipientGroups();
+          } else {
+            this.showSnackBar(response.message || 'Failed to create group', 'error');
+          }
+        },
+        error: (error) => {
+          console.error('Error creating recipient group:', error);
+          this.showSnackBar('Failed to create recipient group', 'error');
+        }
+      });
+  }
+
+  // Update recipient group
+  updateRecipientGroup(groupId: string, groupData: Partial<RecipientGroup>): void {
+    // Ensure we have the recipientIds array properly set
+    const updateData = {
+      aliasName: groupData.aliasName,
+      description: groupData.description || '',
+      recipientIds: groupData.recipientIds || []
+    };
+
+    this.recipientGroupService.updateRecipientGroup(groupId, updateData)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.showSnackBar('Recipient group updated successfully', 'success');
+            this.loadRecipientGroups();
+          } else {
+            this.showSnackBar(response.message || 'Failed to update group', 'error');
+          }
+        },
+        error: (error) => {
+          console.error('Error updating recipient group:', error);
+          this.showSnackBar('Failed to update recipient group', 'error');
+        }
+      });
+  }
+
+  // Delete recipient group
+  deleteRecipientGroup(group: RecipientGroup): void {
+    if (!group._id) return;
+
+    const confirmMessage = `Are you sure you want to delete the group "${group.aliasName}"? This action cannot be undone.`;
+    
+    if (confirm(confirmMessage)) {
+      this.recipientGroupService.deleteRecipientGroup(group._id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (response) => {
+            if (response.success) {
+              this.showSnackBar('Recipient group deleted successfully', 'success');
+              this.loadRecipientGroups();
+            } else {
+              this.showSnackBar(response.message || 'Failed to delete group', 'error');
+            }
+          },
+          error: (error) => {
+            console.error('Error deleting recipient group:', error);
+            this.showSnackBar('Failed to delete recipient group', 'error');
+          }
+        });
+    }
+  }
+
+  // Get recipient count for a group
+  getRecipientCount(group: RecipientGroup): number {
+    return group.recipientIds?.length || 0;
+  }
+
+  // Export groups
+  exportGroups(): void {
+    this.showSnackBar('Group export functionality coming soon', 'success');
+  }
+
+  // View mode switching
+  onViewModeChange(event: any): void {
+    this.viewMode = event.value;
+    this.searchTerm = '';
+    this.currentPage = 1;
+    
+    if (this.viewMode === 'recipients') {
+      this.loadRecipients();
+    } else {
+      this.loadRecipientGroups();
+    }
+  }
+
+  switchToRecipientsView(): void {
+    this.viewMode = 'recipients';
+    this.searchTerm = '';
+    this.currentPage = 1;
+    this.loadRecipients();
+  }
+
+  switchToGroupsView(): void {
+    this.viewMode = 'groups';
+    this.searchTerm = '';
+    this.currentPage = 1;
+    this.loadRecipientGroups();
   }
 
   private showSnackBar(message: string, type: 'success' | 'error'): void {

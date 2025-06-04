@@ -461,15 +461,20 @@ export class FormViewerComponent implements OnInit, AfterViewInit {
       };
     });
     
+    // Debug current user data
+    const currentUser = this.authService.getCurrentUser();
+    console.log('Current user data during form submission:', currentUser);
+    console.log('Auth service authenticated status:', this.authService.isAuthenticated());
+    
     // Prepare submission data with proper typing
     const submissionData: FormDataSubmission = {
       formId: this.formId,
       formTitle: this.formTitle || this.formData.originalJson?.title || 'Untitled Form',
       formData: processedFormData,
       userInfo: {
-        userId: this.authService.getCurrentUser()?.username || 'anonymous',
-        username: this.authService.getCurrentUser()?.username,
-        submittedBy: this.authService.getCurrentUser()?.username || 'Unknown User'
+        userId: this.authService.getCurrentUser()?.id || this.authService.getCurrentUser()?.username || 'anonymous',
+        username: this.authService.getCurrentUser()?.username || 'anonymous',
+        submittedBy: this.authService.getCurrentUser()?.username || this.authService.getCurrentUser()?.name || 'Unknown User'
       },
       submissionMetadata: {
         formVersion: this.formData.metadata?.version || '1.0.0',
@@ -569,6 +574,7 @@ export class FormViewerComponent implements OnInit, AfterViewInit {
   }
 
   onGoToFormsList(): void {
-    this.goBackToForms();
+    // Navigate to the form data list component instead of forms list
+    this.router.navigate(['/form-data']);
   }
 }

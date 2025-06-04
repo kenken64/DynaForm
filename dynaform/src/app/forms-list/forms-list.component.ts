@@ -68,8 +68,25 @@ export class FormsListComponent implements OnInit {
     this.loadForms();
   }
 
+  // Method to clear error state and retry
+  clearError(): void {
+    this.error = '';
+    this.loadForms();
+  }
+
+  // Navigation methods
   onFormClick(form: GeneratedForm): void {
+    // Navigate to view the form
     this.router.navigate(['/forms', form._id]);
+  }
+
+  onFormEdit(form: GeneratedForm): void {
+    // Navigate to form editor with the form ID
+    this.router.navigate(['/form-editor'], { 
+      queryParams: { 
+        editForm: form._id 
+      } 
+    });
   }
 
   onDeleteForm(form: GeneratedForm): void {

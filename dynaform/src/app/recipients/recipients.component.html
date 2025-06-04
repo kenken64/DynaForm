@@ -4,125 +4,232 @@
 
   <div class="main-content">
     <div class="recipients-container">
-    <!-- Controls Section -->
-    <div class="controls-section">
-      <div class="search-container">
-        <mat-form-field appearance="outline" class="search-field">
-          <mat-label>Search recipients</mat-label>
-          <input matInput 
-                 [formControl]="searchControl"
-                 placeholder="Search by name, email, job title, or company...">
-          <mat-icon matSuffix>search</mat-icon>
-        </mat-form-field>
-        <button mat-button *ngIf="searchTerm" (click)="clearSearch()">
-          <mat-icon>clear</mat-icon>
-          Clear
-        </button>
-      </div>
-      
-      <div class="action-buttons">
-        <button mat-raised-button color="primary" (click)="openCreateDialog()">
-          <mat-icon>add</mat-icon>
-          Add Recipient
-        </button>
-        <button mat-raised-button color="accent" (click)="exportRecipients()">
-          <mat-icon>download</mat-icon>
-          Export
-        </button>
-      </div>
-    </div>
-
-    <!-- Loading State -->
-    <div *ngIf="loading" class="loading-container">
-      <mat-progress-spinner diameter="50" mode="indeterminate"></mat-progress-spinner>
-      <p>Loading recipients...</p>
-    </div>
-
-    <!-- Error State -->
-    <div *ngIf="error && !loading" class="error-container">
-      <mat-icon color="warn">error</mat-icon>
-      <p>{{ error }}</p>
-      <button mat-button color="primary" (click)="loadRecipients()">
-        Try Again
-      </button>
-    </div>
-
-    <!-- Recipients Table -->
-    <div *ngIf="!loading && !error" class="table-container">
-      <div *ngIf="recipients.length === 0" class="empty-state">
-        <mat-icon class="empty-icon">people_outline</mat-icon>
-        <h3>No recipients found</h3>
-        <p *ngIf="searchTerm">No recipients match your search criteria.</p>
-        <p *ngIf="!searchTerm">You haven't added any recipients yet.</p>
-        <button mat-raised-button color="primary" (click)="openCreateDialog()">
-          <mat-icon>add</mat-icon>
-          Add First Recipient
-        </button>
+      <!-- View Mode Toggle -->
+      <div class="view-toggle-section">
+        <mat-button-toggle-group [value]="viewMode" (change)="onViewModeChange($event)">
+          <mat-button-toggle value="recipients">
+            <mat-icon>people</mat-icon>
+            Recipients
+          </mat-button-toggle>
+          <mat-button-toggle value="groups">
+            <mat-icon>group_work</mat-icon>
+            Groups
+          </mat-button-toggle>
+        </mat-button-toggle-group>
       </div>
 
-      <div *ngIf="recipients.length > 0" class="table-wrapper">
-        <table mat-table [dataSource]="recipients" class="recipients-table">
-          <!-- Name Column -->
-          <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef>Name</th>
-            <td mat-cell *matCellDef="let recipient">
-              <div class="name-cell">
-                <mat-icon class="avatar-icon">person</mat-icon>
-                <span>{{ recipient.name }}</span>
-              </div>
-            </td>
+      <!-- Controls Section -->
+      <div class="controls-section">
+        <div class="search-container">
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-label>{{ viewMode === 'recipients' ? 'Search recipients' : 'Search groups by alias or description' }}</mat-label>
+            <input matInput 
+                   [formControl]="searchControl"
+                   [placeholder]="viewMode === 'recipients' ? 'Search by name, email, job title, or company...' : 'Search by alias name or description...'">
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+          <button mat-button *ngIf="searchTerm" (click)="clearSearch()">
+            <mat-icon>clear</mat-icon>
+            Clear
+          </button>
+        </div>
+        
+        <div class="action-buttons">
+          <!-- Recipients View Actions -->
+          <ng-container *ngIf="viewMode === 'recipients'">
+            <button mat-raised-button color="primary" (click)="openCreateDialog()">
+              <mat-icon>add</mat-icon>
+              Add Recipient
+            </button>
+            <button mat-raised-button color="accent" (click)="exportRecipients()">
+              <mat-icon>download</mat-icon>
+              Export
+            </button>
           </ng-container>
-
-          <!-- Job Title Column -->
-          <ng-container matColumnDef="jobTitle">
-            <th mat-header-cell *matHeaderCellDef>Job Title</th>
-            <td mat-cell *matCellDef="let recipient">{{ recipient.jobTitle }}</td>
+          
+          <!-- Groups View Actions -->
+          <ng-container *ngIf="viewMode === 'groups'">
+            <button mat-raised-button color="primary" (click)="openCreateGroupDialog()">
+              <mat-icon>add</mat-icon>
+              Create Group
+            </button>
+            <button mat-raised-button color="accent" (click)="exportGroups()">
+              <mat-icon>download</mat-icon>
+              Export Groups
+            </button>
           </ng-container>
+        </div>
+      </div>
 
-          <!-- Email Column -->
-          <ng-container matColumnDef="email">
-            <th mat-header-cell *matHeaderCellDef>Email</th>
-            <td mat-cell *matCellDef="let recipient">
-              <a [href]="'mailto:' + recipient.email" class="email-link">{{ recipient.email }}</a>
-            </td>
-          </ng-container>
+      <!-- Loading State -->
+      <div *ngIf="loading" class="loading-container">
+        <mat-progress-spinner diameter="50" mode="indeterminate"></mat-progress-spinner>
+        <p>{{ viewMode === 'recipients' ? 'Loading recipients...' : 'Loading groups...' }}</p>
+      </div>
 
-          <!-- Company Column -->
-          <ng-container matColumnDef="companyName">
-            <th mat-header-cell *matHeaderCellDef>Company</th>
-            <td mat-cell *matCellDef="let recipient">{{ recipient.companyName }}</td>
-          </ng-container>
+      <!-- Error State -->
+      <div *ngIf="error && !loading" class="error-container">
+        <mat-icon color="warn">error</mat-icon>
+        <p>{{ error }}</p>
+        <button mat-button color="primary" (click)="viewMode === 'recipients' ? loadRecipients() : loadRecipientGroups()">
+          Try Again
+        </button>
+      </div>
 
-          <!-- Actions Column -->
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef>Actions</th>
-            <td mat-cell *matCellDef="let recipient">
-              <div class="action-buttons-cell">
-                <button mat-icon-button 
-                        color="primary" 
-                        (click)="openEditDialog(recipient)"
-                        matTooltip="Edit recipient">
-                  <mat-icon>edit</mat-icon>
-                </button>
-                <button mat-icon-button 
-                        color="warn" 
-                        (click)="deleteRecipient(recipient)"
-                        matTooltip="Delete recipient">
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </div>
-            </td>
-          </ng-container>
+      <!-- Recipients View -->
+      <div *ngIf="!loading && !error && viewMode === 'recipients'" class="table-container">
+        <div *ngIf="recipients.length === 0" class="empty-state">
+          <mat-icon class="empty-icon">people_outline</mat-icon>
+          <h3>No recipients found</h3>
+          <p *ngIf="searchTerm">No recipients match your search criteria.</p>
+          <p *ngIf="!searchTerm">You haven't added any recipients yet.</p>
+          <button mat-raised-button color="primary" (click)="openCreateDialog()">
+            <mat-icon>add</mat-icon>
+            Add First Recipient
+          </button>
+        </div>
 
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        </table>
+        <div *ngIf="recipients.length > 0" class="table-wrapper">
+          <table mat-table [dataSource]="recipients" class="recipients-table">
+            <!-- Name Column -->
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>Name</th>
+              <td mat-cell *matCellDef="let recipient">
+                <div class="name-cell">
+                  <mat-icon class="avatar-icon">person</mat-icon>
+                  <span>{{ recipient.name }}</span>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Job Title Column -->
+            <ng-container matColumnDef="jobTitle">
+              <th mat-header-cell *matHeaderCellDef>Job Title</th>
+              <td mat-cell *matCellDef="let recipient">{{ recipient.jobTitle }}</td>
+            </ng-container>
+
+            <!-- Email Column -->
+            <ng-container matColumnDef="email">
+              <th mat-header-cell *matHeaderCellDef>Email</th>
+              <td mat-cell *matCellDef="let recipient">
+                <a [href]="'mailto:' + recipient.email" class="email-link">{{ recipient.email }}</a>
+              </td>
+            </ng-container>
+
+            <!-- Company Column -->
+            <ng-container matColumnDef="companyName">
+              <th mat-header-cell *matHeaderCellDef>Company</th>
+              <td mat-cell *matCellDef="let recipient">{{ recipient.companyName }}</td>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Actions</th>
+              <td mat-cell *matCellDef="let recipient">
+                <div class="action-buttons-cell">
+                  <button mat-icon-button 
+                          color="primary" 
+                          (click)="openEditDialog(recipient)"
+                          matTooltip="Edit recipient">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button 
+                          color="warn" 
+                          (click)="deleteRecipient(recipient)"
+                          matTooltip="Delete recipient">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- Groups View -->
+      <div *ngIf="!loading && !error && viewMode === 'groups'" class="table-container">
+        <div *ngIf="recipientGroups.length === 0" class="empty-state">
+          <mat-icon class="empty-icon">group_work</mat-icon>
+          <h3>No recipient groups found</h3>
+          <p *ngIf="searchTerm">No groups match your search criteria.</p>
+          <p *ngIf="!searchTerm">You haven't created any recipient groups yet.</p>
+          <button mat-raised-button color="primary" (click)="openCreateGroupDialog()">
+            <mat-icon>add</mat-icon>
+            Create First Group
+          </button>
+        </div>
+
+        <div *ngIf="recipientGroups.length > 0" class="table-wrapper">
+          <table mat-table [dataSource]="recipientGroups" class="recipients-table">
+            <!-- Alias Name Column -->
+            <ng-container matColumnDef="aliasName">
+              <th mat-header-cell *matHeaderCellDef>Alias Name</th>
+              <td mat-cell *matCellDef="let group">
+                <div class="name-cell">
+                  <mat-icon class="avatar-icon">group_work</mat-icon>
+                  <span class="alias-name">{{ group.aliasName }}</span>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Description Column -->
+            <ng-container matColumnDef="description">
+              <th mat-header-cell *matHeaderCellDef>Description</th>
+              <td mat-cell *matCellDef="let group">
+                <span class="description-text">{{ group.description || 'No description' }}</span>
+              </td>
+            </ng-container>
+
+            <!-- Recipient Count Column -->
+            <ng-container matColumnDef="recipientCount">
+              <th mat-header-cell *matHeaderCellDef>Recipients</th>
+              <td mat-cell *matCellDef="let group">
+                <div class="recipient-count">
+                  <mat-icon class="count-icon">people</mat-icon>
+                  <span>{{ getRecipientCount(group) }}</span>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Actions</th>
+              <td mat-cell *matCellDef="let group">
+                <div class="action-buttons-cell">
+                  <button mat-icon-button 
+                          color="primary" 
+                          (click)="openEditGroupDialog(group)"
+                          matTooltip="Edit group">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button 
+                          color="warn" 
+                          (click)="deleteRecipientGroup(group)"
+                          matTooltip="Delete group">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="groupDisplayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: groupDisplayedColumns;"></tr>
+          </table>
+        </div>
       </div>
 
       <!-- Pagination -->
-      <div class="pagination-container" *ngIf="recipients.length > 0 && shouldShowPagination()">
+      <div class="pagination-container" *ngIf="!loading && !error && shouldShowPagination()">
         <div class="pagination-info">
-          <span>Showing {{ ((currentPage - 1) * pageSize) + 1 }} to {{ Math.min(currentPage * pageSize, totalCount) }} of {{ totalCount }} recipients</span>
+          <span *ngIf="viewMode === 'recipients'">
+            Showing {{ ((currentPage - 1) * pageSize) + 1 }} to {{ Math.min(currentPage * pageSize, totalCount) }} of {{ totalCount }} recipients
+          </span>
+          <span *ngIf="viewMode === 'groups'">
+            Showing {{ ((currentPage - 1) * pageSize) + 1 }} to {{ Math.min(currentPage * pageSize, recipientGroups.length) }} of {{ recipientGroups.length }} groups
+          </span>
         </div>
         
         <div class="pagination-controls">
@@ -150,7 +257,6 @@
           </button>
         </div>
       </div>
-    </div>
     </div>
   </div>
 </div>

@@ -1,0 +1,172 @@
+.dialog-container {
+  max-width: 600px;
+  width: 100%;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px 0;
+}
+
+.dialog-header h2 {
+  margin: 0;
+  color: #333;
+  font-weight: 500;
+}
+
+.close-button {
+  margin: -8px;
+}
+
+.dialog-content {
+  padding: 20px 24px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.group-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.recipients-section {
+  margin-top: 16px;
+}
+
+.recipients-section h3,
+.recipients-section h4 {
+  margin: 0 0 12px 0;
+  color: #333;
+  font-weight: 500;
+}
+
+.recipient-option {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0;
+}
+
+.recipient-name {
+  font-weight: 500;
+  color: #333;
+}
+
+.recipient-details {
+  font-size: 12px;
+  color: #666;
+  margin-top: 2px;
+}
+
+.selected-recipients {
+  margin-top: 16px;
+  padding: 16px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.recipients-chips {
+  margin-top: 8px;
+}
+
+.chip-content {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.chip-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+.chip-name {
+  font-weight: 500;
+}
+
+.chip-email {
+  font-size: 12px;
+  color: #666;
+  font-weight: normal;
+}
+
+.no-recipients {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 16px;
+  text-align: center;
+  color: #666;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px dashed #dee2e6;
+  margin-top: 16px;
+}
+
+.no-recipients-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+.dialog-actions {
+  padding: 12px 24px 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.cancel-button {
+  color: #666;
+}
+
+.save-button {
+  min-width: 120px;
+}
+
+/* Material Chip Customization */
+mat-chip-listbox {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+mat-chip-option {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  border: 1px solid #bbdefb;
+}
+
+mat-chip-option:hover {
+  background-color: #bbdefb;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dialog-container {
+    max-width: 95vw;
+    margin: 16px;
+  }
+  
+  .dialog-header {
+    padding: 16px 20px 0;
+  }
+  
+  .dialog-content {
+    padding: 16px 20px;
+  }
+  
+  .dialog-actions {
+    padding: 12px 20px 16px;
+  }
+}

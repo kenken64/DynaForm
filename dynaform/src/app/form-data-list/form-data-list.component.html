@@ -107,7 +107,8 @@
     </div>
 
     <!-- Pagination -->
-    <div class="pagination-container" *ngIf="formSubmissions.length > 0 && shouldShowPagination()">
+    <div class="pagination-wrapper" *ngIf="formSubmissions.length > 0">
+      <!-- Pagination Info - Always show when we have data -->
       <div class="pagination-info">
         <span *ngIf="!isClientSideFiltering">
           Showing {{ ((currentPage - 1) * pageSize) + 1 }} to {{ Math.min(currentPage * pageSize, totalCount) }} of {{ totalCount }} submissions
@@ -117,10 +118,12 @@
         </span>
       </div>
       
-      <div class="pagination-controls">
+      <!-- Pagination Controls - Only show when needed -->
+      <div class="pagination-controls" *ngIf="shouldShowPagination()">
         <button mat-button 
+                class="pagination-btn"
                 [disabled]="currentPage === 1" 
-                (click)="onPageChange(currentPage - 1)">
+                (click)="previousPage()">
           <mat-icon>chevron_left</mat-icon>
           Previous
         </button>
@@ -128,6 +131,7 @@
         <div class="page-numbers">
           <button *ngFor="let page of getPageNumbers()" 
                   mat-button 
+                  class="page-number-btn"
                   [class.active]="page === currentPage"
                   (click)="onPageChange(page)">
             {{ page }}
@@ -135,8 +139,9 @@
         </div>
         
         <button mat-button 
-                [disabled]="currentPage === totalPages"
-                (click)="onPageChange(currentPage + 1)">
+                class="pagination-btn"
+                [disabled]="currentPage >= totalPages"
+                (click)="nextPage()">
           Next
           <mat-icon>chevron_right</mat-icon>
         </button>

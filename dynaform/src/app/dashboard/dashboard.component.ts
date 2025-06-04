@@ -1,6 +1,7 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, OnInit } from '@angular/core';
 import { FormBuilder, Validators, FormGroup, FormControl } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { ActivatedRoute } from '@angular/router';
 import { PdfUploadService } from '../pdf-upload.service';
 import { DescribeImageService } from '../describe-image.service';
 import { FormsService } from '../services/forms.service';
@@ -12,7 +13,7 @@ import { environment } from '../../environments/environment';
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
-export class DashboardComponent implements AfterViewInit {
+export class DashboardComponent implements AfterViewInit, OnInit {
   title = 'dynaform';
   selectedFile: File | null = null;
   uploadMessage: string = '';
@@ -57,7 +58,8 @@ export class DashboardComponent implements AfterViewInit {
     private fb: FormBuilder, 
     private describeService: DescribeImageService,
     private http: HttpClient,
-    private formsService: FormsService // Inject FormsService
+    private formsService: FormsService, // Inject FormsService
+    private route: ActivatedRoute
   ) { 
     // Initialize empty form to prevent template errors
     this.dynamicForm = this.fb.group({});
@@ -81,6 +83,33 @@ export class DashboardComponent implements AfterViewInit {
     }
     
     return cleanWords.join(' ').trim();
+  }
+
+  ngOnInit(): void {
+    // Check for editForm query parameter
+    this.route.queryParams.subscribe(params => {
+      const editFormId = params['editForm'];
+      if (editFormId) {
+        this.loadFormForEditing(editFormId);
+      }
+    });
+  }
+
+  private loadFormForEditing(formId: string): void {
+    this.isFetchingForm = true;
+    this.formsService.getForm(formId).subscribe({
+      next: (form: GeneratedForm) => {
+        this.isFetchingForm = false;
+        if (form) {
+          this.loadFormIntoEditor(form);
+        }
+      },
+      error: (error: any) => {
+        this.isFetchingForm = false;
+        console.error('Error loading form for editing:', error);
+        this.error = 'Failed to load form for editing';
+      }
+    });
   }
 
   ngAfterViewInit(): void {

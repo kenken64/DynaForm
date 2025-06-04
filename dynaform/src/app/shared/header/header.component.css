@@ -83,7 +83,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 480px) {
   .header-content {
     padding: 12px 16px; /* Match side menu responsive padding */
   }
@@ -93,10 +93,17 @@
   }
 
   .app-subtitle {
-    display: none;
+    font-size: 12px; /* Reduce font size instead of hiding */
   }
 
   .user-info {
+    display: none;
+  }
+}
+
+/* Only hide subtitle on very small screens */
+@media (max-width: 320px) {
+  .app-subtitle {
     display: none;
   }
 }

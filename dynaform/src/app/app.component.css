@@ -752,6 +752,10 @@ mat-error {
   margin-left: 60px; /* Width of collapsed side menu */
 }
 
+.main-content.full-width {
+  margin-left: 0; /* No side menu, full width */
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .main-content {

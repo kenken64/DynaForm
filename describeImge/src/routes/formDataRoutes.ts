@@ -10,6 +10,12 @@ router.get('/', formDataController.getAllFormData);
 // GET /api/form-data/search - Search form data submissions (temporarily without auth for debugging)
 router.get('/search', formDataController.searchFormData);
 
+// GET /api/forms-data/user - Get user-specific form data with pagination (requires authentication)
+router.get('/user', verifyToken, formDataController.getUserFormData);
+
+// GET /api/forms-data/user/search - Search user-specific form data (requires authentication)
+router.get('/user/search', verifyToken, formDataController.searchUserFormData);
+
 // POST /api/forms-data - Save form submission data (requires authentication)
 router.post('/', verifyToken, formDataController.saveFormData);
 

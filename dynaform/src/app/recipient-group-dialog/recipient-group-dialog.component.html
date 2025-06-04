@@ -1,0 +1,93 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h2 mat-dialog-title>{{ data.isEdit ? 'Edit' : 'Create' }} Recipient Group</h2>
+    <button mat-icon-button mat-dialog-close class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="dialog-content">
+    <form [formGroup]="groupForm" class="group-form">
+      <!-- Alias Name -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Alias Name</mat-label>
+        <input matInput formControlName="aliasName" placeholder="Enter group alias name">
+        <mat-error *ngIf="groupForm.get('aliasName')?.hasError('required')">
+          Alias name is required
+        </mat-error>
+        <mat-error *ngIf="groupForm.get('aliasName')?.hasError('minlength')">
+          Alias name must be at least 2 characters
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Description -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Description</mat-label>
+        <textarea matInput formControlName="description" placeholder="Optional description" rows="3"></textarea>
+      </mat-form-field>
+
+      <!-- Recipient Selection -->
+      <div class="recipients-section">
+        <h3>Recipients</h3>
+        
+        <!-- Add Recipients -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Add Recipients</mat-label>
+          <input matInput 
+                 [formControl]="recipientControl"
+                 [matAutocomplete]="auto"
+                 placeholder="Search and select recipients">
+          <mat-autocomplete #auto="matAutocomplete" [displayWith]="getDisplayName">
+            <mat-option *ngFor="let recipient of filteredRecipients | async" 
+                        [value]="recipient"
+                        (onSelectionChange)="onRecipientSelected($event, recipient)">
+              <div class="recipient-option">
+                <span class="recipient-name">{{ recipient?.name || 'Unknown' }}</span>
+                <span class="recipient-details">{{ recipient?.email || 'No email' }} - {{ recipient?.companyName || 'No company' }}</span>
+              </div>
+            </mat-option>
+          </mat-autocomplete>
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+
+        <!-- Selected Recipients -->
+        <div class="selected-recipients" *ngIf="selectedRecipients.length > 0">
+          <h4>Selected Recipients ({{ selectedRecipients.length }})</h4>
+          <div class="recipients-chips">
+            <mat-chip-listbox>
+              <mat-chip-option *ngFor="let recipient of selectedRecipients"
+                               (removed)="removeRecipient(recipient)"
+                               removable>
+                <div class="chip-content">
+                  <mat-icon class="chip-icon">person</mat-icon>
+                  <span class="chip-name">{{ recipient?.name || 'Unknown' }}</span>
+                  <span class="chip-email">({{ recipient?.email || 'No email' }})</span>
+                </div>
+                <mat-icon matChipRemove>cancel</mat-icon>
+              </mat-chip-option>
+            </mat-chip-listbox>
+          </div>
+        </div>
+
+        <!-- No Recipients Selected -->
+        <div *ngIf="selectedRecipients.length === 0" class="no-recipients">
+          <mat-icon class="no-recipients-icon">people_outline</mat-icon>
+          <p>No recipients selected. Please add at least one recipient to the group.</p>
+        </div>
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="dialog-actions">
+    <button mat-button (click)="onCancel()" class="cancel-button">
+      Cancel
+    </button>
+    <button mat-raised-button 
+            color="primary" 
+            (click)="onSubmit()"
+            [disabled]="!groupForm.valid || selectedRecipients.length === 0"
+            class="save-button">
+      {{ data.isEdit ? 'Update' : 'Create' }} Group
+    </button>
+  </mat-dialog-actions>
+</div>

@@ -190,6 +190,86 @@ export class FormDataController {
       });
     }
   }
+  
+  async getUserFormData(req: Request, res: Response): Promise<void> {
+    try {
+      const page = parseInt(req.query.page as string) || 1;
+      const pageSize = parseInt(req.query.pageSize as string) || 10;
+      const userId = req.user?.userId; // Get user ID from auth middleware
+
+      if (!userId) {
+        res.status(401).json({
+          success: false,
+          error: 'Authentication required',
+          message: 'User ID not found in request'
+        });
+        return;
+      }
+
+      console.log('getUserFormData called for userId:', userId);
+
+      // Use existing service method with user filtering
+      const result = await formDataService.getAllFormData(undefined, page, pageSize, userId);
+
+      res.status(200).json({
+        success: result.success,
+        count: result.count,
+        page: result.page,
+        pageSize: result.pageSize,
+        totalPages: result.totalPages,
+        data: result.data
+      });
+
+    } catch (error: any) {
+      console.error('Error retrieving user form data:', error);
+      res.status(500).json({ 
+        success: false,
+        error: 'Failed to retrieve user form data', 
+        message: error.message 
+      });
+    }
+  }
+  
+  async searchUserFormData(req: Request, res: Response): Promise<void> {
+    try {
+      const searchQuery = req.query.search as string || '';
+      const page = parseInt(req.query.page as string) || 1;
+      const pageSize = parseInt(req.query.pageSize as string) || 10;
+      const userId = req.user?.userId; // Get user ID from auth middleware
+
+      if (!userId) {
+        res.status(401).json({
+          success: false,
+          error: 'Authentication required',
+          message: 'User ID not found in request'
+        });
+        return;
+      }
+
+      console.log('searchUserFormData called for userId:', userId, 'with query:', searchQuery);
+
+      // Use existing service method with user filtering
+      const result = await formDataService.searchFormData(searchQuery, page, pageSize, userId);
+
+      res.status(200).json({
+        success: result.success,
+        count: result.count,
+        page: result.page,
+        pageSize: result.pageSize,
+        totalPages: result.totalPages,
+        submissions: result.data,
+        searchQuery: searchQuery
+      });
+
+    } catch (error: any) {
+      console.error('Error searching user form data:', error);
+      res.status(500).json({ 
+        success: false,
+        error: 'Failed to search user form data', 
+        message: error.message 
+      });
+    }
+  }
 }
 
 export const formDataController = new FormDataController();

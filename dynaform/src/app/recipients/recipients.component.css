@@ -17,6 +17,59 @@
   margin-top: 20px;
 }
 
+/* View Toggle Section */
+.view-toggle-section {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+  padding: 16px 0;
+}
+
+.view-toggle-section mat-button-toggle-group {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.view-toggle-section mat-button-toggle {
+  font-weight: 500;
+  padding: 12px 24px;
+  min-width: 140px;
+}
+
+.view-toggle-section mat-button-toggle mat-icon {
+  margin-right: 8px;
+  font-size: 18px;
+}
+
+/* Group-specific styling */
+.alias-name {
+  font-weight: 600;
+  color: #1976d2;
+}
+
+.description-text {
+  color: #666;
+  font-style: italic;
+}
+
+.recipient-count {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #e3f2fd;
+  padding: 4px 12px;
+  border-radius: 16px;
+  color: #1976d2;
+  font-weight: 500;
+}
+
+.count-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
 .controls-section {
   display: flex;
   justify-content: space-between;

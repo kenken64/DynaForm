@@ -1,14 +1,14 @@
 <div class="app-container">
   <!-- Dashboard Header -->
-  <app-header subtitle="Generated Forms"></app-header>
+  <app-header subtitle="Forms"></app-header>
 
   <!-- Main Content -->
   <div class="main-content">
     <div class="forms-list-container">
   <!-- Header -->
   <div class="page-header">
-    <h1>Generated Forms</h1>
-    <p class="page-description">View and manage all your generated forms</p>
+    <h1>Forms</h1>
+    <p class="page-description">View and manage all your forms</p>
   </div>
 
   <!-- Search Bar -->
@@ -114,14 +114,24 @@
             mat-icon-button 
             color="primary"
             (click)="onFormClick(form); $event.stopPropagation()"
-            aria-label="View form">
+            aria-label="View form"
+            title="View form">
             <mat-icon>visibility</mat-icon>
+          </button>
+          <button 
+            mat-icon-button 
+            color="accent"
+            (click)="onFormEdit(form); $event.stopPropagation()"
+            aria-label="Edit form"
+            title="Edit form">
+            <mat-icon>edit</mat-icon>
           </button>
           <button 
             mat-icon-button 
             color="warn"
             (click)="onDeleteForm(form); $event.stopPropagation()"
-            aria-label="Delete form">
+            aria-label="Delete form"
+            title="Delete form">
             <mat-icon>delete</mat-icon>
           </button>
         </mat-card-actions>

@@ -1,0 +1,312 @@
+<div class="form-editor-container">
+  <!-- Header Component -->
+  <app-header [subtitle]="'Form Editor'"></app-header>
+  
+  <!-- Main Content Area -->
+  <div class="main-content">
+    <!-- Editor Header -->
+    <div class="editor-header">
+    <div class="header-left">
+      <button mat-icon-button (click)="goBack()" class="back-button">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="form-info">
+        <mat-form-field appearance="outline" class="form-title-field">
+          <mat-label>Form title</mat-label>
+          <input matInput 
+                 placeholder="Enter form title" 
+                 [(ngModel)]="formTitle"
+                 (blur)="updateFormInfo()">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="form-description-field">
+          <mat-label>Form description</mat-label>
+          <input matInput 
+                 placeholder="Enter form description (optional)" 
+                 [(ngModel)]="formDescription"
+                 (blur)="updateFormInfo()">
+        </mat-form-field>
+      </div>
+    </div>
+    
+    <div class="header-actions">
+      <button mat-raised-button color="primary" (click)="previewForm()" [disabled]="!formId">
+        <mat-icon>preview</mat-icon>
+        Preview
+      </button>
+      <button mat-raised-button color="primary" (click)="saveForm()" [disabled]="saving">
+        <mat-icon>save</mat-icon>
+        {{ saving ? 'Saving...' : 'Save' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="60"></mat-spinner>
+    <p>Loading form...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-container">
+    <mat-icon color="warn">error</mat-icon>
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Main Editor -->
+  <div *ngIf="!loading && !error" class="editor-main">
+    <!-- Sidebar - Element Palette -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <h3>Form Elements</h3>
+        <p>Drag elements to add them to your form</p>
+      </div>
+      
+      <div class="elements-palette" 
+           cdkDropList 
+           #elementsList="cdkDropList"
+           [cdkDropListData]="availableElements"
+           [cdkDropListSortingDisabled]="true"
+           cdkDropListConnectedTo="formBuilder">
+        
+        <div *ngFor="let element of availableElements; trackBy: trackByElementType" 
+             class="palette-element"
+             cdkDrag
+             [cdkDragData]="element">
+          <div class="element-content">
+            <mat-icon>{{ element.icon }}</mat-icon>
+            <div class="element-info">
+              <span class="element-label">{{ element.label }}</span>
+              <span class="element-description">{{ element.description }}</span>
+            </div>
+          </div>
+          <div *cdkDragPlaceholder class="drag-placeholder">
+            <mat-icon>{{ element.icon }}</mat-icon>
+            {{ element.label }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Builder Area -->
+    <div class="form-builder">
+      <div class="builder-header">
+        <h3>Form Builder</h3>
+        <p>Drag elements here to build your form</p>
+      </div>
+      
+      <div class="form-preview">
+        <!-- Form Title Display -->
+        <div class="form-title-display">
+          <h2>{{ formTitle }}</h2>
+          <p *ngIf="formDescription">{{ formDescription }}</p>
+        </div>
+        
+        <!-- Drop Zone -->
+        <div class="drop-zone" 
+             cdkDropList 
+             #formBuilder="cdkDropList"
+             [cdkDropListData]="formElements"
+             cdkDropListConnectedTo="elementsList"
+             (cdkDropListDropped)="onElementDrop($event)">
+          
+          <!-- Empty State -->
+          <div *ngIf="formElements.length === 0" class="empty-form">
+            <mat-icon>drag_indicator</mat-icon>
+            <p>Drag form elements here to start building your form</p>
+          </div>
+          
+          <!-- Form Elements -->
+          <div *ngFor="let element of formElements; trackBy: trackByElementId" 
+               class="form-element-container"
+               cdkDrag
+               [class.selected]="selectedElement?.id === element.id"
+               (click)="selectElement(element)">
+            
+            <div class="element-controls">
+              <button mat-icon-button 
+                      class="duplicate-btn" 
+                      (click)="duplicateElement(element); $event.stopPropagation()"
+                      title="Duplicate">
+                <mat-icon>content_copy</mat-icon>
+              </button>
+              <button mat-icon-button 
+                      class="delete-btn" 
+                      (click)="deleteElement(element); $event.stopPropagation()"
+                      title="Delete">
+                <mat-icon>delete</mat-icon>
+              </button>
+              <mat-icon class="drag-handle" cdkDragHandle>drag_indicator</mat-icon>
+            </div>
+            
+            <!-- Form Element Rendering -->
+            <div class="form-element" [ngSwitch]="element.type">
+              
+              <!-- Text Input -->
+              <mat-form-field *ngSwitchCase="'text'" appearance="outline" class="full-width">
+                <mat-label>{{ element.label }}</mat-label>
+                <input matInput [placeholder]="element.placeholder || ''" [required]="element.required">
+                <mat-hint *ngIf="element.required">Required field</mat-hint>
+              </mat-form-field>
+              
+              <!-- Textarea -->
+              <mat-form-field *ngSwitchCase="'textarea'" appearance="outline" class="full-width">
+                <mat-label>{{ element.label }}</mat-label>
+                <textarea matInput [placeholder]="element.placeholder || ''" [required]="element.required" rows="4"></textarea>
+                <mat-hint *ngIf="element.required">Required field</mat-hint>
+              </mat-form-field>
+              
+              <!-- Number Input -->
+              <mat-form-field *ngSwitchCase="'number'" appearance="outline" class="full-width">
+                <mat-label>{{ element.label }}</mat-label>
+                <input matInput type="number" [placeholder]="element.placeholder || ''" [required]="element.required">
+                <mat-hint *ngIf="element.required">Required field</mat-hint>
+              </mat-form-field>
+              
+              <!-- Email Input -->
+              <mat-form-field *ngSwitchCase="'email'" appearance="outline" class="full-width">
+                <mat-label>{{ element.label }}</mat-label>
+                <input matInput type="email" [placeholder]="element.placeholder || ''" [required]="element.required">
+                <mat-hint *ngIf="element.required">Required field</mat-hint>
+              </mat-form-field>
+              
+              <!-- Date Input -->
+              <mat-form-field *ngSwitchCase="'date'" appearance="outline" class="full-width">
+                <mat-label>{{ element.label }}</mat-label>
+                <input matInput [matDatepicker]="picker" [required]="element.required">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+                <mat-hint *ngIf="element.required">Required field</mat-hint>
+              </mat-form-field>
+              
+              <!-- Select Dropdown -->
+              <mat-form-field *ngSwitchCase="'select'" appearance="outline" class="full-width">
+                <mat-label>{{ element.label }}</mat-label>
+                <mat-select [required]="element.required">
+                  <mat-option disabled>Choose an option</mat-option>
+                  <mat-option *ngFor="let option of element.options" [value]="option">
+                    {{ option }}
+                  </mat-option>
+                </mat-select>
+                <mat-hint *ngIf="element.required">Required field</mat-hint>
+              </mat-form-field>
+              
+              <!-- Radio Buttons -->
+              <div *ngSwitchCase="'radio'" class="radio-group">
+                <label class="form-label">{{ element.label }} <span *ngIf="element.required" class="required">*</span></label>
+                <mat-radio-group class="radio-options">
+                  <mat-radio-button *ngFor="let option of element.options" [value]="option" class="radio-option">
+                    {{ option }}
+                  </mat-radio-button>
+                </mat-radio-group>
+              </div>
+              
+              <!-- Checkboxes -->
+              <div *ngSwitchCase="'checkbox'" class="checkbox-group">
+                <label class="form-label">{{ element.label }} <span *ngIf="element.required" class="required">*</span></label>
+                <div class="checkbox-options">
+                  <mat-checkbox *ngFor="let option of element.options" class="checkbox-option">
+                    {{ option }}
+                  </mat-checkbox>
+                </div>
+              </div>
+              
+              <!-- File Upload -->
+              <div *ngSwitchCase="'file'" class="file-upload">
+                <label class="form-label">{{ element.label }} <span *ngIf="element.required" class="required">*</span></label>
+                <div class="file-input-area">
+                  <mat-icon>cloud_upload</mat-icon>
+                  <p>Click to upload or drag and drop</p>
+                  <input type="file" style="display: none;">
+                </div>
+              </div>
+              
+              <!-- Label/Heading -->
+              <div *ngSwitchCase="'label'" class="label-element">
+                <h3>{{ element.label }}</h3>
+              </div>
+              
+            </div>
+            
+            <div *cdkDragPlaceholder class="element-placeholder">
+              <mat-icon>{{ getElementIcon(element.type) }}</mat-icon>
+              {{ element.label }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Properties Panel -->
+    <div class="properties-panel" *ngIf="selectedElement">
+      <div class="panel-header">
+        <h3>Element Properties</h3>
+        <button mat-icon-button (click)="selectedElement = null">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      
+      <div class="properties-content">
+        <!-- Basic Properties -->
+        <div class="property-group">
+          <h4>Basic</h4>
+          
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Label</mat-label>
+            <input matInput 
+                   [(ngModel)]="selectedElement.label"
+                   (ngModelChange)="updateElementProperty(selectedElement, 'label', $event)">
+          </mat-form-field>
+          
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Field Name</mat-label>
+            <input matInput 
+                   [(ngModel)]="selectedElement.name"
+                   (ngModelChange)="updateElementProperty(selectedElement, 'name', $event)">
+          </mat-form-field>
+          
+          <mat-form-field *ngIf="selectedElement.type !== 'label'" appearance="outline" class="full-width">
+            <mat-label>Placeholder</mat-label>
+            <input matInput 
+                   [(ngModel)]="selectedElement.placeholder"
+                   (ngModelChange)="updateElementProperty(selectedElement, 'placeholder', $event)">
+          </mat-form-field>
+        </div>
+        
+        <!-- Validation Properties -->
+        <div class="property-group" *ngIf="selectedElement.type !== 'label'">
+          <h4>Validation</h4>
+          
+          <mat-checkbox [(ngModel)]="selectedElement.required"
+                        (ngModelChange)="updateElementProperty(selectedElement, 'required', $event)">
+            Required field
+          </mat-checkbox>
+        </div>
+        
+        <!-- Options for Select, Radio, Checkbox -->
+        <div class="property-group" *ngIf="selectedElement.options">
+          <h4>Options</h4>
+          
+          <div *ngFor="let option of selectedElement.options; let i = index" class="option-item">
+            <mat-form-field appearance="outline" class="option-input">
+              <mat-label>Option {{ i + 1 }}</mat-label>
+              <input matInput 
+                     [value]="option"
+                     (blur)="updateOption(selectedElement, i, $any($event.target).value)">
+            </mat-form-field>
+            <button mat-icon-button 
+                    (click)="removeOption(selectedElement, i)"
+                    [disabled]="selectedElement.options!.length <= 1">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+          
+          <button mat-stroked-button (click)="addOption(selectedElement)" class="add-option-btn">
+            <mat-icon>add</mat-icon>
+            Add Option
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div> <!-- End main-content -->
+</div>

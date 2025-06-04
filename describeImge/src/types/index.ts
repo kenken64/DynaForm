@@ -123,3 +123,42 @@ export interface UpdateRecipientRequest {
   email?: string;
   companyName?: string;
 }
+
+// Recipient Group Interfaces
+export interface RecipientGroup {
+  _id?: any;
+  aliasName: string;
+  description?: string;
+  recipientIds: string[];
+  createdAt?: string;
+  updatedAt?: string;
+  createdBy: string;
+}
+
+export interface CreateRecipientGroupRequest {
+  aliasName: string;
+  description?: string;
+  recipientIds: string[];
+}
+
+export interface UpdateRecipientGroupRequest {
+  aliasName?: string;
+  description?: string;
+  recipientIds?: string[];
+}
+
+export interface RecipientGroupListResponse {
+  success: boolean;
+  groups: RecipientGroup[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+export interface RecipientGroupResponse {
+  success: boolean;
+  message?: string;
+  group?: RecipientGroup;
+  error?: string;
+}
