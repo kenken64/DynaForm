@@ -1,15 +1,43 @@
 import os
 import io
 import base64
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory # Added send_from_directory
 from pdf2image import convert_from_bytes
 from werkzeug.utils import secure_filename
-from flask_cors import CORS
-import uuid
-import PyPDF2
+from flask@app.route('/conversion/health-check', methods=['GET'])
+def index():
+    return f"""
+    <h1>PDF to PNG Conversion API (Flask)</h1>
+    <h2>Option 1: Get Base64 Images (JSON Response)</h2>
+    <p>Send a POST request to <code>/api/pdf-to-png</code> (from previous example) with a PDF file (key <code>pdfFile</code>).</p>
+    
+    <h2>Option 2: Save Images on Server & Get Info (JSON Response)</h2>
+    <p>Send a POST request to <code>/conversion/pdf-to-png-save</code> with a PDF file (key <code>pdfFile</code>).</p>
+    <p>PNG images will be saved in the '{GENERATED_IMAGES_DIR}' directory on the server within a unique subfolder.</p>
+    
+    <h2>Option 3: Extract PDF Metadata (JSON Response)</h2>
+    <p>Send a POST request to <code>/conversion/pdf-metadata</code> with a PDF file (key <code>pdfFile</code>).</p>
+    <p>Returns metadata including title, author, creation date, modification date, and more.</p>
+    
+    <h3>Example using cURL for saving on server:</h3>
+    <pre>
+curl -X POST \\
+     -F "pdfFile=@/path/to/your/document.pdf" \\
+     http://localhost:{PORT}/conversion/pdf-to-png-save
+    </pre>
+    
+    <h3>Example using cURL for metadata extraction:</h3>
+    <pre>
+curl -X POST \\
+     -F "pdfFile=@/path/to/your/document.pdf" \\
+     http://localhost:{PORT}/conversion/pdf-metadata
+    </pre>
+    
+    <p>If you enable the '/generated_images/' route, you can access saved images via URLs provided in the response.</p>
+    """# Import CORS
+import uuid # For generating unique filenames/directories
+import PyPDF2  # For PDF metadata extraction
 from datetime import datetime
-import hashlib
-import json
 
 app = Flask(__name__)
 CORS(app, resources={
@@ -17,15 +45,18 @@ CORS(app, resources={
         "origins": ["http://localhost:4201"],
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization"],
-        "supports_credentials": True
+        "supports_credentials": True # If you need to allow cookies or auth headers
     }
 })
 
 # Configuration
 PORT = 5001
+# Directory to save the generated PNG images
+# Ensure this directory exists and your application has write permissions to it.
+# For simplicity, create it in the same directory as app.py or use an absolute path.
 GENERATED_IMAGES_DIR = 'generated_pngs'
 ALLOWED_EXTENSIONS = {'pdf'}
-POPPLER_PATH = None
+POPPLER_PATH = None # Set if Poppler is not in PATH
 
 # Ensure the directory for generated images exists
 if not os.path.exists(GENERATED_IMAGES_DIR):
@@ -33,52 +64,8 @@ if not os.path.exists(GENERATED_IMAGES_DIR):
     print(f"Created directory: {GENERATED_IMAGES_DIR}")
 
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-def generate_metadata_hash(metadata):
-    """Generate various hashes from PDF metadata for identification and comparison"""
-    try:
-        # Extract key fields for hashing
-        title = metadata.get('title', '')
-        creator = metadata.get('creator', '')
-        producer = metadata.get('producer', '')
-        creation_date = metadata.get('creation_date', '')
-        modification_date = metadata.get('modification_date', '')
-        
-        # Concatenate key metadata fields
-        metadata_string = f"{title}|{creator}|{producer}|{creation_date}|{modification_date}"
-        
-        # Generate different types of hashes
-        hashes = {}
-        
-        # MD5 hash
-        hashes['md5'] = hashlib.md5(metadata_string.encode('utf-8')).hexdigest()
-        
-        # SHA1 hash
-        hashes['sha1'] = hashlib.sha1(metadata_string.encode('utf-8')).hexdigest()
-        
-        # SHA256 hash
-        hashes['sha256'] = hashlib.sha256(metadata_string.encode('utf-8')).hexdigest()
-        
-        # Short ID (first 8 characters of SHA256)
-        hashes['short_id'] = hashes['sha256'][:8]
-        
-        # JSON fingerprint hash (for structured comparison)
-        json_metadata = json.dumps(metadata, sort_keys=True, default=str)
-        hashes['json_fingerprint'] = hashlib.sha256(json_metadata.encode('utf-8')).hexdigest()
-        
-        # Print hash information to console
-        print("METADATA HASHES GENERATED:")
-        print("-" * 30)
-        for hash_type, hash_value in hashes.items():
-            print(f"{hash_type.upper()}: {hash_value}")
-        print("-" * 30)
-        
-        return hashes
-        
-    except Exception as e:
-        print(f"Error generating metadata hash: {e}")
-        return {"error": f"Failed to generate hash: {str(e)}"}
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def extract_pdf_metadata(pdf_bytes):
     """Extract metadata from PDF bytes"""
@@ -87,7 +74,6 @@ def extract_pdf_metadata(pdf_bytes):
         metadata = pdf_reader.metadata
         
         if not metadata:
-            print("No metadata found in PDF")
             return {"message": "No metadata found in PDF"}
         
         # Extract common metadata fields
@@ -143,17 +129,12 @@ def extract_pdf_metadata(pdf_bytes):
         # Additional info
         extracted_metadata['page_count'] = len(pdf_reader.pages)
         
-        # Generate hashes from metadata
-        metadata_hashes = generate_metadata_hash(extracted_metadata)
-        extracted_metadata['hashes'] = metadata_hashes
-        
         # Print metadata to console
         print("=" * 50)
         print("PDF METADATA EXTRACTED:")
         print("=" * 50)
         for key, value in extracted_metadata.items():
-            if key != 'hashes':  # Print hashes separately
-                print(f"{key.replace('_', ' ').title()}: {value}")
+            print(f"{key.replace('_', ' ').title()}: {value}")
         print("=" * 50)
         
         return extracted_metadata
@@ -202,6 +183,7 @@ def pdf_to_png_save():
 
     if file and allowed_file(file.filename):
         original_filename_base = os.path.splitext(secure_filename(file.filename))[0]
+        # Create a unique subdirectory for this conversion's images to avoid filename clashes
         unique_subdir_name = str(uuid.uuid4())
         output_dir_for_this_pdf = os.path.join(GENERATED_IMAGES_DIR, unique_subdir_name)
         os.makedirs(output_dir_for_this_pdf, exist_ok=True)
@@ -224,25 +206,30 @@ def pdf_to_png_save():
                 return jsonify({"error": "Could not convert PDF to images. The PDF might be empty or corrupted."}), 500
 
             saved_file_paths = []
-            saved_file_urls = []
+            saved_file_urls = [] # If you want to serve them later
 
             for i, image in enumerate(images):
+                # Create a filename for each page
                 output_filename = f"{original_filename_base}_page_{i + 1}.png"
                 output_filepath = os.path.join(output_dir_for_this_pdf, output_filename)
 
+                # Save the PIL image object directly to a file
                 image.save(output_filepath, 'PNG')
                 saved_file_paths.append(output_filepath)
 
+                # Construct a URL if you plan to serve these files
+                # This assumes you'll set up a route to serve files from GENERATED_IMAGES_DIR
                 file_url = f"/conversion/generated_images/{unique_subdir_name}/{output_filename}"
                 saved_file_urls.append(request.host_url.rstrip('/') + file_url)
+
 
             return jsonify({
                 "message": f"Successfully converted PDF to {len(saved_file_paths)} PNG images.",
                 "saved_files_count": len(saved_file_paths),
-                "output_directory_on_server": output_dir_for_this_pdf,
-                "saved_file_paths_on_server": saved_file_paths,
-                "accessible_urls": saved_file_urls,
-                "metadata": metadata
+                "output_directory_on_server": output_dir_for_this_pdf, # Path on the server
+                "saved_file_paths_on_server": saved_file_paths, # Full paths on the server
+                "accessible_urls": saved_file_urls, # URLs if serving static files
+                "metadata": metadata # PDF metadata
             }), 200
 
         except Exception as e:
@@ -251,9 +238,14 @@ def pdf_to_png_save():
     else:
         return jsonify({"error": "Invalid file type. Only PDF files are allowed."}), 400
 
+# Optional: Add a route to serve the generated images
+# This is a simple way for development/testing. For production, use a proper web server (Nginx, Apache)
+# to serve static files.
 @app.route('/conversion/generated_images/<path:subpath_to_file>')
 def serve_generated_image(subpath_to_file):
+    # subpath_to_file will be like "unique_subdir_name/original_filename_base_page_1.png"
     return send_from_directory(GENERATED_IMAGES_DIR, subpath_to_file)
+
 
 @app.route('/conversion/health-check', methods=['GET'])
 def index():
@@ -263,27 +255,14 @@ def index():
     <p>Send a POST request to <code>/api/pdf-to-png</code> (from previous example) with a PDF file (key <code>pdfFile</code>).</p>
     
     <h2>Option 2: Save Images on Server & Get Info (JSON Response)</h2>
-    <p>Send a POST request to <code>/conversion/pdf-to-png-save</code> with a PDF file (key <code>pdfFile</code>).</p>
+    <p>Send a POST request to <code>/api/pdf-to-png-save</code> with a PDF file (key <code>pdfFile</code>).</p>
     <p>PNG images will be saved in the '{GENERATED_IMAGES_DIR}' directory on the server within a unique subfolder.</p>
-    
-    <h2>Option 3: Extract PDF Metadata (JSON Response)</h2>
-    <p>Send a POST request to <code>/conversion/pdf-metadata</code> with a PDF file (key <code>pdfFile</code>).</p>
-    <p>Returns metadata including title, author, creation date, modification date, and more.</p>
-    
     <h3>Example using cURL for saving on server:</h3>
     <pre>
 curl -X POST \\
      -F "pdfFile=@/path/to/your/document.pdf" \\
-     http://localhost:{PORT}/conversion/pdf-to-png-save
+     http://localhost:{PORT}/api/pdf-to-png-save
     </pre>
-    
-    <h3>Example using cURL for metadata extraction:</h3>
-    <pre>
-curl -X POST \\
-     -F "pdfFile=@/path/to/your/document.pdf" \\
-     http://localhost:{PORT}/conversion/pdf-metadata
-    </pre>
-    
     <p>If you enable the '/generated_images/' route, you can access saved images via URLs provided in the response.</p>
     """
 

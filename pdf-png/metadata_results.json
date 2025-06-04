@@ -1,0 +1,66 @@
+[
+  {
+    "file": "Sample-Fillable-PDF.pdf",
+    "metadata": {
+      "title": "Microsoft Word - Sample Fillable Word Document.docx",
+      "creator": "Word",
+      "producer": "Acrobat PDFMaker 15 for Word",
+      "creation_date": "2017-12-07T18:27:21",
+      "creation_date_formatted": "2017-12-07 18:27:21",
+      "modification_date": "2017-12-20T10:25:20",
+      "modification_date_formatted": "2017-12-20 10:25:20",
+      "page_count": 1,
+      "file_size_bytes": 67411,
+      "file_size_mb": 0.06
+    }
+  },
+  {
+    "file": "medical_form.pdf",
+    "metadata": {
+      "creator": "PScript5.dll Version 5.2.2",
+      "producer": "Acrobat Distiller 9.0.0 (Windows)",
+      "creation_date": "2018-03-23T14:49:39",
+      "creation_date_formatted": "2018-03-23 14:49:39",
+      "modification_date": "2018-03-23T14:49:39",
+      "modification_date_formatted": "2018-03-23 14:49:39",
+      "page_count": 1,
+      "file_size_bytes": 106317,
+      "file_size_mb": 0.1
+    }
+  },
+  {
+    "file": "sampleform.pdf",
+    "metadata": {
+      "title": "PDF Form Example",
+      "creator": "Writer",
+      "producer": "OpenOffice.org 3.4",
+      "keywords": "PDF Form",
+      "creation_date": "2013-06-29T20:48:53",
+      "creation_date_formatted": "2013-06-29 20:48:53",
+      "modification_date": "2024-06-24T14:40:05",
+      "modification_date_formatted": "2024-06-24 14:40:05",
+      "page_count": 1,
+      "file_size_bytes": 73226,
+      "file_size_mb": 0.07
+    }
+  },
+  {
+    "file": "bankers-guarantee-extension.pdf",
+    "metadata": {
+      "producer": "cairo 1.16.0 (https://cairographics.org)",
+      "creation_date": "2024-11-05T08:49:52",
+      "creation_date_formatted": "2024-11-05 08:49:52",
+      "page_count": 2,
+      "file_size_bytes": 21384,
+      "file_size_mb": 0.02
+    }
+  },
+  {
+    "file": "UOB Debt Relief Plan Application Form_Kenneth Phang.pdf",
+    "metadata": {
+      "page_count": 3,
+      "file_size_bytes": 3860078,
+      "file_size_mb": 3.68
+    }
+  }
+]
