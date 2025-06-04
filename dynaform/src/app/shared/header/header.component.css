@@ -57,6 +57,20 @@
   opacity: 0.9;
 }
 
+.debug-button {
+  color: white !important;
+  border: none !important;
+  background: none !important;
+  padding: 8px !important;
+  min-width: auto !important;
+  width: auto !important;
+  line-height: 1 !important;
+}
+
+.debug-button:hover {
+  background: none !important;
+}
+
 .logout-button {
   color: white !important;
   border: 1px solid rgba(255, 255, 255, 0.3) !important;

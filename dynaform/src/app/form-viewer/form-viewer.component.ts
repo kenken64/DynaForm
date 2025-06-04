@@ -358,6 +358,18 @@ export class FormViewerComponent implements OnInit, AfterViewInit {
     return this.fieldConfigurations[fieldName] || [];
   }
 
+  // Check if field has relevant configurations (mandatory or validation only)
+  hasRelevantConfiguration(fieldName: string): boolean {
+    const configs = this.getFieldConfiguration(fieldName);
+    return configs.includes('mandatory') || configs.includes('validation');
+  }
+
+  // Get only relevant configurations (mandatory and validation)
+  getRelevantConfigurations(fieldName: string): string[] {
+    const configs = this.getFieldConfiguration(fieldName);
+    return configs.filter(config => config === 'mandatory' || config === 'validation');
+  }
+
   updateFieldConfiguration(fieldName: string, configurations: string[]): void {
     this.fieldConfigurations[fieldName] = configurations;
   }

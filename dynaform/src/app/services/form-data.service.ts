@@ -246,4 +246,80 @@ export class FormDataService {
     );
   }
 
+  // Get form data submissions for specific user with pagination
+  getUserFormData(userId: string, page: number = 1, pageSize: number = 10): Observable<FormDataListResponse> {
+    this.loadingSignal.set(true);
+    this.errorSignal.set('');
+    
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('pageSize', pageSize.toString())
+      .set('userId', userId);
+    
+    return this.http.get<any>(`${this.baseUrl}/forms-data/user`, { 
+      params,
+      headers: this.authService.getAuthHeaders()
+    }).pipe(
+      map(response => {
+        console.log('Get user form data response:', response);
+        return {
+          success: response.success,
+          submissions: response.data || [],
+          totalCount: response.count || 0,
+          page: response.page || page,
+          pageSize: response.pageSize || pageSize,
+          totalPages: response.totalPages || Math.ceil((response.count || 0) / pageSize)
+        };
+      }),
+      tap(response => {
+        this.allFormDataSignal.set(response.submissions);
+        this.loadingSignal.set(false);
+      }),
+      catchError(error => {
+        this.loadingSignal.set(false);
+        this.errorSignal.set('Failed to load user form data');
+        console.error('Error loading user form data:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  // Search form data submissions for specific user
+  searchUserFormData(userId: string, query: string, page: number = 1, pageSize: number = 10): Observable<FormDataListResponse> {
+    this.loadingSignal.set(true);
+    this.errorSignal.set('');
+    
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('pageSize', pageSize.toString())
+      .set('search', query)
+      .set('userId', userId);
+    
+    return this.http.get<any>(`${this.baseUrl}/forms-data/user/search`, { 
+      params,
+      headers: this.authService.getAuthHeaders()
+    }).pipe(
+      map(response => {
+        console.log('Search user form data response:', response);
+        return {
+          success: response.success,
+          submissions: response.submissions || response.data || [],
+          totalCount: response.count || 0,
+          page: response.page || page,
+          pageSize: response.pageSize || pageSize,
+          totalPages: response.totalPages || Math.ceil((response.count || 0) / pageSize)
+        };
+      }),
+      tap(response => {
+        this.allFormDataSignal.set(response.submissions);
+        this.loadingSignal.set(false);
+      }),
+      catchError(error => {
+        this.loadingSignal.set(false);
+        this.errorSignal.set('Failed to search user form data');
+        console.error('Error searching user form data:', error);
+        return throwError(() => error);
+      })
+    );
+  }
 }

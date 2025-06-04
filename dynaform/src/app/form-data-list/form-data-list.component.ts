@@ -22,6 +22,7 @@ export class FormDataListComponent implements OnInit, OnDestroy {
   totalCount = 0;
   totalPages = 0;
   currentUser: User | null = null;
+  isClientSideFiltering = false; // Track when we're doing client-side filtering
 
   // Expose Math to template
   Math = Math;
@@ -71,61 +72,120 @@ export class FormDataListComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.error = '';
     
+    // Try to use user-specific endpoints first for better performance
+    const useUserSpecificEndpoints = true; // Can be toggled based on backend support
+    
+    if (this.searchTerm.trim()) {
+      const searchObservable = useUserSpecificEndpoints
+        ? this.formDataService.searchUserFormData(this.currentUser.id, this.searchTerm, this.currentPage, this.pageSize)
+        : this.formDataService.searchFormData(this.searchTerm, this.currentPage, this.pageSize);
+      
+      searchObservable
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (response: FormDataListResponse) => {
+            console.log('Search results:', response);
+            
+            if (useUserSpecificEndpoints) {
+              // Server-side filtering - use response directly
+              this.formSubmissions = response.submissions;
+              this.totalCount = response.totalCount;
+              this.totalPages = response.totalPages;
+              this.isClientSideFiltering = false;
+            } else {
+              // Client-side filtering fallback
+              this.formSubmissions = this.filterUserSubmissions(response.submissions);
+              this.updatePaginationCounts(this.formSubmissions.length, response.submissions.length, response.totalCount);
+            }
+            
+            console.log(`Search completed: ${this.formSubmissions.length} submissions, ${this.totalPages} pages`);
+            this.loading = false;
+          },
+          error: (error) => {
+            // If user-specific endpoint fails, fallback to general search with client filtering
+            if (useUserSpecificEndpoints && error.status === 404) {
+              console.log('User-specific search endpoint not available, falling back to client-side filtering');
+              this.loadFormDataWithClientFiltering();
+            } else {
+              this.error = 'Failed to search form data. Please try again.';
+              this.loading = false;
+              console.error('Error searching form data:', error);
+            }
+          }
+        });
+    } else {
+      const getAllObservable = useUserSpecificEndpoints
+        ? this.formDataService.getUserFormData(this.currentUser.id, this.currentPage, this.pageSize)
+        : this.formDataService.getAllFormData(this.currentPage, this.pageSize);
+      
+      getAllObservable
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (response: FormDataListResponse) => {
+            console.log('All form data response:', response);
+            
+            if (useUserSpecificEndpoints) {
+              // Server-side filtering - use response directly
+              this.formSubmissions = response.submissions;
+              this.totalCount = response.totalCount;
+              this.totalPages = response.totalPages;
+              this.isClientSideFiltering = false;
+            } else {
+              // Client-side filtering fallback
+              this.formSubmissions = this.filterUserSubmissions(response.submissions);
+              this.updatePaginationCounts(this.formSubmissions.length, response.submissions.length, response.totalCount);
+            }
+            
+            console.log(`Data loaded: ${this.formSubmissions.length} submissions, ${this.totalPages} pages`);
+            this.loading = false;
+          },
+          error: (error) => {
+            // If user-specific endpoint fails, fallback to general API with client filtering
+            if (useUserSpecificEndpoints && error.status === 404) {
+              console.log('User-specific endpoint not available, falling back to client-side filtering');
+              this.loadFormDataWithClientFiltering();
+            } else {
+              this.error = 'Failed to load form data. Please try again.';
+              this.loading = false;
+              console.error('Error loading form data:', error);
+            }
+          }
+        });
+    }
+  }
+
+  // Fallback method for client-side filtering when server-side filtering is not available
+  private loadFormDataWithClientFiltering(): void {
     if (this.searchTerm.trim()) {
       this.formDataService.searchFormData(this.searchTerm, this.currentPage, this.pageSize)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: (response: FormDataListResponse) => {
-            console.log('Search results:', response);
-            // Filter results to ensure they belong to the current user
+            console.log('Fallback search results:', response);
             this.formSubmissions = this.filterUserSubmissions(response.submissions);
-            
-            // Adjust pagination counts based on filtered results
-            // Since we're filtering client-side, we need to estimate the correct pagination
-            const filteredCount = this.formSubmissions.length;
-            const originalCount = response.submissions.length;
-            const filterRatio = originalCount > 0 ? filteredCount / originalCount : 1;
-            
-            // Estimate total count based on filter ratio
-            this.totalCount = Math.round(response.totalCount * filterRatio);
-            this.totalPages = Math.max(1, Math.ceil(this.totalCount / this.pageSize));
-            
-            console.log(`Search filtered ${filteredCount}/${originalCount} submissions. Estimated total: ${this.totalCount}, pages: ${this.totalPages}`);
+            this.updatePaginationCounts(this.formSubmissions.length, response.submissions.length, response.totalCount);
             this.loading = false;
           },
           error: (error) => {
             this.error = 'Failed to search form data. Please try again.';
             this.loading = false;
-            console.error('Error searching form data:', error);
+            console.error('Error in fallback search:', error);
           }
         });
     } else {
-      console.log('Fetching all form data for page:', this.currentPage, 'with page size:', this.pageSize);
       this.formDataService.getAllFormData(this.currentPage, this.pageSize)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: (response: FormDataListResponse) => {
-            console.log('All form data response:', response);
-            // Filter results to ensure they belong to the current user
+            console.log('Fallback all data response:', response);
             this.formSubmissions = this.filterUserSubmissions(response.submissions);
-            
-            // Adjust pagination counts based on filtered results
-            // Since we're filtering client-side, we need to estimate the correct pagination
-            const filteredCount = this.formSubmissions.length;
-            const originalCount = response.submissions.length;
-            const filterRatio = originalCount > 0 ? filteredCount / originalCount : 1;
-            
-            // Estimate total count based on filter ratio
-            this.totalCount = Math.round(response.totalCount * filterRatio);
-            this.totalPages = Math.max(1, Math.ceil(this.totalCount / this.pageSize));
-            
-            console.log(`Filtered ${filteredCount}/${originalCount} submissions. Estimated total: ${this.totalCount}, pages: ${this.totalPages}`);
+            this.updatePaginationCounts(this.formSubmissions.length, response.submissions.length, response.totalCount);
             this.loading = false;
           },
           error: (error) => {
             this.error = 'Failed to load form data. Please try again.';
             this.loading = false;
-            console.error('Error loading form data:', error);
+            console.error('Error in fallback load:', error);
           }
         });
     }
@@ -300,6 +360,41 @@ export class FormDataListComponent implements OnInit, OnDestroy {
 
   // Check if pagination should be shown
   shouldShowPagination(): boolean {
-    return this.totalCount > this.pageSize;
+    // Only show pagination if we have more than one page of actual data
+    // and we're not doing client-side filtering that would break pagination
+    return this.totalPages > 1 && this.totalCount > this.pageSize;
+  }
+
+  // Update pagination counts with proper logic for client-side filtering
+  private updatePaginationCounts(filteredCount: number, originalCount: number, serverTotalCount: number): void {
+    // When doing client-side filtering, we can't rely on server pagination
+    // We need to show all filtered results on a single page to avoid confusion
+    
+    if (filteredCount !== originalCount && originalCount > 0) {
+      // Client-side filtering is happening - disable pagination for accuracy
+      console.log(`Client-side filtering detected: ${filteredCount}/${originalCount} submissions match current user`);
+      
+      this.isClientSideFiltering = true;
+      
+      // Set pagination to show all filtered results
+      this.totalCount = filteredCount;
+      this.totalPages = 1;
+      this.currentPage = 1;
+      
+    } else if (filteredCount === originalCount) {
+      // No filtering needed or all results belong to user - use server pagination
+      this.isClientSideFiltering = false;
+      this.totalCount = serverTotalCount;
+      this.totalPages = Math.max(1, Math.ceil(this.totalCount / this.pageSize));
+      
+    } else {
+      // Edge case: no results found
+      this.isClientSideFiltering = false;
+      this.totalCount = 0;
+      this.totalPages = 1;
+      this.currentPage = 1;
+    }
+    
+    console.log(`Pagination updated: totalCount=${this.totalCount}, totalPages=${this.totalPages}, currentPage=${this.currentPage}, clientFiltering=${this.isClientSideFiltering}`);
   }
 }

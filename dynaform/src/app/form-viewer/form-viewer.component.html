@@ -1,5 +1,5 @@
 <div class="app-container">
-  <!-- Dashboard Header - Only show if showHeader is true -->
+  <!-- Dashboard Header - Only shown when showHeader is true -->
   <app-header subtitle="Form Viewer" *ngIf="showHeader"></app-header>
 
   <!-- Main Content -->
@@ -60,10 +60,10 @@
               <!-- Clean field rendering for all fields -->
               <div *ngFor="let field of fields; let i = index">
                 <div class="form-field-container">
-                  <!-- Field Configuration Panel (Read-only display) -->
-                  <div class="field-config-panel" *ngIf="getFieldConfiguration(field.name).length > 0">
+                  <!-- Field Configuration Panel (Only show when mandatory or validation is configured) -->
+                  <div class="field-config-panel" *ngIf="hasRelevantConfiguration(field.name)">
                     <div class="config-status">
-                      <span *ngFor="let config of getFieldConfiguration(field.name)" class="config-badge">
+                      <span *ngFor="let config of getRelevantConfigurations(field.name)" class="config-badge">
                         <mat-icon>{{ config === 'mandatory' ? 'star' : 'verified' }}</mat-icon>
                         {{ config | titlecase }}
                       </span>

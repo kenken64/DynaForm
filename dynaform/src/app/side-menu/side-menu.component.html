@@ -50,15 +50,6 @@
       <mat-icon>people</mat-icon>
       <span *ngIf="!isCollapsed">Recipients</span>
     </div>
-    
-    <div 
-      class="nav-item"
-      [class.active]="isActiveRoute('/debug-forms')"
-      (click)="navigateTo('/debug-forms')"
-      matRipple>
-      <mat-icon>bug_report</mat-icon>
-      <span *ngIf="!isCollapsed">Debug Forms</span>
-    </div>
   </div>
 
   <!-- Divider -->
@@ -208,15 +199,6 @@
       matRipple
       title="Recipients">
       <mat-icon>people</mat-icon>
-    </div>
-    
-    <div 
-      class="nav-icon"
-      [class.active]="isActiveRoute('/debug-forms')"
-      (click)="navigateTo('/debug-forms')"
-      matRipple
-      title="Debug Forms">
-      <mat-icon>bug_report</mat-icon>
     </div>
   </div>
 </div>

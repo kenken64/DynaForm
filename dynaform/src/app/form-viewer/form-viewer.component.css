@@ -303,19 +303,6 @@
   align-items: center;
   gap: 6px;
   position: relative;
-  padding-left: 4px;
-}
-
-.field-label::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3px;
-  height: 60%;
-  background: linear-gradient(180deg, #667eea, #764ba2);
-  border-radius: 2px;
 }
 
 .required-indicator {
