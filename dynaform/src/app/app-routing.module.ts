@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { LandingComponent } from './landing/landing.component';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
@@ -13,7 +14,7 @@ import { AuthGuard } from './auth/auth.guard';
 import { DebugFormsComponent } from './debug-forms.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+  { path: '', component: LandingComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
@@ -25,7 +26,7 @@ const routes: Routes = [
   { path: 'form-data/:id', component: FormDataViewerComponent, canActivate: [AuthGuard] },
   { path: 'recipients', component: RecipientsComponent, canActivate: [AuthGuard] },
   { path: 'debug-forms', component: DebugFormsComponent, canActivate: [AuthGuard] },
-  { path: '**', redirectTo: '/dashboard' }
+  { path: '**', redirectTo: '' }
 ];
 
 @NgModule({

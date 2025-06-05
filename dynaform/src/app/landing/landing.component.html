@@ -1,0 +1,200 @@
+<div class="landing-container">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <div class="logo-section">
+        <div class="logo">
+          <mat-icon class="logo-icon">description</mat-icon>
+          <span class="logo-text">DynaForm</span>
+        </div>
+      </div>
+      
+      <h1 class="hero-title">
+        Transform Documents into <span class="highlight">Smart Forms</span>
+      </h1>
+      
+      <p class="hero-subtitle">
+        Convert any document or image into structured form data with AI-powered extraction. 
+        Secure, fast, and blockchain-verified.
+      </p>
+
+      <!-- Search and Verify Section -->
+      <div class="search-section">
+        <h3 class="search-title">Verify Form on Blockchain</h3>
+        <div class="search-container">
+          <mat-form-field class="search-field" appearance="outline">
+            <mat-label>Enter form hash or ID</mat-label>
+            <input 
+              matInput 
+              [(ngModel)]="searchQuery" 
+              (keyup)="onSearchKeyup($event)"
+              placeholder="0x1234567890abcdef..."
+              class="search-input">
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+          <button 
+            mat-raised-button 
+            color="primary" 
+            class="verify-button"
+            (click)="verifyBlockchain()"
+            [disabled]="!searchQuery.trim() || isVerifying">
+            <mat-icon *ngIf="isVerifying" class="spinning">refresh</mat-icon>
+            <mat-icon *ngIf="!isVerifying">verified</mat-icon>
+            {{ isVerifying ? 'Verifying...' : 'Verify' }}
+          </button>
+        </div>
+        
+        <!-- Verification Result -->
+        <div *ngIf="verificationResult" class="verification-result" 
+             [class.success]="verificationResult.isValid"
+             [class.error]="!verificationResult.isValid">
+          <mat-icon>{{ verificationResult.isValid ? 'check_circle' : 'error' }}</mat-icon>
+          <div class="result-content">
+            <div class="result-message">{{ verificationResult.message }}</div>
+            <div *ngIf="verificationResult.isValid && verificationResult.timestamp" class="result-details">
+              <small>Block: #{{ verificationResult.blockNumber }} | {{ verificationResult.timestamp | date:'medium' }}</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sample Hash Button -->
+        <div class="sample-section">
+          <button mat-button class="sample-button" (click)="generateSampleHash()">
+            <mat-icon>content_copy</mat-icon>
+            Try Sample Hash
+          </button>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button 
+          mat-raised-button 
+          class="login-button"
+          (click)="navigateToLogin()">
+          <mat-icon>login</mat-icon>
+          Get Started
+        </button>
+        <button 
+          mat-raised-button 
+          class="trial-button"
+          (click)="navigateToLogin()">
+          <mat-icon>star</mat-icon>
+          Start Free Trial
+        </button>
+      </div>
+    </div>
+
+    <!-- Background Animation -->
+    <div class="background-animation">
+      <div class="floating-icon" style="top: 10%; left: 15%; animation-delay: 0s;">
+        <mat-icon>description</mat-icon>
+      </div>
+      <div class="floating-icon" style="top: 20%; right: 20%; animation-delay: 1s;">
+        <mat-icon>image</mat-icon>
+      </div>
+      <div class="floating-icon" style="bottom: 30%; left: 10%; animation-delay: 2s;">
+        <mat-icon>smart_button</mat-icon>
+      </div>
+      <div class="floating-icon" style="bottom: 15%; right: 15%; animation-delay: 1.5s;">
+        <mat-icon>security</mat-icon>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-section">
+    <div class="container">
+      <h2 class="section-title">Why Choose DynaForm?</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <mat-icon class="feature-icon">auto_fix_high</mat-icon>
+          <h3>AI-Powered Extraction</h3>
+          <p>Advanced computer vision automatically identifies and extracts form fields from any document or image.</p>
+        </div>
+        
+        <div class="feature-card">
+          <mat-icon class="feature-icon">security</mat-icon>
+          <h3>Blockchain Verified</h3>
+          <p>Every form is cryptographically signed and stored on blockchain for immutable verification.</p>
+        </div>
+        
+        <div class="feature-card">
+          <mat-icon class="feature-icon">flash_on</mat-icon>
+          <h3>Lightning Fast</h3>
+          <p>Process documents in seconds with our optimized AI models and cloud infrastructure.</p>
+        </div>
+        
+        <div class="feature-card">
+          <mat-icon class="feature-icon">api</mat-icon>
+          <h3>Developer Friendly</h3>
+          <p>RESTful APIs and SDKs for seamless integration into your existing applications.</p>
+        </div>
+        
+        <div class="feature-card">
+          <mat-icon class="feature-icon">code</mat-icon>
+          <h3>Open Source</h3>
+          <p>Built on open source technologies with full transparency and community-driven development.</p>
+        </div>
+        
+        <div class="feature-card">
+          <mat-icon class="feature-icon">publish</mat-icon>
+          <h3>AI Agent Form Publisher</h3>
+          <p>Intelligent publishing system that automatically optimizes and distributes your forms across platforms.</p>
+        </div>
+        
+        <div class="feature-card">
+          <mat-icon class="feature-icon">edit_note</mat-icon>
+          <h3>AI Agent Form Editor</h3>
+          <p>Smart form editing with AI-powered suggestions, field optimization, and automatic layout improvements.</p>
+        </div>
+        
+        <div class="feature-card">
+          <mat-icon class="feature-icon">build</mat-icon>
+          <h3>Powerful Form Editor</h3>
+          <p>Drag-and-drop form builder with advanced field types, validation rules, and real-time preview capabilities.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="stats-section">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number">1M+</div>
+          <div class="stat-label">Documents Processed</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">99.9%</div>
+          <div class="stat-label">Accuracy Rate</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">50+</div>
+          <div class="stat-label">Form Types Supported</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">24/7</div>
+          <div class="stat-label">API Availability</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="container">
+      <h2>Ready to Transform Your Documents?</h2>
+      <p>Join thousands of developers and businesses using DynaForm</p>
+      <button 
+        mat-raised-button 
+        color="primary" 
+        class="cta-button"
+        (click)="navigateToLogin()">
+        Start Free Trial
+        <mat-icon>arrow_forward</mat-icon>
+      </button>
+    </div>
+  </section>
+</div>

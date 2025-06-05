@@ -1,3 +1,23 @@
+.app-container {
+  display: flex;
+  height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  transition: margin-left 0.3s ease;
+  overflow-y: auto;
+}
+
+.main-content.full-width {
+  margin-left: 0;
+  width: 100%;
+}
+
+.main-content.expanded {
+  margin-left: 60px; /* Collapsed sidebar width */
+}
+
 .mat-stepper-horizontal {
     margin-top: 8px;
     width: 100%;

@@ -23,9 +23,11 @@ export class AppComponent {
         route = route.firstChild;
       }
       const currentRoutePath = route.snapshot.routeConfig ? route.snapshot.routeConfig.path : '';
-      // Check if the route is login or under an auth segment and is login
+      // Check if the route is login, register, landing page, or under an auth segment
       if (currentRoutePath === 'login' || 
-          (route.parent?.snapshot?.routeConfig?.path === 'auth' && currentRoutePath === 'login')) {
+          currentRoutePath === 'register' ||
+          currentRoutePath === '' ||
+          (route.parent?.snapshot?.routeConfig?.path === 'auth' && (currentRoutePath === 'login' || currentRoutePath === 'register'))) {
         this.showSideMenu = false;
       } else {
         this.showSideMenu = true;

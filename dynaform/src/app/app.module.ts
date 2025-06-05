@@ -52,6 +52,8 @@ import { RecipientsComponent } from './recipients/recipients.component';
 import { RecipientDialogComponent } from './recipient-dialog/recipient-dialog.component';
 import { RecipientGroupDialogComponent } from './recipient-group-dialog/recipient-group-dialog.component';
 import { DebugFormsComponent } from './debug-forms.component';
+import { LandingComponent } from './landing/landing.component';
+import { BlockchainService } from './services/blockchain.service';
 
 @NgModule({
   declarations: [
@@ -72,7 +74,8 @@ import { DebugFormsComponent } from './debug-forms.component';
     RecipientsComponent,
     RecipientDialogComponent,
     RecipientGroupDialogComponent,
-    DebugFormsComponent
+    DebugFormsComponent,
+    LandingComponent
   ],
   imports: [
     BrowserModule,
@@ -111,7 +114,8 @@ import { DebugFormsComponent } from './debug-forms.component';
     AuthGuard,
     DatePipe,
     TitleCasePipe,
-    FormsService
+    FormsService,
+    BlockchainService
   ],
   bootstrap: [AppComponent]
 })
