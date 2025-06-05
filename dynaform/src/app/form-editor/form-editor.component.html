@@ -63,6 +63,7 @@
       
       <div class="elements-palette" 
            cdkDropList 
+           id="elementsList"
            #elementsList="cdkDropList"
            [cdkDropListData]="availableElements"
            [cdkDropListSortingDisabled]="true"
@@ -71,7 +72,9 @@
         <div *ngFor="let element of availableElements; trackBy: trackByElementType" 
              class="palette-element"
              cdkDrag
-             [cdkDragData]="element">
+             [cdkDragData]="element"
+             (cdkDragStarted)="onDragStarted($event)"
+             (cdkDragEnded)="onDragEnded($event)">
           <div class="element-content">
             <mat-icon>{{ element.icon }}</mat-icon>
             <div class="element-info">
@@ -104,10 +107,13 @@
         <!-- Drop Zone -->
         <div class="drop-zone" 
              cdkDropList 
+             id="formBuilder"
              #formBuilder="cdkDropList"
              [cdkDropListData]="formElements"
              cdkDropListConnectedTo="elementsList"
-             (cdkDropListDropped)="onElementDrop($event)">
+             (cdkDropListDropped)="onElementDrop($event)"
+             (cdkDropListEntered)="onDragEntered($event)"
+             (cdkDropListExited)="onDragExited($event)">
           
           <!-- Empty State -->
           <div *ngIf="formElements.length === 0" class="empty-form">
@@ -119,23 +125,33 @@
           <div *ngFor="let element of formElements; trackBy: trackByElementId" 
                class="form-element-container"
                cdkDrag
+               [cdkDragData]="element"
                [class.selected]="selectedElement?.id === element.id"
                (click)="selectElement(element)">
             
-            <div class="element-controls">
-              <button mat-icon-button 
-                      class="duplicate-btn" 
-                      (click)="duplicateElement(element); $event.stopPropagation()"
-                      title="Duplicate">
-                <mat-icon>content_copy</mat-icon>
-              </button>
-              <button mat-icon-button 
-                      class="delete-btn" 
-                      (click)="deleteElement(element); $event.stopPropagation()"
-                      title="Delete">
-                <mat-icon>delete</mat-icon>
-              </button>
-              <mat-icon class="drag-handle" cdkDragHandle>drag_indicator</mat-icon>
+            <!-- Element Controls at Top -->
+            <div class="element-controls-top">
+              <div class="element-info-header">
+                <span class="element-type-label">{{ element.label }}</span>
+                <span class="element-type-badge">{{ element.type }}</span>
+              </div>
+              <div class="element-actions">
+                <button mat-icon-button 
+                        class="duplicate-btn" 
+                        size="small"
+                        (click)="duplicateElement(element); $event.stopPropagation()"
+                        title="Duplicate">
+                  <mat-icon>content_copy</mat-icon>
+                </button>
+                <button mat-icon-button 
+                        class="delete-btn" 
+                        size="small"
+                        (click)="deleteElement(element); $event.stopPropagation()"
+                        title="Delete">
+                  <mat-icon>delete</mat-icon>
+                </button>
+                <mat-icon class="drag-handle" cdkDragHandle title="Drag to reorder">drag_indicator</mat-icon>
+              </div>
             </div>
             
             <!-- Form Element Rendering -->

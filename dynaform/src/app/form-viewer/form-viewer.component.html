@@ -106,7 +106,7 @@
                   </ng-container>
 
                   <!-- Text/Number/Date Fields -->
-                  <ng-container *ngIf="field.type !== 'checkbox' && !isTextAreaField(field) && !isSignatureField(field)">
+                  <ng-container *ngIf="field.type !== 'checkbox' && field.type !== 'select' && !isTextAreaField(field) && !isSignatureField(field)">
                     <div class="field-label">
                       {{ field.name }}
                       <span *ngIf="getFieldConfiguration(field.name).includes('mandatory')" class="required-indicator">*</span>
@@ -116,6 +116,25 @@
                              [type]="isDateField(field) ? 'date' : (isNumericField(field) ? 'number' : 'text')"
                              [formControlName]="sanitizeFieldName(field.name)"
                              [placeholder]="isDateField(field) ? 'Select ' + field.name.toLowerCase() : (isNumericField(field) ? 'Enter ' + field.name.toLowerCase() : 'Enter your ' + field.name.toLowerCase())" />
+                      <mat-error *ngIf="getFieldConfiguration(field.name).includes('mandatory')">
+                        This field is required
+                      </mat-error>
+                    </mat-form-field>
+                  </ng-container>
+
+                  <!-- Select/Dropdown Fields -->
+                  <ng-container *ngIf="field.type === 'select'">
+                    <div class="field-label">
+                      {{ field.name }}
+                      <span *ngIf="getFieldConfiguration(field.name).includes('mandatory')" class="required-indicator">*</span>
+                    </div>
+                    <mat-form-field appearance="outline" class="full-width">
+                      <mat-select [formControlName]="sanitizeFieldName(field.name)" 
+                                  [placeholder]="'Select ' + field.name.toLowerCase()">
+                        <mat-option *ngFor="let option of field.options" [value]="option">
+                          {{ option }}
+                        </mat-option>
+                      </mat-select>
                       <mat-error *ngIf="getFieldConfiguration(field.name).includes('mandatory')">
                         This field is required
                       </mat-error>

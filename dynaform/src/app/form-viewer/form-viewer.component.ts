@@ -123,6 +123,9 @@ export class FormViewerComponent implements OnInit, AfterViewInit {
     console.log('Building form with fields:', this.fields);
 
     this.fields.forEach(field => {
+      // Normalize field types for backward compatibility
+      field = this.normalizeFieldType(field);
+      
       const sanitizedKey = this.sanitizeFieldName(field.name);
       this.originalFieldNameMap[sanitizedKey] = field.name;
       
@@ -144,7 +147,7 @@ export class FormViewerComponent implements OnInit, AfterViewInit {
           group[sanitizedKey] = field.value || false;
         }
       } else {
-        // For all other field types (text, textarea, date, number)
+        // For all other field types (text, textarea, date, number, select)
         initialValue = field.value || '';
         group[sanitizedKey] = initialValue;
       }
@@ -155,6 +158,18 @@ export class FormViewerComponent implements OnInit, AfterViewInit {
     
     console.log('Dynamic form created:', this.dynamicForm);
     console.log('Form controls:', Object.keys(this.dynamicForm.controls));
+  }
+
+  // Normalize field types for backward compatibility
+  normalizeFieldType(field: any): any {
+    const normalizedField = { ...field };
+    
+    // Map 'text' to 'textbox' for consistency
+    if (normalizedField.type === 'text') {
+      normalizedField.type = 'textbox';
+    }
+    
+    return normalizedField;
   }
 
   // Sanitize field names for form controls
@@ -355,7 +370,29 @@ export class FormViewerComponent implements OnInit, AfterViewInit {
 
   // Field configuration methods
   getFieldConfiguration(fieldName: string): string[] {
-    return this.fieldConfigurations[fieldName] || [];
+    const config = this.fieldConfigurations[fieldName];
+    
+    // Handle different field configuration formats for backward compatibility
+    if (!config) {
+      return [];
+    }
+    
+    // Handle object format: { mandatory: boolean, validation: boolean }
+    if (typeof config === 'object' && config !== null && !Array.isArray(config)) {
+      const result: string[] = [];
+      const configObj = config as any; // Type assertion for flexibility
+      if (configObj.mandatory) result.push('mandatory');
+      if (configObj.validation) result.push('validation');
+      return result;
+    }
+    
+    // Handle legacy array format: ['mandatory', 'validation'] or []
+    if (Array.isArray(config)) {
+      return config;
+    }
+    
+    // Fallback for unknown formats
+    return [];
   }
 
   // Check if field has relevant configurations (mandatory or validation only)

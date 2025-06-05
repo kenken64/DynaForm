@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
@@ -6,6 +6,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
 
 import { FormsService } from '../services/forms.service';
+import { AuthService } from '../auth/auth.service';
 import { GeneratedForm, FormField, FieldConfiguration } from '../interfaces/form.interface';
 
 export interface FormElementType {
@@ -71,7 +72,9 @@ export class FormEditorComponent implements OnInit, OnDestroy {
     private router: Router,
     private fb: FormBuilder,
     private formsService: FormsService,
-    private snackBar: MatSnackBar
+    private authService: AuthService,
+    private snackBar: MatSnackBar,
+    private cdr: ChangeDetectorRef
   ) {
     this.editorForm = this.fb.group({
       title: [this.formTitle, Validators.required],
@@ -116,22 +119,45 @@ export class FormEditorComponent implements OnInit, OnDestroy {
     
     this.formsService.getForm(formId).subscribe({
       next: (form: GeneratedForm) => {
+        console.log('=== FORM LOADING DEBUG ===');
         console.log('Loaded form:', form);
+        console.log('Form ID:', formId);
+        console.log('FormData array:', form.formData);
+        console.log('FieldConfigurations:', form.fieldConfigurations);
+        
         this.loading = false;
         this.form = form;
         this.formTitle = form.metadata.formName || 'Untitled Form';
         this.formDescription = ''; // Add description field to form interface if needed
         
         // Convert form fields to drag form fields
-        this.formElements = (form.formData || []).map((field, index) => ({
-          ...field,
-          id: `field_${index}_${Date.now()}`,
-          type: this.mapFieldType(field.type), // Map field types to supported types
-          label: field.name,
-          position: index,
-          required: form.fieldConfigurations?.[field.name]?.mandatory || false,
-          options: this.extractOptionsFromValue(field) // Extract options from checkbox values
-        }));
+        this.formElements = (form.formData || []).map((field, index) => {
+          console.log(`Processing field ${index}:`, field);
+          const mappedType = this.mapFieldType(field.type);
+          const requiredStatus = this.getFieldMandatoryStatus(form.fieldConfigurations, field.name);
+          const extractedOptions = this.extractOptionsFromValue(field);
+          
+          console.log(`- Original type: ${field.type} -> Mapped type: ${mappedType}`);
+          console.log(`- Required status: ${requiredStatus}`);
+          console.log(`- Extracted options:`, extractedOptions);
+          console.log(`- Field options:`, field.options);
+          
+          const dragField = {
+            ...field,
+            id: `field_${index}_${Date.now()}`,
+            type: mappedType, // Map field types to supported types
+            label: field.name,
+            position: index,
+            required: requiredStatus,
+            options: extractedOptions || field.options // Extract options from field.value or use field.options directly
+          };
+          
+          console.log(`- Final drag field:`, dragField);
+          return dragField;
+        });
+        
+        console.log('Final formElements array:', this.formElements);
+        console.log('=== END FORM LOADING DEBUG ===');
         
         // Update form controls
         this.editorForm.patchValue({
@@ -150,25 +176,130 @@ export class FormEditorComponent implements OnInit, OnDestroy {
 
   // Drag and drop handlers
   onElementDrop(event: CdkDragDrop<any[]>): void {
+    console.log('=== DROP EVENT TRIGGERED ===');
+    console.log('Event object:', event);
+    console.log('Previous container ID:', event.previousContainer.id);
+    console.log('Current container ID:', event.container.id);
+    console.log('Previous index:', event.previousIndex);
+    console.log('Current index:', event.currentIndex);
+    console.log('Previous container data:', event.previousContainer.data);
+    console.log('Current container data:', event.container.data);
+    console.log('Item data:', event.item.data);
+    console.log('Event item element:', event.item.element);
+    
     if (event.previousContainer === event.container) {
       // Reorder within form elements
+      console.log('🔄 REORDERING within form elements');
       moveItemInArray(this.formElements, event.previousIndex, event.currentIndex);
       this.updateElementPositions();
+      this.cdr.detectChanges();
     } else {
       // Add new element from palette
-      const elementType = event.previousContainer.data[event.previousIndex];
-      const newElement = this.createElement(elementType);
+      console.log('➕ ADDING new element from palette');
       
-      // Insert at specific position & ensure change detection
-      const updatedFormElements = [...this.formElements];
-      updatedFormElements.splice(event.currentIndex, 0, newElement);
-      this.formElements = updatedFormElements;
+      // Get the element type from drag data with multiple fallback strategies
+      let elementType: FormElementType | null = null;
       
-      this.updateElementPositions();
+      // Strategy 1: Try to get from event item data
+      if (event.item.data) {
+        elementType = event.item.data;
+        console.log('✅ Element type from item data:', elementType);
+      }
       
-      // Auto-select the new element
-      this.selectedElement = newElement;
+      // Strategy 2: Fallback to container data
+      if (!elementType && event.previousContainer.data && event.previousContainer.data[event.previousIndex]) {
+        elementType = event.previousContainer.data[event.previousIndex];
+        console.log('✅ Element type from container data:', elementType);
+      }
+      
+      // Strategy 3: Try to extract from available elements array
+      if (!elementType && event.previousIndex >= 0 && event.previousIndex < this.availableElements.length) {
+        elementType = this.availableElements[event.previousIndex];
+        console.log('✅ Element type from available elements:', elementType);
+      }
+      
+      if (!elementType) {
+        console.error('❌ No element type found. Event details:', {
+          event,
+          previousIndex: event.previousIndex,
+          itemData: event.item.data,
+          containerData: event.previousContainer.data,
+          availableElements: this.availableElements
+        });
+        return;
+      }
+      
+      try {
+        const newElement = this.createElement(elementType);
+        console.log('✅ Created new element:', newElement);
+        
+        // Insert at specific position
+        if (event.currentIndex >= 0 && event.currentIndex <= this.formElements.length) {
+          // Insert at specific position & ensure change detection
+          const updatedFormElements = [...this.formElements];
+          updatedFormElements.splice(event.currentIndex, 0, newElement);
+          this.formElements = updatedFormElements;
+          console.log('✅ Inserted at position:', event.currentIndex);
+        } else {
+          // Add to end if index is invalid
+          this.formElements = [...this.formElements, newElement];
+          console.log('✅ Added to end');
+        }
+        
+        console.log('Updated form elements array:', this.formElements);
+        console.log('Form elements length:', this.formElements.length);
+        
+        this.updateElementPositions();
+        
+        // Auto-select the new element
+        this.selectedElement = newElement;
+        console.log('✅ Selected element:', this.selectedElement);
+        
+        // Manually trigger change detection
+        this.cdr.detectChanges();
+        console.log('✅ Change detection triggered');
+        
+      } catch (error) {
+        console.error('❌ Error creating element:', error);
+      }
     }
+    
+    console.log('=== DROP EVENT COMPLETE ===');
+  }
+
+  // Additional drag event handlers for debugging
+  onDragStarted(event: any): void {
+    console.log('🚀 DRAG STARTED:', {
+      event,
+      source: event.source,
+      item: event.source.data,
+      element: event.source.element.nativeElement
+    });
+  }
+
+  onDragEnded(event: any): void {
+    console.log('🏁 DRAG ENDED:', {
+      event,
+      source: event.source,
+      distance: event.distance,
+      dropPoint: event.dropPoint
+    });
+  }
+
+  onDragEntered(event: any): void {
+    console.log('📥 DRAG ENTERED drop zone:', {
+      event,
+      container: event.container,
+      containerData: event.container.data,
+      item: event.item
+    });
+  }
+
+  onDragExited(event: any): void {
+    console.log('📤 DRAG EXITED drop zone:', {
+      event,
+      container: event.container
+    });
   }
 
   private createElement(elementType: FormElementType): DragFormField {
@@ -338,6 +469,15 @@ export class FormEditorComponent implements OnInit, OnDestroy {
       };
     });
 
+    // Get current user information
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser) {
+      this.saving = false;
+      this.error = 'Authentication required to save form';
+      this.snackBar.open('Please log in to save forms', 'Close', { duration: 3000 });
+      return;
+    }
+
     const formData = {
       formData: formFields,
       fieldConfigurations,
@@ -345,7 +485,8 @@ export class FormEditorComponent implements OnInit, OnDestroy {
         formName: this.formTitle,
         version: '1.0',
         createdAt: this.form?.metadata.createdAt || new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
+        createdBy: currentUser.id // Add user ID to track ownership
       }
     };
 
@@ -429,9 +570,51 @@ export class FormEditorComponent implements OnInit, OnDestroy {
 
   // Extract options from checkbox field values
   private extractOptionsFromValue(field: FormField): string[] | undefined {
+    console.log(`extractOptionsFromValue for field '${field.name}' (type: ${field.type}):`, field);
+    
+    // For checkbox fields, try to extract options from the value object first
     if (field.type === 'checkbox' && typeof field.value === 'object' && field.value !== null) {
-      return Object.keys(field.value);
+      const optionsFromValue = Object.keys(field.value);
+      console.log(`- Checkbox value object keys:`, optionsFromValue);
+      if (optionsFromValue.length > 0) {
+        return optionsFromValue;
+      }
     }
+    
+    // Fallback to field.options if available
+    if (field.options && Array.isArray(field.options)) {
+      console.log(`- Using field.options:`, field.options);
+      return field.options;
+    }
+    
+    console.log(`- No options found for field '${field.name}'`);
     return undefined;
+  }
+
+  // Get field mandatory status with backward compatibility for both array and object formats
+  private getFieldMandatoryStatus(fieldConfigurations: Record<string, any>, fieldName: string): boolean {
+    const config = fieldConfigurations?.[fieldName];
+    console.log(`getFieldMandatoryStatus for '${fieldName}':`, config);
+    
+    if (!config) {
+      console.log(`- No config found for '${fieldName}', returning false`);
+      return false;
+    }
+    
+    // Handle object format: { mandatory: boolean, validation: boolean }
+    if (typeof config === 'object' && config !== null && !Array.isArray(config)) {
+      console.log(`- Object format detected for '${fieldName}', mandatory:`, config.mandatory);
+      return config.mandatory || false;
+    }
+    
+    // Handle legacy array format: ['mandatory', 'validation'] or []
+    if (Array.isArray(config)) {
+      const result = config.includes('mandatory');
+      console.log(`- Array format detected for '${fieldName}', includes 'mandatory':`, result);
+      return result;
+    }
+    
+    console.log(`- Unknown config format for '${fieldName}', returning false`);
+    return false;
   }
 }

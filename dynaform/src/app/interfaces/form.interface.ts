@@ -11,11 +11,14 @@ export interface FieldConfiguration {
   validation: boolean;
 }
 
+// Support for flexible field configuration formats (backward compatibility)
+export type FieldConfigurationValue = FieldConfiguration | string[] | any;
+
 export interface GeneratedForm {
   _id: string;
   formData: FormField[];
   fields?: FormField[]; // Additional property for compatibility
-  fieldConfigurations: Record<string, FieldConfiguration>;
+  fieldConfigurations: Record<string, FieldConfigurationValue>;
   originalJson?: any;
   metadata: {
     createdAt: string;

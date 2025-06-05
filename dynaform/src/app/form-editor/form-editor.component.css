@@ -2,9 +2,10 @@
 .form-editor-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
   width: 100%;
   background-color: #f5f5f5;
+  overflow: hidden; /* Prevent container from scrolling */
 }
 
 /* Ensure subtitle is always visible in form editor */
@@ -21,7 +22,7 @@
   padding: 0;
   background-color: #f5f5f5;
   overflow: hidden;
-  min-height: calc(100vh - 64px); /* Account for header height */
+  height: 100vh; /* Full viewport height */
 }
 
 /* Editor Header */
@@ -237,8 +238,9 @@
 .editor-main {
   display: flex;
   flex: 1;
-  height: 100%;
+  height: calc(100vh - 160px); /* Fixed height to enable independent scrolling */
   overflow: hidden;
+  min-height: 600px; /* Ensure minimum usable height */
 }
 
 /* Sidebar - Element Palette */
@@ -246,15 +248,20 @@
   width: 280px;
   background-color: white;
   border-right: 1px solid #e0e0e0;
-  overflow-y: auto;
   flex-shrink: 0;
   box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Prevent sidebar from scrolling as a whole */
 }
 
 .sidebar-header {
   padding: 20px;
   border-bottom: 1px solid #e0e0e0;
+  flex-shrink: 0; /* Prevent header from shrinking */
+  background-color: white;
+  z-index: 1;
 }
 
 .sidebar-header h3 {
@@ -271,6 +278,13 @@
 
 .elements-palette {
   padding: 16px;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100%;
+  /* Enable smooth scrolling for the palette */
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
 }
 
 .palette-element {
@@ -345,12 +359,16 @@
   flex-direction: column;
   overflow: hidden;
   min-width: 0; /* Ensure flex item can shrink */
+  height: 100%;
+  background-color: #f5f5f5;
 }
 
 .builder-header {
   padding: 20px 24px;
   background-color: white;
   border-bottom: 1px solid #e0e0e0;
+  flex-shrink: 0; /* Prevent header from shrinking */
+  z-index: 1;
 }
 
 .builder-header h3 {
@@ -368,9 +386,14 @@
 .form-preview {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 24px;
   width: 100%;
   box-sizing: border-box;
+  height: 100%;
+  /* Enable smooth scrolling for the form preview */
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
 }
 
 .form-title-display {
@@ -403,6 +426,19 @@
   padding: 24px;
   width: 100%;
   box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.drop-zone.cdk-drop-list-dragging {
+  background-color: #f8f9fa;
+  border-color: #1976d2;
+  border-style: dashed;
+}
+
+.drop-zone.cdk-drop-list-receiving {
+  background-color: #e3f2fd;
+  border-color: #1976d2;
+  border-width: 2px;
 }
 
 .empty-form {
@@ -427,7 +463,6 @@
 .form-element-container {
   position: relative;
   margin-bottom: 24px;
-  padding: 16px;
   border: 2px solid transparent;
   border-radius: 8px;
   background-color: #fafafa;
@@ -435,6 +470,7 @@
   width: 100%;
   box-sizing: border-box;
   cursor: pointer;
+  overflow: hidden;
 }
 
 .form-element-container:hover {
@@ -451,25 +487,75 @@
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
-.element-controls {
-  position: absolute;
-  top: 8px;
-  right: 8px;
+/* Element Controls at Top */
+.element-controls-top {
   display: flex;
-  gap: 4px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: rgba(25, 118, 210, 0.05);
+  border-bottom: 1px solid rgba(25, 118, 210, 0.1);
   opacity: 0;
   transition: opacity 0.2s ease;
+  position: relative;
+  z-index: 2;
 }
 
-.form-element-container:hover .element-controls,
-.form-element-container.selected .element-controls {
+.form-element-container:hover .element-controls-top,
+.form-element-container.selected .element-controls-top {
   opacity: 1;
 }
 
-.element-controls button {
-  width: 32px;
-  height: 32px;
-  line-height: 32px;
+.element-info-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.element-type-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #1976d2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.element-type-badge {
+  font-size: 10px;
+  font-weight: 500;
+  color: #666;
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 2px 6px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.element-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.element-actions button {
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
+}
+
+.element-actions .mat-icon-button {
+  --mdc-icon-button-state-layer-size: 28px;
+  --mdc-icon-button-icon-size: 16px;
+}
+
+.element-actions .mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
 }
 
 .duplicate-btn {
@@ -483,10 +569,25 @@
 .drag-handle {
   color: #757575;
   cursor: grab;
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
 }
 
 .drag-handle:active {
   cursor: grabbing;
+}
+
+/* Form Element Content */
+.form-element {
+  padding: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Legacy element-controls class - keep for backward compatibility but hide */
+.element-controls {
+  display: none;
 }
 
 .element-placeholder {
@@ -579,9 +680,11 @@
   width: 320px;
   background-color: white;
   border-left: 1px solid #e0e0e0;
-  overflow-y: auto;
   flex-shrink: 0;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Prevent panel from scrolling as a whole */
 }
 
 .panel-header {
@@ -590,6 +693,9 @@
   align-items: center;
   padding: 20px;
   border-bottom: 1px solid #e0e0e0;
+  flex-shrink: 0; /* Prevent header from shrinking */
+  background-color: white;
+  z-index: 1;
 }
 
 .panel-header h3 {
@@ -600,6 +706,13 @@
 
 .properties-content {
   padding: 20px;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100%;
+  /* Enable smooth scrolling for the properties content */
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
 }
 
 .property-group {
@@ -646,6 +759,33 @@
 
 .cdk-drop-list-dragging .form-element-container:not(.cdk-drag-placeholder) {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* Custom Scrollbar Styling */
+.elements-palette::-webkit-scrollbar,
+.form-preview::-webkit-scrollbar,
+.properties-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.elements-palette::-webkit-scrollbar-track,
+.form-preview::-webkit-scrollbar-track,
+.properties-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.elements-palette::-webkit-scrollbar-thumb,
+.form-preview::-webkit-scrollbar-thumb,
+.properties-content::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.elements-palette::-webkit-scrollbar-thumb:hover,
+.form-preview::-webkit-scrollbar-thumb:hover,
+.properties-content::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
 }
 
 /* Responsive Design */
