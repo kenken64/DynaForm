@@ -106,6 +106,9 @@ exports.config = {
     get DEFAULT_MODEL_NAME() {
         return process.env.DEFAULT_QWEN_MODEL_NAME || 'qwen2.5vl:latest';
     },
+    get DEEPSEEK_MODEL_NAME() {
+        return process.env.DEEPSEEK_MODEL_NAME || 'deepseek-r1:8b';
+    },
     // Ollama Timeout Configuration
     OLLAMA_TIMEOUT_MS: 120000, // 2 minutes timeout for image processing
     // File Upload Configuration

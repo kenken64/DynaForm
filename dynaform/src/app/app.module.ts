@@ -31,6 +31,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatRadioModule } from '@angular/material/radio';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { TextFieldModule } from '@angular/cdk/text-field';
 import { DatePipe, TitleCasePipe } from '@angular/common';
 import { FormConfirmationComponent } from './form-confirmation/form-confirmation.component';
 import { FormViewerComponent } from './form-viewer/form-viewer.component';
@@ -55,6 +56,7 @@ import { DebugFormsComponent } from './debug-forms.component';
 import { LandingComponent } from './landing/landing.component';
 import { PublicFormComponent } from './public-form/public-form.component';
 import { BlockchainService } from './services/blockchain.service';
+import { AskDynaformComponent } from './ask-dynaform/ask-dynaform.component';
 
 @NgModule({
   declarations: [
@@ -77,7 +79,8 @@ import { BlockchainService } from './services/blockchain.service';
     RecipientGroupDialogComponent,
     DebugFormsComponent,
     LandingComponent,
-    PublicFormComponent
+    PublicFormComponent,
+    AskDynaformComponent
   ],
   imports: [
     BrowserModule,
@@ -108,7 +111,8 @@ import { BlockchainService } from './services/blockchain.service';
     MatDatepickerModule,
     MatNativeDateModule,
     MatRadioModule,
-    DragDropModule
+    DragDropModule,
+    TextFieldModule
   ],
   providers: [
     provideHttpClient(withInterceptorsFromDi()),

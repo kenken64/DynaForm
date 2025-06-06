@@ -13,6 +13,7 @@ import { RecipientsComponent } from './recipients/recipients.component';
 import { PublicFormComponent } from './public-form/public-form.component';
 import { AuthGuard } from './auth/auth.guard';
 import { DebugFormsComponent } from './debug-forms.component';
+import { AskDynaformComponent } from './ask-dynaform/ask-dynaform.component';
 
 const routes: Routes = [
   { path: '', component: LandingComponent },
@@ -26,6 +27,7 @@ const routes: Routes = [
   { path: 'form-data', component: FormDataListComponent, canActivate: [AuthGuard] },
   { path: 'form-data/:id', component: FormDataViewerComponent, canActivate: [AuthGuard] },
   { path: 'recipients', component: RecipientsComponent, canActivate: [AuthGuard] },
+  { path: 'ask-dynaform', component: AskDynaformComponent, canActivate: [AuthGuard] },
   { path: 'debug-forms', component: DebugFormsComponent, canActivate: [AuthGuard] },
   { path: 'public/form/:formId/:fingerprint', component: PublicFormComponent },
   { path: '**', redirectTo: '' }

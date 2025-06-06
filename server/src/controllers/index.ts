@@ -4,4 +4,5 @@ export { FormDataController, formDataController } from './formDataController';
 export { RecipientController, recipientController } from './recipientController';
 export { RecipientGroupController, recipientGroupController } from './recipientGroupController';
 export { PublicFormController, publicFormController } from './publicFormController';
+export { ChatController, chatController } from './chatController';
 export { authController } from './authController';

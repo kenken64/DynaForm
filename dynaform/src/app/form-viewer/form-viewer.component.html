@@ -200,6 +200,10 @@
                 <span class="meta-item">
                   <mat-icon>assignment</mat-icon>
                   Form ID: {{ formData._id }}
+                </span><br>
+                <span class="meta-item" *ngIf="formData.pdfMetadata?.hashes?.json_fingerprint">
+                  <mat-icon>fingerprint</mat-icon>
+                  JSON Fingerprint: {{ formData.pdfMetadata.hashes.json_fingerprint }}
                 </span>
               </div>
             </mat-card-subtitle>

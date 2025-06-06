@@ -132,8 +132,77 @@
     <div class="step-content">
       <!-- Show form preview if available -->
       <div *ngIf="generatedImageUrl" class="form-preview-container">
-        <img [src]="generatedImageUrl" alt="Form Preview" />
-        <p>Form preview generated from your PDF</p>
+        <!-- Carousel container -->
+        <div class="carousel-container" 
+             [class.single-image]="!isCarouselEnabled()"
+             role="region"
+             [attr.aria-label]="'Form preview images'"
+             [attr.aria-describedby]="'image-description'">
+          <!-- Previous button (only show if carousel is enabled) -->
+          <button *ngIf="isCarouselEnabled()" 
+                  mat-icon-button 
+                  class="carousel-nav prev-btn"
+                  (click)="previousImage()"
+                  [attr.aria-label]="'Previous image ' + currentImageIndex + ' of ' + imageUrls.length"
+                  [attr.aria-controls]="'carousel-image'"
+                  type="button">
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+
+          <!-- Image display -->
+          <div class="image-wrapper">
+            <img [src]="generatedImageUrl" 
+                 alt="Form Preview" 
+                 class="carousel-image"
+                 id="carousel-image"
+                 [attr.aria-describedby]="'image-counter'"
+                 role="img" />
+          </div>
+
+          <!-- Next button (only show if carousel is enabled) -->
+          <button *ngIf="isCarouselEnabled()" 
+                  mat-icon-button 
+                  class="carousel-nav next-btn"
+                  (click)="nextImage()"
+                  [attr.aria-label]="'Next image ' + (currentImageIndex + 2) + ' of ' + imageUrls.length"
+                  [attr.aria-controls]="'carousel-image'"
+                  type="button">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+
+        <!-- Image indicators (only show if carousel is enabled) -->
+        <div *ngIf="isCarouselEnabled()" 
+             class="carousel-indicators"
+             role="tablist"
+             aria-label="Image navigation">
+          <button *ngFor="let image of imageUrls; let i = index"
+                  class="indicator-btn"
+                  [class.active]="i === currentImageIndex"
+                  (click)="goToImage(i)"
+                  [attr.aria-label]="'Go to image ' + (i + 1) + ' of ' + imageUrls.length"
+                  [attr.aria-current]="i === currentImageIndex ? 'true' : 'false'"
+                  [attr.aria-controls]="'carousel-image'"
+                  role="tab"
+                  type="button">
+          </button>
+        </div>
+
+        <!-- Image counter and description -->
+        <div class="image-info">
+          <p *ngIf="isCarouselEnabled()" 
+             class="image-counter"
+             id="image-counter"
+             aria-live="polite">
+            Image {{ currentImageIndex + 1 }} of {{ imageUrls.length }}
+          </p>
+          <p class="image-description" id="image-description">
+            Form preview generated from your PDF
+            <span *ngIf="isCarouselEnabled()" class="sr-only">
+              Use arrow keys to navigate between images
+            </span>
+          </p>
+        </div>
       </div>
       
       <!-- Show message if no preview available -->

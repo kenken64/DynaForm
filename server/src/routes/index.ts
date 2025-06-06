@@ -6,6 +6,7 @@ import recipientRoutes from './recipientRoutes';
 import recipientGroupRoutes from './recipientGroupRoutes';
 import publicRoutes from './publicRoutes';
 import authRoutes from './authRoutes';
+import chatRoutes from './chatRoutes';
 
 const router = Router();
 
@@ -17,6 +18,7 @@ router.use('/api/recipients', recipientRoutes);
 router.use('/api/recipient-groups', recipientGroupRoutes);
 router.use('/api/public', publicRoutes);
 router.use('/api/auth', authRoutes);
+router.use('/api/chat', chatRoutes);
 
 // Keep health check at root level for monitoring tools
 router.get('/health', (req, res) => {

@@ -1,0 +1,128 @@
+<div class="chat-container">
+  <!-- Header -->
+  <div class="chat-header">
+    <div class="header-content">
+      <div class="header-title">
+        <mat-icon class="header-icon">psychology</mat-icon>
+        <h2>Ask DynaForm AI</h2>
+      </div>
+      <div class="header-actions">
+        <button 
+          mat-icon-button 
+          (click)="clearChat()"
+          matTooltip="Clear chat"
+          aria-label="Clear chat">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
+    </div>
+    <p class="header-subtitle">
+      Get instant help with forms, data extraction, and DynaForm features
+    </p>
+  </div>
+
+  <!-- Messages Container -->
+  <div class="messages-container" #messagesContainer>
+    <div class="messages-list">
+      <div 
+        *ngFor="let message of messages; trackBy: trackByMessageId"
+        class="message-wrapper"
+        [ngClass]="{
+          'user-message': message.role === 'user',
+          'assistant-message': message.role === 'assistant'
+        }">
+        
+        <!-- Message Avatar -->
+        <div class="message-avatar">
+          <div 
+            class="avatar-circle"
+            [ngClass]="{
+              'user-avatar': message.role === 'user',
+              'assistant-avatar': message.role === 'assistant'
+            }">
+            <mat-icon *ngIf="message.role === 'user'">person</mat-icon>
+            <mat-icon *ngIf="message.role === 'assistant'">psychology</mat-icon>
+          </div>
+        </div>
+
+        <!-- Message Content -->
+        <div class="message-content">
+          <div class="message-header">
+            <span class="message-sender">
+              {{ message.role === 'user' ? 'You' : 'DynaForm AI' }}
+            </span>
+            <span class="message-time">
+              {{ formatTime(message.timestamp) }}
+            </span>
+          </div>
+          
+          <div 
+            class="message-text"
+            [ngClass]="{
+              'user-text': message.role === 'user',
+              'assistant-text': message.role === 'assistant'
+            }">
+            <div *ngIf="message.content" class="text-content">
+              {{ message.content }}
+            </div>
+            
+            <!-- Streaming indicator -->
+            <div *ngIf="message.isStreaming" class="streaming-indicator">
+              <div class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="error-container">
+    <mat-icon class="error-icon">error_outline</mat-icon>
+    <span>{{ error }}</span>
+    <button mat-button color="primary" (click)="error = ''">
+      Dismiss
+    </button>
+  </div>
+
+  <!-- Input Area -->
+  <div class="input-container">
+    <form [formGroup]="chatForm" (ngSubmit)="onSubmit()" class="input-form">
+      <div class="input-wrapper">
+        <mat-form-field appearance="outline" class="message-input">
+          <textarea 
+            matInput
+            formControlName="message"
+            placeholder="Ask me anything about DynaForm..."
+            rows="1"
+            cdkTextareaAutosize
+            cdkAutosizeMinRows="1"
+            cdkAutosizeMaxRows="6"
+            (keydown)="onKeyDown($event)"
+            [disabled]="isLoading"></textarea>
+        </mat-form-field>
+        
+        <button 
+          mat-fab 
+          color="primary"
+          type="submit"
+          class="send-button"
+          [disabled]="chatForm.invalid || isLoading"
+          aria-label="Send message">
+          <mat-icon *ngIf="!isLoading">send</mat-icon>
+          <mat-spinner *ngIf="isLoading" diameter="24"></mat-spinner>
+        </button>
+      </div>
+      
+      <div class="input-footer">
+        <small class="input-hint">
+          Press Enter to send • Shift + Enter for new line
+        </small>
+      </div>
+    </form>
+  </div>
+</div>

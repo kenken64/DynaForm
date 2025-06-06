@@ -50,6 +50,15 @@
       <mat-icon>people</mat-icon>
       <span *ngIf="!isCollapsed">Recipients</span>
     </div>
+    
+    <div 
+      class="nav-item"
+      [class.active]="isActiveRoute('/ask-dynaform')"
+      (click)="navigateTo('/ask-dynaform')"
+      matRipple>
+      <mat-icon>chat</mat-icon>
+      <span *ngIf="!isCollapsed">Ask for DynaForm</span>
+    </div>
   </div>
 
   <!-- Divider -->
@@ -199,6 +208,15 @@
       matRipple
       title="Recipients">
       <mat-icon>people</mat-icon>
+    </div>
+    
+    <div 
+      class="nav-icon"
+      [class.active]="isActiveRoute('/ask-dynaform')"
+      (click)="navigateTo('/ask-dynaform')"
+      matRipple
+      title="Ask for DynaForm">
+      <mat-icon>chat</mat-icon>
     </div>
   </div>
 </div>

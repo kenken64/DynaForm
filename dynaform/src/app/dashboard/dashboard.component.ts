@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, OnInit } from '@angular/core';
+import { Component, AfterViewInit, OnInit, HostListener } from '@angular/core';
 import { FormBuilder, Validators, FormGroup, FormControl } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
@@ -56,6 +56,9 @@ export class DashboardComponent implements AfterViewInit, OnInit {
   // Side menu state
   isSideMenuCollapsed = false;
   selectedFormFromMenu: GeneratedForm | null = null;
+
+  // Carousel properties
+  currentImageIndex: number = 0;
 
   constructor(
     private pdfUploadService: PdfUploadService,
@@ -187,6 +190,7 @@ export class DashboardComponent implements AfterViewInit, OnInit {
         
         // Normalize URLs for production environment
         this.imageUrls = response.accessible_urls.map(url => this.normalizeImageUrl(url));
+        this.currentImageIndex = 0; // Reset carousel to first image
         this.generatedImageUrl = this.imageUrls[0];
         console.log('Normalized image URLs:', this.imageUrls);
         console.log('Generated image URL:', this.generatedImageUrl);
@@ -821,6 +825,7 @@ export class DashboardComponent implements AfterViewInit, OnInit {
     this.uploadMessage = '';
     this.imageUrls = [];
     this.generatedImageUrl = null;
+    this.currentImageIndex = 0; // Reset carousel index
     this.error = '';
     this.pdfMetadata = null; // Clear PDF metadata when creating new form
   }
@@ -1012,5 +1017,60 @@ export class DashboardComponent implements AfterViewInit, OnInit {
     
     // Switch to form view
     this.currentView = 'form';
+  }
+
+  // Carousel methods
+  nextImage(): void {
+    if (this.imageUrls.length > 1) {
+      this.currentImageIndex = (this.currentImageIndex + 1) % this.imageUrls.length;
+      this.generatedImageUrl = this.imageUrls[this.currentImageIndex];
+    }
+  }
+
+  previousImage(): void {
+    if (this.imageUrls.length > 1) {
+      this.currentImageIndex = this.currentImageIndex === 0 
+        ? this.imageUrls.length - 1 
+        : this.currentImageIndex - 1;
+      this.generatedImageUrl = this.imageUrls[this.currentImageIndex];
+    }
+  }
+
+  goToImage(index: number): void {
+    if (index >= 0 && index < this.imageUrls.length) {
+      this.currentImageIndex = index;
+      this.generatedImageUrl = this.imageUrls[this.currentImageIndex];
+    }
+  }
+
+  // Helper method to check if carousel should be enabled
+  isCarouselEnabled(): boolean {
+    return this.imageUrls.length > 1;
+  }
+
+  // Keyboard navigation for carousel
+  @HostListener('document:keydown', ['$event'])
+  onKeyDown(event: KeyboardEvent): void {
+    // Only handle keyboard navigation when viewing the form preview and carousel is enabled
+    if (this.currentView === 'form' && this.generatedImageUrl && this.isCarouselEnabled()) {
+      switch (event.key) {
+        case 'ArrowLeft':
+          event.preventDefault();
+          this.previousImage();
+          break;
+        case 'ArrowRight':
+          event.preventDefault();
+          this.nextImage();
+          break;
+        case 'Home':
+          event.preventDefault();
+          this.goToImage(0);
+          break;
+        case 'End':
+          event.preventDefault();
+          this.goToImage(this.imageUrls.length - 1);
+          break;
+      }
+    }
   }
 }

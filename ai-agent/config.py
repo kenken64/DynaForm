@@ -1,0 +1,27 @@
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+class Config:
+    # MongoDB Configuration
+    MONGODB_URI = os.getenv('MONGODB_URI', 'mongodb://localhost:27017')
+    MONGODB_DATABASE = os.getenv('MONGODB_DATABASE', 'dynaform')
+    FORMS_COLLECTION = os.getenv('FORMS_COLLECTION', 'generated_forms')
+    
+    # Ollama Configuration
+    OLLAMA_HOST = os.getenv('OLLAMA_HOST', 'http://localhost:11434')
+    OLLAMA_MODEL = os.getenv('OLLAMA_MODEL', 'llama3.2:3b')
+    
+    # API Endpoints
+    VERIFIABLE_CONTRACT_API = os.getenv('VERIFIABLE_CONTRACT_API', 'http://localhost:3002/api/urls')
+    FRONTEND_BASE_URL = os.getenv('FRONTEND_BASE_URL', 'http://localhost:4200')
+    
+    # Agent Configuration
+    LISTEN_KEYWORDS = ['publish', 'deploy', 'register']
+    
+    # Server Configuration
+    HOST = os.getenv('HOST', '0.0.0.0')
+    PORT = int(os.getenv('PORT', 8001))
+
+config = Config()
