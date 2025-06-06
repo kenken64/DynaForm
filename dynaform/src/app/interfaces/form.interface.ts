@@ -26,6 +26,24 @@ export interface GeneratedForm {
     version: string;
     updatedAt?: string;
   };
+  pdfMetadata?: {
+    title?: string;
+    author?: string;
+    subject?: string;
+    creator?: string;
+    producer?: string;
+    creation_date?: string;
+    modification_date?: string;
+    page_count?: number;
+    hashes?: {
+      md5: string;
+      sha1: string;
+      sha256: string;
+      short_id: string;
+      json_fingerprint: string;
+    };
+  };
+  pdfFingerprint?: string; // Store the short_id for easy identification
 }
 
 export interface FormsResponse {

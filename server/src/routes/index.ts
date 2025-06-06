@@ -4,6 +4,7 @@ import formRoutes from './formRoutes';
 import formDataRoutes from './formDataRoutes';
 import recipientRoutes from './recipientRoutes';
 import recipientGroupRoutes from './recipientGroupRoutes';
+import publicRoutes from './publicRoutes';
 import authRoutes from './authRoutes';
 
 const router = Router();
@@ -14,6 +15,7 @@ router.use('/api/forms', formRoutes);
 router.use('/api/forms-data', formDataRoutes);
 router.use('/api/recipients', recipientRoutes);
 router.use('/api/recipient-groups', recipientGroupRoutes);
+router.use('/api/public', publicRoutes);
 router.use('/api/auth', authRoutes);
 
 // Keep health check at root level for monitoring tools

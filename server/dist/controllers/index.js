@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.authController = exports.recipientController = exports.RecipientController = exports.formDataController = exports.FormDataController = exports.formController = exports.FormController = exports.imageController = exports.ImageController = void 0;
+exports.authController = exports.recipientGroupController = exports.RecipientGroupController = exports.recipientController = exports.RecipientController = exports.formDataController = exports.FormDataController = exports.formController = exports.FormController = exports.imageController = exports.ImageController = void 0;
 var imageController_1 = require("./imageController");
 Object.defineProperty(exports, "ImageController", { enumerable: true, get: function () { return imageController_1.ImageController; } });
 Object.defineProperty(exports, "imageController", { enumerable: true, get: function () { return imageController_1.imageController; } });
@@ -13,6 +13,9 @@ Object.defineProperty(exports, "formDataController", { enumerable: true, get: fu
 var recipientController_1 = require("./recipientController");
 Object.defineProperty(exports, "RecipientController", { enumerable: true, get: function () { return recipientController_1.RecipientController; } });
 Object.defineProperty(exports, "recipientController", { enumerable: true, get: function () { return recipientController_1.recipientController; } });
+var recipientGroupController_1 = require("./recipientGroupController");
+Object.defineProperty(exports, "RecipientGroupController", { enumerable: true, get: function () { return recipientGroupController_1.RecipientGroupController; } });
+Object.defineProperty(exports, "recipientGroupController", { enumerable: true, get: function () { return recipientGroupController_1.recipientGroupController; } });
 var authController_1 = require("./authController");
 Object.defineProperty(exports, "authController", { enumerable: true, get: function () { return authController_1.authController; } });
 //# sourceMappingURL=index.js.map

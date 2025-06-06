@@ -417,6 +417,116 @@
   margin: 0;
 }
 
+/* PDF Metadata Styles */
+.pdf-metadata-info {
+  margin: 16px 0;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.metadata-card {
+  background: linear-gradient(135deg, #f8fffe 0%, #f0f9ff 100%);
+  border: 1px solid #e0f2fe;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(79, 172, 254, 0.1);
+  transition: all 0.3s ease;
+}
+
+.metadata-card:hover {
+  box-shadow: 0 4px 12px rgba(79, 172, 254, 0.15);
+  transform: translateY(-1px);
+}
+
+.metadata-card mat-card-header {
+  padding-bottom: 8px;
+}
+
+.metadata-card mat-card-title {
+  color: #0277bd;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.metadata-card mat-card-subtitle {
+  color: #546e7a;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.metadata-details {
+  display: grid;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.metadata-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 6px;
+  border-left: 3px solid #4caf50;
+  transition: background-color 0.2s ease;
+}
+
+.metadata-item:hover {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.metadata-item strong {
+  color: #37474f;
+  font-weight: 600;
+  margin-right: 8px;
+  min-width: 80px;
+  flex-shrink: 0;
+}
+
+.fingerprint-code {
+  background: #263238;
+  color: #4caf50;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: 'Courier New', Consolas, monospace;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  border: 1px solid #37474f;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Animation for metadata reveal */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive adjustments for metadata */
+@media (max-width: 768px) {
+  .metadata-details {
+    gap: 8px;
+  }
+  
+  .metadata-item {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .metadata-item strong {
+    min-width: auto;
+  }
+  
+  .fingerprint-code {
+    font-size: 12px;
+    word-break: break-all;
+  }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .main-content {

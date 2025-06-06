@@ -10,6 +10,8 @@ router.post('/', auth_1.verifyToken, controllers_1.formController.saveForm);
 router.get('/', auth_1.verifyToken, controllers_1.formController.getForms);
 // GET /api/forms/search - Search user's forms (requires authentication)
 router.get('/search', auth_1.verifyToken, controllers_1.formController.searchForms);
+// GET /api/forms/fingerprint/:fingerprint - Get forms by PDF fingerprint (requires authentication)
+router.get('/fingerprint/:fingerprint', auth_1.verifyToken, controllers_1.formController.getFormsByPdfFingerprint);
 // GET /api/forms/:id - Get a specific form by ID (requires authentication)
 router.get('/:id', auth_1.verifyToken, controllers_1.formController.getFormById);
 // PUT /api/forms/:id - Update a form by ID (requires authentication)

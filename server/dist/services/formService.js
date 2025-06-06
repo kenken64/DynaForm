@@ -8,7 +8,7 @@ class FormService {
         return (0, connection_1.getDatabase)().collection('generated_form');
     }
     async saveForm(formRequest, userId) {
-        const { formData, fieldConfigurations, originalJson, metadata } = formRequest;
+        const { formData, fieldConfigurations, originalJson, metadata, pdfMetadata, pdfFingerprint } = formRequest;
         // Validate required fields
         if (!formData || !Array.isArray(formData)) {
             throw new Error('Invalid form data. Expected formData to be an array.');
@@ -30,11 +30,13 @@ class FormService {
                 version: '1.0.0',
                 createdBy: userId, // Add user ID to track ownership
                 ...metadata
-            }
+            },
+            ...(pdfMetadata && { pdfMetadata }), // Include PDF metadata if provided
+            ...(pdfFingerprint && { pdfFingerprint }) // Include PDF fingerprint if provided
         };
         const collection = this.getCollection();
         const result = await collection.insertOne(formDocument);
-        console.log(`Form saved successfully with ID: ${result.insertedId} for user: ${userId}`);
+        console.log(`Form saved successfully with ID: ${result.insertedId} for user: ${userId}${pdfFingerprint ? ` with PDF fingerprint: ${pdfFingerprint}` : ''}`);
         return {
             formId: result.insertedId.toString(),
             savedAt: formDocument.metadata.createdAt
@@ -145,6 +147,20 @@ class FormService {
         }
         const result = await collection.deleteOne(filter);
         return result.deletedCount > 0;
+    }
+    async getFormsByPdfFingerprint(pdfFingerprint, userId) {
+        const collection = this.getCollection();
+        // Create filter for PDF fingerprint and user ownership
+        const filter = { pdfFingerprint };
+        if (userId) {
+            filter['metadata.createdBy'] = userId;
+        }
+        const forms = await collection
+            .find(filter)
+            .sort({ 'metadata.createdAt': -1 })
+            .toArray();
+        console.log(`Found ${forms.length} forms with PDF fingerprint: ${pdfFingerprint}${userId ? ` for user: ${userId}` : ''}`);
+        return forms;
     }
 }
 exports.FormService = FormService;

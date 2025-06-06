@@ -41,6 +41,24 @@ export interface SaveFormRequest {
     formName?: string;
     version?: string;
   };
+  pdfMetadata?: {
+    title?: string;
+    author?: string;
+    subject?: string;
+    creator?: string;
+    producer?: string;
+    creation_date?: string;
+    modification_date?: string;
+    page_count?: number;
+    hashes?: {
+      md5: string;
+      sha1: string;
+      sha256: string;
+      short_id: string;
+      json_fingerprint: string;
+    };
+  };
+  pdfFingerprint?: string;
 }
 
 export interface GeneratedForm {
@@ -55,6 +73,24 @@ export interface GeneratedForm {
     updatedAt?: string;
     createdBy: string; // User ID of the form creator
   };
+  pdfMetadata?: {
+    title?: string;
+    author?: string;
+    subject?: string;
+    creator?: string;
+    producer?: string;
+    creation_date?: string;
+    modification_date?: string;
+    page_count?: number;
+    hashes?: {
+      md5: string;
+      sha1: string;
+      sha256: string;
+      short_id: string;
+      json_fingerprint: string;
+    };
+  };
+  pdfFingerprint?: string; // Store the short_id for easy identification
 }
 
 // API Response interfaces

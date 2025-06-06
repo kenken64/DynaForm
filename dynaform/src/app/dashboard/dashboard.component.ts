@@ -6,6 +6,7 @@ import { PdfUploadService } from '../pdf-upload.service';
 import { DescribeImageService } from '../describe-image.service';
 import { FormsService } from '../services/forms.service';
 import { GeneratedForm, FieldConfiguration } from '../interfaces/form.interface';
+import { PdfMetadata } from '../pdf-upload-response.model';
 import { environment } from '../../environments/environment';
 
 @Component({
@@ -48,6 +49,9 @@ export class DashboardComponent implements AfterViewInit, OnInit {
     savedAt: string;
   } | null = null;
   viewerFormId: string = '';
+
+  // PDF metadata and fingerprint data
+  pdfMetadata: PdfMetadata | null = null;
 
   // Side menu state
   isSideMenuCollapsed = false;
@@ -176,6 +180,11 @@ export class DashboardComponent implements AfterViewInit, OnInit {
         this.isUploadingPdf = false;
         this.uploadMessage = `Upload successful! File "${this.selectedFile?.name}" has been processed.`;
         console.log(response?.accessible_urls[0]);
+        
+        // Store PDF metadata and fingerprint data
+        this.pdfMetadata = response.metadata;
+        console.log('PDF Metadata with fingerprints:', this.pdfMetadata);
+        
         // Normalize URLs for production environment
         this.imageUrls = response.accessible_urls.map(url => this.normalizeImageUrl(url));
         this.generatedImageUrl = this.imageUrls[0];
@@ -735,9 +744,11 @@ export class DashboardComponent implements AfterViewInit, OnInit {
         formName: this.formTitle || 'Generated Form',
         createdAt: new Date().toISOString(),
         version: '1.0.0'
-      }
+      },
+      pdfMetadata: this.pdfMetadata, // Include PDF metadata and fingerprint data
+      pdfFingerprint: this.pdfMetadata?.hashes?.short_id || undefined // Include short_id fingerprint specifically
     };
-    
+    console.log(this.pdfMetadata?.hashes)
     console.log('Saving form data to backend:', saveFormData);
     
     // Save to backend
@@ -767,7 +778,9 @@ export class DashboardComponent implements AfterViewInit, OnInit {
             formName: this.formTitle || 'Generated Form',
             createdAt: new Date().toISOString(),
             version: '1.0.0'
-          }
+          },
+          pdfMetadata: this.pdfMetadata || undefined,
+          pdfFingerprint: this.pdfMetadata?.hashes?.short_id || undefined
         };
 
         // Add to FormsService cache to trigger auto-refresh
@@ -809,6 +822,7 @@ export class DashboardComponent implements AfterViewInit, OnInit {
     this.imageUrls = [];
     this.generatedImageUrl = null;
     this.error = '';
+    this.pdfMetadata = null; // Clear PDF metadata when creating new form
   }
 
   onBackToMain(): void {

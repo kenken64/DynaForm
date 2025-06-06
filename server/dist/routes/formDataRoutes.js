@@ -8,6 +8,10 @@ const router = (0, express_1.Router)();
 router.get('/', controllers_1.formDataController.getAllFormData);
 // GET /api/form-data/search - Search form data submissions (temporarily without auth for debugging)
 router.get('/search', controllers_1.formDataController.searchFormData);
+// GET /api/forms-data/user - Get user-specific form data with pagination (requires authentication)
+router.get('/user', auth_1.verifyToken, controllers_1.formDataController.getUserFormData);
+// GET /api/forms-data/user/search - Search user-specific form data (requires authentication)
+router.get('/user/search', auth_1.verifyToken, controllers_1.formDataController.searchUserFormData);
 // POST /api/forms-data - Save form submission data (requires authentication)
 router.post('/', auth_1.verifyToken, controllers_1.formDataController.saveFormData);
 // GET /api/forms-data/:formId - Get form data by form ID (requires authentication)

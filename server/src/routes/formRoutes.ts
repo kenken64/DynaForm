@@ -13,6 +13,9 @@ router.get('/', verifyToken, formController.getForms);
 // GET /api/forms/search - Search user's forms (requires authentication)
 router.get('/search', verifyToken, formController.searchForms);
 
+// GET /api/forms/fingerprint/:fingerprint - Get forms by PDF fingerprint (requires authentication)
+router.get('/fingerprint/:fingerprint', verifyToken, formController.getFormsByPdfFingerprint);
+
 // GET /api/forms/:id - Get a specific form by ID (requires authentication)
 router.get('/:id', verifyToken, formController.getFormById);
 

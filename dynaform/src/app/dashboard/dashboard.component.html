@@ -74,6 +74,34 @@
         <p>{{ uploadMessage }}</p>
       </div>
       
+      <!-- PDF Metadata Information -->
+      <div *ngIf="pdfMetadata" class="pdf-metadata-info">
+        <mat-card class="metadata-card">
+          <mat-card-header>
+            <mat-icon mat-card-avatar style="color: #4caf50;">fingerprint</mat-icon>
+            <mat-card-title>PDF Fingerprint Generated</mat-card-title>
+            <mat-card-subtitle>Unique identification for this PDF document</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="metadata-details">
+              <div *ngIf="pdfMetadata.title" class="metadata-item">
+                <strong>Title:</strong> {{ pdfMetadata.title }}
+              </div>
+              <div *ngIf="pdfMetadata.creator" class="metadata-item">
+                <strong>Creator:</strong> {{ pdfMetadata.creator }}
+              </div>
+              <div class="metadata-item">
+                <strong>Pages:</strong> {{ pdfMetadata.page_count }}
+              </div>
+              <div class="metadata-item">
+                <strong>Short ID:</strong> 
+                <code class="fingerprint-code">{{ pdfMetadata.hashes.short_id }}</code>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      
       <!-- Next Button with Validation -->
       <div class="upload-button">
         <button mat-raised-button 

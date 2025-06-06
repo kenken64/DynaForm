@@ -1,0 +1,180 @@
+<div class="public-form-container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="loading-gif-container">
+      <img src="https://i.pinimg.com/originals/99/b9/52/99b952956e2b92e88bbfeb747b61e503.gif" 
+           alt="Loading..." 
+           class="loading-gif" />
+    </div>
+    <p class="loading-text">Loading your form...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-container">
+    <img src="https://i.pinimg.com/originals/ef/8b/bd/ef8bbd4554dedcc2fd1fd15ab0ebd7a1.gif" 
+         alt="Error" 
+         class="error-gif" />
+    <h2>Unable to Load Form</h2>
+    <p>{{ error }}</p>
+    <button mat-raised-button color="primary" (click)="loadForm()">
+      <mat-icon>refresh</mat-icon>
+      Try Again
+    </button>
+  </div>
+
+  <!-- Form Content -->
+  <div *ngIf="formData && !loading && !error" class="form-content">
+    <!-- Form Header -->
+    <div class="form-header">
+      <div class="form-title-section">
+        <mat-icon class="form-icon">assignment</mat-icon>
+        <h1 class="form-title">{{ formTitle }}</h1>
+      </div>
+      <p class="form-subtitle">Please fill out all required fields and submit your form.</p>
+    </div>
+
+    <!-- Dynamic Form -->
+    <div class="form-card" *ngIf="dynamicForm && fields.length > 0">
+      <form [formGroup]="dynamicForm" (ngSubmit)="onSubmit()" class="public-form">
+        <!-- Field rendering for all fields -->
+        <div *ngFor="let field of fields; let i = index" class="form-field-wrapper">
+          <!-- Field Configuration Indicators -->
+          <div class="field-config-indicators" *ngIf="hasRelevantConfiguration(field.name)">
+            <span *ngFor="let config of getRelevantConfigurations(field.name)" class="config-badge">
+              <mat-icon>{{ config === 'mandatory' ? 'star' : 'verified' }}</mat-icon>
+              {{ config | titlecase }}
+            </span>
+          </div>
+
+          <!-- Textarea Fields -->
+          <ng-container *ngIf="isTextAreaField(field)">
+            <div class="field-label">
+              {{ field.name }}
+              <span *ngIf="getFieldConfiguration(field.name).includes('mandatory')" class="required-indicator">*</span>
+            </div>
+            <mat-form-field appearance="outline" class="full-width textarea-field">
+              <textarea matInput 
+                        [rows]="field.name.toLowerCase().includes('reason') ? 8 : 6"
+                        [formControlName]="sanitizeFieldName(field.name)"
+                        [placeholder]="'Enter your ' + field.name.toLowerCase()"></textarea>
+              <mat-error *ngIf="getFieldConfiguration(field.name).includes('mandatory')">
+                This field is required
+              </mat-error>
+            </mat-form-field>
+          </ng-container>
+
+          <!-- Signature Fields -->
+          <ng-container *ngIf="isSignatureField(field)">
+            <div class="field-label">
+              {{ field.name }}
+              <span *ngIf="getFieldConfiguration(field.name).includes('mandatory')" class="required-indicator">*</span>
+            </div>
+            <mat-form-field appearance="outline" class="full-width signature-field">
+              <input matInput 
+                     type="text"
+                     [formControlName]="sanitizeFieldName(field.name)"
+                     placeholder="Click here to sign or type your signature" />
+              <mat-icon matSuffix class="signature-icon">edit</mat-icon>
+              <mat-error *ngIf="getFieldConfiguration(field.name).includes('mandatory')">
+                This field is required
+              </mat-error>
+            </mat-form-field>
+          </ng-container>
+
+          <!-- Text/Number/Date Fields -->
+          <ng-container *ngIf="field.type !== 'checkbox' && field.type !== 'select' && !isTextAreaField(field) && !isSignatureField(field)">
+            <div class="field-label">
+              {{ field.name }}
+              <span *ngIf="getFieldConfiguration(field.name).includes('mandatory')" class="required-indicator">*</span>
+            </div>
+            <mat-form-field appearance="outline" class="full-width">
+              <input matInput 
+                     [type]="isDateField(field) ? 'date' : (isNumericField(field) ? 'number' : 'text')"
+                     [formControlName]="sanitizeFieldName(field.name)"
+                     [placeholder]="isDateField(field) ? 'Select ' + field.name.toLowerCase() : (isNumericField(field) ? 'Enter ' + field.name.toLowerCase() : 'Enter your ' + field.name.toLowerCase())" />
+              <mat-error *ngIf="getFieldConfiguration(field.name).includes('mandatory')">
+                This field is required
+              </mat-error>
+            </mat-form-field>
+          </ng-container>
+
+          <!-- Select/Dropdown Fields -->
+          <ng-container *ngIf="field.type === 'select'">
+            <div class="field-label">
+              {{ field.name }}
+              <span *ngIf="getFieldConfiguration(field.name).includes('mandatory')" class="required-indicator">*</span>
+            </div>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-select [formControlName]="sanitizeFieldName(field.name)" 
+                          [placeholder]="'Select ' + field.name.toLowerCase()">
+                <mat-option *ngFor="let option of field.options" [value]="option">
+                  {{ option }}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="getFieldConfiguration(field.name).includes('mandatory')">
+                This field is required
+              </mat-error>
+            </mat-form-field>
+          </ng-container>
+
+          <!-- Single Checkbox -->
+          <ng-container *ngIf="field.type === 'checkbox' && !isCheckboxGroup(field)">
+            <div class="single-checkbox-container">
+              <mat-checkbox [formControlName]="sanitizeFieldName(field.name)">
+                <div class="checkbox-label-wrapper">
+                  <span class="checkbox-label-text">{{ field.name }}</span>
+                  <span *ngIf="getFieldConfiguration(field.name).includes('mandatory')" class="required-indicator">*</span>
+                </div>
+              </mat-checkbox>
+              <mat-error *ngIf="getFieldConfiguration(field.name).includes('mandatory') && dynamicForm.get(sanitizeFieldName(field.name))?.invalid && dynamicForm.get(sanitizeFieldName(field.name))?.touched">
+                This field is required
+              </mat-error>
+            </div>
+          </ng-container>
+
+          <!-- Checkbox Group -->
+          <ng-container *ngIf="field.type === 'checkbox' && isCheckboxGroup(field)">
+            <div class="checkbox-group-container">
+              <div class="field-label">
+                {{ field.name }}
+                <span *ngIf="getFieldConfiguration(field.name).includes('mandatory')" class="required-indicator">*</span>
+              </div>
+              <div class="checkbox-group">
+                <mat-checkbox 
+                  *ngFor="let option of field.options" 
+                  [formControlName]="sanitizeFieldName(field.name + '_' + option)"
+                  class="checkbox-option">
+                  {{ option }}
+                </mat-checkbox>
+              </div>
+              <mat-error *ngIf="getFieldConfiguration(field.name).includes('mandatory')">
+                Please select at least one option
+              </mat-error>
+            </div>
+          </ng-container>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="submit-section">
+          <button 
+            mat-raised-button 
+            color="primary" 
+            type="submit"
+            class="submit-btn"
+            [disabled]="saving">
+            <mat-icon *ngIf="!saving">save</mat-icon>
+            <mat-spinner *ngIf="saving" diameter="20"></mat-spinner>
+            {{ saving ? 'Submitting...' : 'Submit Form' }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- No Fields Message -->
+    <div *ngIf="!fields || fields.length === 0" class="no-fields-container">
+      <mat-icon class="info-icon">info</mat-icon>
+      <h3>No Form Fields</h3>
+      <p>This form doesn't contain any fillable fields.</p>
+    </div>
+  </div>
+</div>

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.authService = exports.recipientService = exports.RecipientService = exports.formDataService = exports.FormDataService = exports.formService = exports.FormService = exports.ollamaService = exports.OllamaService = void 0;
+exports.authService = exports.recipientGroupService = exports.RecipientGroupService = exports.recipientService = exports.RecipientService = exports.formDataService = exports.FormDataService = exports.formService = exports.FormService = exports.ollamaService = exports.OllamaService = void 0;
 var ollamaService_1 = require("./ollamaService");
 Object.defineProperty(exports, "OllamaService", { enumerable: true, get: function () { return ollamaService_1.OllamaService; } });
 Object.defineProperty(exports, "ollamaService", { enumerable: true, get: function () { return ollamaService_1.ollamaService; } });
@@ -13,6 +13,9 @@ Object.defineProperty(exports, "formDataService", { enumerable: true, get: funct
 var recipientService_1 = require("./recipientService");
 Object.defineProperty(exports, "RecipientService", { enumerable: true, get: function () { return recipientService_1.RecipientService; } });
 Object.defineProperty(exports, "recipientService", { enumerable: true, get: function () { return recipientService_1.recipientService; } });
+var recipientGroupService_1 = require("./recipientGroupService");
+Object.defineProperty(exports, "RecipientGroupService", { enumerable: true, get: function () { return recipientGroupService_1.RecipientGroupService; } });
+Object.defineProperty(exports, "recipientGroupService", { enumerable: true, get: function () { return recipientGroupService_1.recipientGroupService; } });
 var authService_1 = require("./authService");
 Object.defineProperty(exports, "authService", { enumerable: true, get: function () { return authService_1.authService; } });
 //# sourceMappingURL=index.js.map

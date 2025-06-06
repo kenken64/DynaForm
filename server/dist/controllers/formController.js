@@ -207,6 +207,43 @@ class FormController {
             });
         }
     }
+    async getFormsByPdfFingerprint(req, res) {
+        try {
+            const { fingerprint } = req.params;
+            const userId = req.user?.userId; // Get user ID from auth middleware
+            if (!userId) {
+                res.status(401).json({
+                    success: false,
+                    error: 'Authentication required',
+                    message: 'User ID not found in request'
+                });
+                return;
+            }
+            if (!fingerprint) {
+                res.status(400).json({
+                    success: false,
+                    error: 'PDF fingerprint required',
+                    message: 'Fingerprint parameter is missing'
+                });
+                return;
+            }
+            const forms = await services_1.formService.getFormsByPdfFingerprint(fingerprint, userId);
+            res.status(200).json({
+                success: true,
+                message: `Found ${forms.length} forms with PDF fingerprint: ${fingerprint}`,
+                count: forms.length,
+                data: forms
+            });
+        }
+        catch (error) {
+            console.error('Error retrieving forms by PDF fingerprint:', error);
+            res.status(500).json({
+                success: false,
+                error: 'Failed to retrieve forms by PDF fingerprint',
+                message: error.message
+            });
+        }
+    }
 }
 exports.FormController = FormController;
 exports.formController = new FormController();

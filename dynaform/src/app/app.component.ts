@@ -17,22 +17,21 @@ export class AppComponent {
   constructor(private router: Router, private activatedRoute: ActivatedRoute) {
     this.router.events.pipe(
       filter((event: RouterEvent): event is NavigationEnd => event instanceof NavigationEnd) // Typed event and used type guard
-    ).subscribe(() => {
-      let route = this.activatedRoute;
-      while (route.firstChild) {
-        route = route.firstChild;
-      }
-      const currentRoutePath = route.snapshot.routeConfig ? route.snapshot.routeConfig.path : '';
-      // Check if the route is login, register, landing page, or under an auth segment
-      if (currentRoutePath === 'login' || 
-          currentRoutePath === 'register' ||
-          currentRoutePath === '' ||
-          (route.parent?.snapshot?.routeConfig?.path === 'auth' && (currentRoutePath === 'login' || currentRoutePath === 'register'))) {
+    ).subscribe((event: NavigationEnd) => {
+      // Use the URL to detect public routes instead of route config path
+      const currentUrl = event.url;
+      console.log('Current URL:', currentUrl);
+      
+      // Check if the route is login, register, landing page, or public form
+      if (currentUrl === '/' || 
+          currentUrl === '/login' || 
+          currentUrl === '/register' ||
+          currentUrl.startsWith('/public/form/')) {
         this.showSideMenu = false;
       } else {
         this.showSideMenu = true;
       }
-      console.log('Current route path:', currentRoutePath, 'Show side menu:', this.showSideMenu);
+      console.log('Show side menu:', this.showSideMenu);
     });
   }
 

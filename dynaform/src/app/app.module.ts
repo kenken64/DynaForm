@@ -53,6 +53,7 @@ import { RecipientDialogComponent } from './recipient-dialog/recipient-dialog.co
 import { RecipientGroupDialogComponent } from './recipient-group-dialog/recipient-group-dialog.component';
 import { DebugFormsComponent } from './debug-forms.component';
 import { LandingComponent } from './landing/landing.component';
+import { PublicFormComponent } from './public-form/public-form.component';
 import { BlockchainService } from './services/blockchain.service';
 
 @NgModule({
@@ -75,7 +76,8 @@ import { BlockchainService } from './services/blockchain.service';
     RecipientDialogComponent,
     RecipientGroupDialogComponent,
     DebugFormsComponent,
-    LandingComponent
+    LandingComponent,
+    PublicFormComponent
   ],
   imports: [
     BrowserModule,
