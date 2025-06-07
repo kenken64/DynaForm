@@ -86,7 +86,7 @@ export class PublicFormComponent implements OnInit {
         if (error.status === 400) {
           this.error = 'The form link appears to be invalid. Please check the URL and try again.';
         } else if (error.status === 404) {
-          this.error = 'Form not found. This form may no longer be available.';
+          this.error = 'Form not found or not yet verified. This form may not be publicly available yet or the verification process is still in progress.';
         } else if (error.status === 0) {
           this.error = 'Unable to connect to the server. Please check your internet connection and try again.';
         } else {

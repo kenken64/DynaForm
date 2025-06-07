@@ -5,9 +5,9 @@ load_dotenv()
 
 class Config:
     # MongoDB Configuration
-    MONGODB_URI = os.getenv('MONGODB_URI', 'mongodb://localhost:27017')
-    MONGODB_DATABASE = os.getenv('MONGODB_DATABASE', 'dynaform')
-    FORMS_COLLECTION = os.getenv('FORMS_COLLECTION', 'generated_forms')
+    MONGODB_URI = os.getenv('MONGODB_URI', 'mongodb://doc2formapp:apppassword123@localhost:27017/doc2formjson?authSource=admin')
+    MONGODB_DATABASE = os.getenv('MONGODB_DATABASE', 'doc2formjson')
+    FORMS_COLLECTION = os.getenv('FORMS_COLLECTION', 'generated_form')
     
     # Ollama Configuration
     OLLAMA_HOST = os.getenv('OLLAMA_HOST', 'http://localhost:11434')

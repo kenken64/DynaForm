@@ -138,10 +138,24 @@ export class AskDynaformComponent implements OnInit, OnDestroy, AfterViewChecked
   private updateMessage(id: string, content: string, isStreaming: boolean): void {
     const messageIndex = this.messages.findIndex(m => m.id === id);
     if (messageIndex !== -1) {
-      this.messages[messageIndex].content = content;
+      this.messages[messageIndex].content = this.cleanResponseContent(content);
       this.messages[messageIndex].isStreaming = isStreaming;
       this.shouldScrollToBottom = true;
     }
+  }
+
+  private cleanResponseContent(content: string): string {
+    // Remove <think> tags and their content
+    let cleanedContent = content.replace(/<think>[\s\S]*?<\/think>/gi, '');
+    
+    // Remove any remaining <think> or </think> tags that might be unclosed
+    cleanedContent = cleanedContent.replace(/<\/?think>/gi, '');
+    
+    // Clean up extra whitespace that might be left after removing tags
+    cleanedContent = cleanedContent.replace(/\n\s*\n\s*\n/g, '\n\n');
+    cleanedContent = cleanedContent.trim();
+    
+    return cleanedContent;
   }
 
   private scrollToBottom(): void {
@@ -158,7 +172,7 @@ export class AskDynaformComponent implements OnInit, OnDestroy, AfterViewChecked
     return Date.now().toString() + Math.random().toString(36).substr(2, 9);
   }
 
-  private hasStreamingMessage(): boolean {
+  hasStreamingMessage(): boolean {
     return this.messages.some(message => message.isStreaming);
   }
 

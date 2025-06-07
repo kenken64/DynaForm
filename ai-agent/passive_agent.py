@@ -13,9 +13,9 @@ from conversation_interceptor import conversation_interceptor
 from ollama_monitor import OllamaConversationMonitor
 from ollama_interceptor import get_ollama_interceptor
 
-# Configure logging
+# Configure logging with DEBUG level for detailed interception logging
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
         logging.StreamHandler(sys.stdout),
@@ -39,15 +39,20 @@ class PassiveFormPublishingAgent:
     async def _conversation_callback(self, prompt: str, response: str):
         """Callback function called when a conversation is intercepted"""
         try:
-            logger.info(f"💬 Intercepted conversation - Prompt: {prompt[:100]}...")
+            logger.info(f"💬 [CALLBACK] Intercepted conversation:")
+            logger.info(f"💬 [CALLBACK] Prompt: {prompt}")
+            logger.info(f"💬 [CALLBACK] Response: {response}")
+            logger.info(f"💬 [CALLBACK] Prompt length: {len(prompt)} chars")
+            logger.info(f"💬 [CALLBACK] Response length: {len(response)} chars")
             
             # Use the conversation interceptor to process
+            logger.info(f"🔄 [CALLBACK] Passing to conversation interceptor...")
             result = await conversation_interceptor._intercept_conversation(prompt, response)
             
             if result:
-                logger.info("✅ Successfully processed publishing request")
+                logger.info("✅ [CALLBACK] Successfully processed publishing request")
             else:
-                logger.debug("ℹ️ No publishing action needed for this conversation")
+                logger.info("ℹ️ [CALLBACK] No publishing action needed for this conversation")
                 
         except Exception as e:
             logger.error(f"Error in conversation callback: {e}")
@@ -91,6 +96,11 @@ class PassiveFormPublishingAgent:
             
             # Start the real-time interceptor
             self.interceptor = get_ollama_interceptor(self._conversation_callback)
+            
+            # Connect the response injector for custom response handling
+            self.interceptor.set_response_injector(conversation_interceptor)
+            logger.info("🔄 Connected response injector for successful publication handling")
+            
             logger.info("🎯 Starting real-time Ollama conversation interception...")
             
             # Start interception in the background

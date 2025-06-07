@@ -18,7 +18,14 @@ class VerifiableContractService:
     async def register_url(self, form_id: str, json_fingerprint: str) -> Dict[str, Any]:
         """Register a form URL with the verifiable contract"""
         try:
+            logger.debug(f"🔗 [VERIFIABLE API] Starting URL registration process")
+            logger.debug(f"🔗 [VERIFIABLE API] Form ID: {form_id}")
+            logger.debug(f"🔗 [VERIFIABLE API] JSON Fingerprint: {json_fingerprint}")
+            logger.debug(f"🔗 [VERIFIABLE API] API URL: {self.api_url}")
+            logger.debug(f"🔗 [VERIFIABLE API] Frontend Base URL: {self.frontend_base_url}")
+            
             form_url = self._build_form_url(form_id, json_fingerprint)
+            logger.info(f"🔗 [VERIFIABLE API] Built form URL: {form_url}")
             
             payload = {
                 "url": form_url,
@@ -29,7 +36,10 @@ class VerifiableContractService:
                 }
             }
             
-            logger.info(f"Registering URL: {form_url}")
+            logger.info(f"🔗 [VERIFIABLE API] Registering URL with payload:")
+            logger.info(f"🔗 [VERIFIABLE API] Payload: {payload}")
+            
+            logger.debug(f"🔗 [VERIFIABLE API] Making POST request to: {self.api_url}")
             
             async with aiohttp.ClientSession() as session:
                 async with session.post(
@@ -37,9 +47,17 @@ class VerifiableContractService:
                     json=payload,
                     headers={'Content-Type': 'application/json'}
                 ) as response:
+                    logger.debug(f"🔗 [VERIFIABLE API] Response status: {response.status}")
+                    logger.debug(f"🔗 [VERIFIABLE API] Response headers: {dict(response.headers)}")
+                    
                     if response.status == 200:
                         result = await response.json()
-                        logger.info(f"Successfully registered URL. Transaction hash: {result.get('transactionHash')}")
+                        logger.info(f"🔗 [VERIFIABLE API] ✅ Successfully registered URL!")
+                        logger.info(f"🔗 [VERIFIABLE API] Full response: {result}")
+                        logger.info(f"🔗 [VERIFIABLE API] Transaction hash: {result.get('transactionHash')}")
+                        logger.info(f"🔗 [VERIFIABLE API] Block number: {result.get('blockNumber')}")
+                        logger.info(f"🔗 [VERIFIABLE API] Gas used: {result.get('gasUsed')}")
+                        
                         return {
                             "success": True,
                             "url": form_url,
@@ -50,7 +68,11 @@ class VerifiableContractService:
                         }
                     else:
                         error_text = await response.text()
-                        logger.error(f"Failed to register URL. Status: {response.status}, Error: {error_text}")
+                        logger.error(f"🔗 [VERIFIABLE API] ❌ Failed to register URL!")
+                        logger.error(f"🔗 [VERIFIABLE API] Status: {response.status}")
+                        logger.error(f"🔗 [VERIFIABLE API] Error response: {error_text}")
+                        logger.error(f"🔗 [VERIFIABLE API] Response headers: {dict(response.headers)}")
+                        
                         return {
                             "success": False,
                             "error": f"HTTP {response.status}: {error_text}",
@@ -58,14 +80,16 @@ class VerifiableContractService:
                         }
         
         except aiohttp.ClientError as e:
-            logger.error(f"Network error while registering URL: {e}")
+            logger.error(f"🔗 [VERIFIABLE API] ❌ Network error while registering URL: {e}")
+            logger.exception("🔗 [VERIFIABLE API] Full network error details:")
             return {
                 "success": False,
                 "error": f"Network error: {str(e)}",
                 "url": form_url if 'form_url' in locals() else None
             }
         except Exception as e:
-            logger.error(f"Unexpected error while registering URL: {e}")
+            logger.error(f"🔗 [VERIFIABLE API] ❌ Unexpected error while registering URL: {e}")
+            logger.exception("🔗 [VERIFIABLE API] Full exception details:")
             return {
                 "success": False,
                 "error": f"Unexpected error: {str(e)}",
@@ -117,26 +141,40 @@ class VerifiableContractService:
         """Check the status of the verifiable contract API"""
         try:
             status_url = f"{self.api_url.replace('/urls', '/status')}"
+            logger.debug(f"🔗 [VERIFIABLE API] Checking API status at: {status_url}")
             
             async with aiohttp.ClientSession() as session:
                 async with session.get(status_url) as response:
+                    logger.debug(f"🔗 [VERIFIABLE API] Status check response: {response.status}")
+                    
                     if response.status == 200:
                         result = await response.json()
-                        logger.info("API status check successful")
+                        logger.info(f"🔗 [VERIFIABLE API] ✅ API status check successful: {result}")
+                        logger.debug(f"🔗 [VERIFIABLE API] Full status response: {result}")
                         return {
                             "success": True,
                             "status": result
                         }
                     else:
                         error_text = await response.text()
-                        logger.error(f"API status check failed. Status: {response.status}")
+                        logger.error(f"🔗 [VERIFIABLE API] ❌ API status check failed!")
+                        logger.error(f"🔗 [VERIFIABLE API] Status: {response.status}")
+                        logger.error(f"🔗 [VERIFIABLE API] Error response: {error_text}")
                         return {
                             "success": False,
                             "error": f"HTTP {response.status}: {error_text}"
                         }
         
+        except aiohttp.ClientError as e:
+            logger.error(f"🔗 [VERIFIABLE API] ❌ Network error checking API status: {e}")
+            logger.exception("🔗 [VERIFIABLE API] Full network error details:")
+            return {
+                "success": False,
+                "error": f"Network error: {str(e)}"
+            }
         except Exception as e:
-            logger.error(f"Error checking API status: {e}")
+            logger.error(f"🔗 [VERIFIABLE API] ❌ Unexpected error checking API status: {e}")
+            logger.exception("🔗 [VERIFIABLE API] Full exception details:")
             return {
                 "success": False,
                 "error": str(e)

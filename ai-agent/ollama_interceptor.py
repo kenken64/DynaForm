@@ -36,6 +36,12 @@ class OllamaRealTimeInterceptor:
         self.proxy_app = None
         self.log_monitor_thread = None
         self.recent_conversations = []
+        self.response_injector = None  # Will be set to conversation_interceptor instance
+    
+    def set_response_injector(self, injector):
+        """Set the response injector (conversation_interceptor instance)"""
+        self.response_injector = injector
+        logger.info("🔄 Response injector set for custom response handling")
         
     async def start_interception(self):
         """Start all interception methods"""
@@ -68,8 +74,11 @@ class OllamaRealTimeInterceptor:
                 path = request.path
                 method = request.method
                 
+                logger.info(f"🌐 [PROXY] Incoming {method} request to {path}")
+                
                 # Forward to actual Ollama
                 url = f"{self.ollama_host}{path}"
+                logger.debug(f"🌐 [PROXY] Forwarding to: {url}")
                 
                 # Get request data
                 if method in ['POST', 'PUT']:
@@ -83,22 +92,86 @@ class OllamaRealTimeInterceptor:
                     elif path == '/api/chat' and data:
                         await self._intercept_chat_request(data)
                     
-                    # Forward request
-                    async with aiohttp.ClientSession() as session:
-                        async with session.request(
-                            method, url, data=data, headers=headers
-                        ) as response:
-                            result = await response.read()
-                            
-                            # Intercept response for streaming
-                            if path in ['/api/generate', '/api/chat']:
-                                await self._intercept_response(data, result)
-                            
-                            return web.Response(
-                                body=result,
-                                status=response.status,
-                                headers=response.headers
-                            )
+                    # Check for custom response injection before forwarding
+                    custom_response = None
+                    if self.response_injector and path == '/api/generate':
+                        try:
+                            request_json = json.loads(data.decode('utf-8'))
+                            prompt = request_json.get('prompt', '')
+                            if prompt:
+                                custom_response = self.response_injector.should_inject_response(prompt)
+                                if custom_response:
+                                    logger.info(f"🔄 Injecting custom response for prompt: {prompt[:50]}...")
+                        except Exception as e:
+                            logger.error(f"Error checking for response injection: {e}")
+                    
+                    if custom_response:
+                        # Return custom response instead of forwarding to Ollama
+                        logger.info(f"✅ Returning injected success response")
+                        
+                        # Format as Ollama response
+                        stream = False
+                        try:
+                            request_json = json.loads(data.decode('utf-8'))
+                            stream = request_json.get('stream', False)
+                        except:
+                            pass
+                        
+                        if stream:
+                            # Streaming response format
+                            response_data = json.dumps({
+                                "model": "auto-publisher",
+                                "created_at": datetime.now().isoformat(),
+                                "response": custom_response,
+                                "done": True
+                            })
+                        else:
+                            # Non-streaming response format
+                            response_data = json.dumps({
+                                "model": "auto-publisher",
+                                "created_at": datetime.now().isoformat(),
+                                "response": custom_response,
+                                "done": True,
+                                "context": [],
+                                "total_duration": 1000000000,
+                                "load_duration": 500000000,
+                                "prompt_eval_count": 0,
+                                "prompt_eval_duration": 0,
+                                "eval_count": len(custom_response.split()),
+                                "eval_duration": 500000000
+                            })
+                        
+                        # Also trigger the conversation callback for consistency
+                        try:
+                            request_json = json.loads(data.decode('utf-8'))
+                            prompt = request_json.get('prompt', '')
+                            if prompt:
+                                await self.conversation_callback(prompt, custom_response)
+                        except Exception as e:
+                            logger.error(f"Error triggering callback for injected response: {e}")
+                        
+                        return web.Response(
+                            body=response_data.encode('utf-8'),
+                            status=200,
+                            headers={'Content-Type': 'application/json'}
+                        )
+                    else:
+                        # Forward request normally
+                        async with aiohttp.ClientSession() as session:
+                            async with session.request(
+                                method, url, data=data, headers=headers
+                            ) as response:
+                                result = await response.read()
+                                
+                                # Intercept response for streaming
+                                if path in ['/api/generate', '/api/chat']:
+                                    await self._intercept_response(data, result)
+                                
+                                return web.Response(
+                                    body=result,
+                                    status=response.status,
+                                    headers=response.headers
+                                )
                 else:
                     # GET requests
                     async with aiohttp.ClientSession() as session:
@@ -138,18 +211,33 @@ class OllamaRealTimeInterceptor:
             json_data = json.loads(data.decode('utf-8'))
             prompt = json_data.get('prompt', '')
             model = json_data.get('model', '')
+            stream = json_data.get('stream', False)
+            
+            logger.info(f"🔍 [INTERCEPT] Generate request detected:")
+            logger.info(f"🔍 [INTERCEPT] Model: {model}")
+            logger.info(f"🔍 [INTERCEPT] Stream: {stream}")
+            logger.info(f"🔍 [INTERCEPT] Prompt: {prompt}")
             
             if prompt:
                 logger.debug(f"🔍 Intercepted generate request: {prompt[:100]}...")
                 # Store for matching with response
-                self.recent_conversations.append({
+                conversation_entry = {
                     'timestamp': datetime.now(),
                     'prompt': prompt,
                     'model': model,
-                    'type': 'generate'
-                })
+                    'type': 'generate',
+                    'stream': stream
+                }
+                self.recent_conversations.append(conversation_entry)
+                logger.debug(f"🔍 [DEBUG] Stored conversation entry: {conversation_entry}")
+                
+                # Clean old conversations (keep last 10)
+                if len(self.recent_conversations) > 10:
+                    self.recent_conversations = self.recent_conversations[-10:]
+                    
         except Exception as e:
             logger.error(f"Error intercepting generate request: {e}")
+            logger.exception("Full exception details:")
     
     async def _intercept_chat_request(self, data: bytes):
         """Intercept /api/chat requests"""
@@ -157,58 +245,101 @@ class OllamaRealTimeInterceptor:
             json_data = json.loads(data.decode('utf-8'))
             messages = json_data.get('messages', [])
             model = json_data.get('model', '')
+            stream = json_data.get('stream', False)
+            
+            logger.info(f"🔍 [INTERCEPT] Chat request detected:")
+            logger.info(f"🔍 [INTERCEPT] Model: {model}")
+            logger.info(f"🔍 [INTERCEPT] Stream: {stream}")
+            logger.info(f"🔍 [INTERCEPT] Messages count: {len(messages)}")
             
             if messages:
                 # Get the last user message
                 user_messages = [msg for msg in messages if msg.get('role') == 'user']
+                logger.debug(f"🔍 [DEBUG] User messages found: {len(user_messages)}")
+                
                 if user_messages:
                     prompt = user_messages[-1].get('content', '')
+                    logger.info(f"🔍 [INTERCEPT] Latest user message: {prompt}")
                     logger.debug(f"🔍 Intercepted chat request: {prompt[:100]}...")
                     
-                    self.recent_conversations.append({
+                    conversation_entry = {
                         'timestamp': datetime.now(),
                         'prompt': prompt,
                         'messages': messages,
                         'model': model,
-                        'type': 'chat'
-                    })
+                        'type': 'chat',
+                        'stream': stream
+                    }
+                    self.recent_conversations.append(conversation_entry)
+                    logger.debug(f"🔍 [DEBUG] Stored chat conversation entry")
+                    
+                    # Clean old conversations (keep last 10)
+                    if len(self.recent_conversations) > 10:
+                        self.recent_conversations = self.recent_conversations[-10:]
+                        
         except Exception as e:
             logger.error(f"Error intercepting chat request: {e}")
+            logger.exception("Full exception details:")
     
     async def _intercept_response(self, request_data: bytes, response_data: bytes):
         """Match responses with requests and trigger callback"""
         try:
+            logger.debug(f"🔍 [DEBUG] Intercepting response...")
+            
             # Parse response
             response_text = response_data.decode('utf-8')
+            logger.debug(f"🔍 [DEBUG] Raw response length: {len(response_text)} chars")
             
             # Handle streaming responses (one JSON per line)
             response_parts = []
-            for line in response_text.strip().split('\n'):
+            lines = response_text.strip().split('\n')
+            logger.debug(f"🔍 [DEBUG] Response lines count: {len(lines)}")
+            
+            for i, line in enumerate(lines):
                 if line.strip():
                     try:
                         part = json.loads(line)
                         if 'response' in part:
                             response_parts.append(part['response'])
-                    except json.JSONDecodeError:
+                            logger.debug(f"🔍 [DEBUG] Extracted response part {i}: {part['response'][:50]}...")
+                    except json.JSONDecodeError as e:
+                        logger.debug(f"🔍 [DEBUG] Failed to parse line {i}: {e}")
                         continue
+            
+            logger.debug(f"🔍 [DEBUG] Total response parts extracted: {len(response_parts)}")
             
             if response_parts:
                 full_response = ''.join(response_parts)
+                logger.info(f"🔍 [INTERCEPT] Full response assembled: {full_response}")
                 
                 # Match with recent conversation
+                logger.debug(f"🔍 [DEBUG] Recent conversations available: {len(self.recent_conversations)}")
+                
                 if self.recent_conversations:
                     recent = self.recent_conversations[-1]
                     prompt = recent.get('prompt', '')
+                    logger.debug(f"🔍 [DEBUG] Matching with prompt: {prompt}")
                     
                     if prompt and full_response:
-                        logger.info(f"✅ Matched conversation pair - triggering callback")
+                        logger.info(f"✅ [INTERCEPT] Matched conversation pair - triggering callback")
+                        logger.info(f"✅ [INTERCEPT] Prompt: {prompt}")
+                        logger.info(f"✅ [INTERCEPT] Response: {full_response}")
+                        
                         await self.conversation_callback(prompt, full_response)
                         
                         # Clean up old conversations
                         self.recent_conversations = self.recent_conversations[-5:]
+                        logger.debug(f"🔍 [DEBUG] Cleaned up conversations, remaining: {len(self.recent_conversations)}")
+                    else:
+                        logger.debug(f"🔍 [DEBUG] Missing prompt or response, cannot match")
+                else:
+                    logger.debug(f"🔍 [DEBUG] No recent conversations to match with")
+            else:
+                logger.debug(f"🔍 [DEBUG] No response parts extracted from response")
             
         except Exception as e:
             logger.error(f"Error intercepting response: {e}")
+            logger.exception("Full exception details:")
     
     async def _monitor_network_traffic(self):
         """Monitor network traffic to detect Ollama API calls"""
