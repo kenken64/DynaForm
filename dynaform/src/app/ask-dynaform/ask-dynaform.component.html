@@ -66,36 +66,14 @@
               {{ message.content }}
             </div>
             
-            <!-- Streaming indicator -->
+            <!-- Show thinking text for streaming messages -->
             <div *ngIf="message.isStreaming" class="streaming-indicator">
-              <div class="typing-dots">
-                <span></span>
-                <span></span>
-                <span></span>
-              </div>
+              <div class="thinking-text">Thinking...</div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Loading indicator -->
-      <div *ngIf="isLoading" class="loading-message">
-        <div class="message-avatar">
-          <div class="avatar-circle assistant-avatar">
-            <mat-icon>psychology</mat-icon>
-          </div>
-        </div>
-        <div class="message-content">
-          <div class="thinking-indicator">
-            <div class="thinking-text">Thinking...</div>
-            <div class="thinking-animation">
-              <div class="thinking-dot"></div>
-              <div class="thinking-dot"></div>
-              <div class="thinking-dot"></div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -122,7 +100,7 @@
             cdkAutosizeMinRows="1"
             cdkAutosizeMaxRows="6"
             (keydown)="onKeyDown($event)"
-            [disabled]="isLoading"></textarea>
+            [disabled]="hasStreamingMessage()"></textarea>
         </mat-form-field>
         
         <button 
@@ -130,10 +108,10 @@
           color="primary"
           type="submit"
           class="send-button"
-          [disabled]="chatForm.invalid || isLoading"
+          [disabled]="chatForm.invalid || hasStreamingMessage()"
           aria-label="Send message">
-          <mat-icon *ngIf="!isLoading">send</mat-icon>
-          <mat-spinner *ngIf="isLoading" diameter="24"></mat-spinner>
+          <mat-icon *ngIf="!hasStreamingMessage()">send</mat-icon>
+          <mat-spinner *ngIf="hasStreamingMessage()" diameter="24"></mat-spinner>
         </button>
       </div>
       

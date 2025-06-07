@@ -73,7 +73,7 @@ export class AskDynaformComponent implements OnInit, OnDestroy, AfterViewChecked
   }
 
   onSubmit(): void {
-    if (this.chatForm.invalid || this.isLoading) {
+    if (this.chatForm.invalid || this.hasStreamingMessage()) {
       return;
     }
 
@@ -98,7 +98,6 @@ export class AskDynaformComponent implements OnInit, OnDestroy, AfterViewChecked
   }
 
   private sendMessage(message: string): void {
-    this.isLoading = true;
     this.error = '';
 
     // Add streaming assistant message
@@ -122,13 +121,11 @@ export class AskDynaformComponent implements OnInit, OnDestroy, AfterViewChecked
     ).subscribe({
       next: (response) => {
         this.updateMessage(assistantMessageId, response.data.message, false);
-        this.isLoading = false;
       },
       error: (error) => {
         console.error('Chat error:', error);
         this.updateMessage(assistantMessageId, 'Sorry, I encountered an error while processing your request. Please try again.', false);
         this.error = 'Failed to send message. Please try again.';
-        this.isLoading = false;
       }
     });
   }
@@ -159,6 +156,10 @@ export class AskDynaformComponent implements OnInit, OnDestroy, AfterViewChecked
 
   private generateMessageId(): string {
     return Date.now().toString() + Math.random().toString(36).substr(2, 9);
+  }
+
+  private hasStreamingMessage(): boolean {
+    return this.messages.some(message => message.isStreaming);
   }
 
   onKeyDown(event: KeyboardEvent): void {

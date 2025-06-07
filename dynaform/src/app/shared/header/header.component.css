@@ -1,9 +1,9 @@
 /* Dashboard Header Styles */
 .dashboard-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--header-gradient);
   color: white;
   padding: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px var(--shadow-color);
   position: sticky;
   top: 0;
   z-index: 999; /* Lower than side menu z-index */
@@ -55,6 +55,22 @@
 .user-info {
   font-size: 14px;
   opacity: 0.9;
+}
+
+.theme-toggle-button {
+  color: white !important;
+  border: none !important;
+  background: none !important;
+  padding: 8px !important;
+  min-width: auto !important;
+  width: auto !important;
+  line-height: 1 !important;
+  margin-right: 8px;
+}
+
+.theme-toggle-button:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 50%;
 }
 
 .debug-button {

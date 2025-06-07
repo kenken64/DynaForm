@@ -98,9 +98,9 @@ export const config = {
     return process.env.MONGODB_DATABASE || process.env.MONGODB_DB_NAME || 'doc2formjson';
   },
   
-  // Ollama Configuration
+  // Ollama Configuration (via AI Agent Proxy for conversation interception)
   get OLLAMA_BASE_URL() {
-    return process.env.OLLAMA_BASE_URL || 'http://localhost:11434';
+    return process.env.OLLAMA_BASE_URL || 'http://localhost:11435';
   },
   get DEFAULT_MODEL_NAME() {
     return process.env.DEFAULT_QWEN_MODEL_NAME || 'qwen2.5vl:latest';
