@@ -107,7 +107,13 @@ class OllamaService:
     
     async def analyze_publish_intent(self, text: str) -> Dict[str, Any]:
         """Analyze text to understand publishing intent and extract relevant information"""
-        system_prompt = """You are a JSON-only response AI. You MUST respond with valid JSON only, no other text.
+        system_prompt = """You are a JSON-only response AI. You MUST respond with valid JSON only, no other text, no thinking, no explanation.
+
+DO NOT include:
+- <thinking> tags or thoughts
+- Code blocks or markdown
+- Explanatory text
+- Any text before or after the JSON
 
 Analyze user requests for publishing forms to blockchain and respond with this exact JSON structure:
 
@@ -124,7 +130,7 @@ Example inputs and responses:
 - "publish form abc123" → {"wants_to_publish": true, "form_id": "abc123", "confidence": 0.9, "extracted_info": "User wants to publish form abc123"}
 - "hello" → {"wants_to_publish": false, "form_id": null, "confidence": 0.1, "extracted_info": "General greeting, no publish intent"}
 
-RESPOND ONLY WITH VALID JSON."""
+RESPOND WITH ONLY THE JSON OBJECT, NO OTHER TEXT."""
         
         try:
             response = await self.generate_response(
@@ -134,10 +140,26 @@ RESPOND ONLY WITH VALID JSON."""
             
             if response:
                 try:
-                    # Clean the response - remove any non-JSON content
+                    # Clean the response - remove any non-JSON content including thinking indicators
                     response = response.strip()
-                    if response.startswith('```json'):
-                        response = response.replace('```json', '').replace('```', '').strip()
+                    
+                    # Remove common thinking indicators and markdown
+                    thinking_patterns = [
+                        r'<thinking>.*?</thinking>',
+                        r'<think>.*?</think>',
+                        r'```json\s*',
+                        r'```\s*',
+                        r'思考：.*?(?=\{|$)',
+                        r'让我分析.*?(?=\{|$)',
+                        r'Looking at.*?(?=\{|$)',
+                        r'Analyzing.*?(?=\{|$)'
+                    ]
+                    
+                    import re
+                    for pattern in thinking_patterns:
+                        response = re.sub(pattern, '', response, flags=re.DOTALL | re.IGNORECASE)
+                    
+                    response = response.strip()
                     
                     # Find JSON object in response
                     start_idx = response.find('{')

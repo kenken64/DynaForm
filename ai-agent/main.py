@@ -3,9 +3,6 @@ import logging
 import signal
 import sys
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
 
 # Local imports
 from config import config
@@ -14,7 +11,6 @@ from verifiable_contract_service import verifiable_contract_service
 from ollama_service import ollama_service
 from conversation_interceptor import conversation_interceptor
 from ollama_monitor import OllamaConversationMonitor
-from ai_agent import form_publishing_agent
 
 # Configure logging
 logging.basicConfig(
@@ -35,27 +31,9 @@ class MessageResponse(BaseModel):
     response: str
     success: bool
 
-class ConversationRequest(BaseModel):
-    prompt: str
-    response: str
-
-class ConversationResponse(BaseModel):
-    intercepted: bool
-    action_taken: bool
-    message: str
-
 class HealthResponse(BaseModel):
     status: str
     services: dict
-
-class ConversationRequest(BaseModel):
-    prompt: str
-    response: str
-
-class ConversationResponse(BaseModel):
-    intercepted: bool
-    action_taken: bool
-    message: str
 
 # Global shutdown flag
 shutdown_event = asyncio.Event()
@@ -137,38 +115,6 @@ async def health_check():
         logger.error(f"Health check failed: {e}")
         raise HTTPException(status_code=500, detail=f"Health check failed: {str(e)}")
 
-@app.post("/intercept-conversation", response_model=ConversationResponse)
-async def intercept_conversation(request: ConversationRequest):
-    """Endpoint for external systems to send conversations for interception"""
-    try:
-        logger.info(f"🕵️ Intercepting conversation - Prompt: {request.prompt[:100]}...")
-        
-        # Use the conversation interceptor to process
-        result = await conversation_interceptor._intercept_conversation(request.prompt, request.response)
-        
-        if result:
-            logger.info("✅ Successfully processed publishing request from external conversation")
-            return ConversationResponse(
-                intercepted=True,
-                action_taken=True,
-                message="Form publishing request detected and processed successfully"
-            )
-        else:
-            logger.debug("ℹ️ No publishing action needed for this conversation")
-            return ConversationResponse(
-                intercepted=True,
-                action_taken=False,
-                message="Conversation intercepted but no publishing keywords detected"
-            )
-            
-    except Exception as e:
-        logger.error(f"Error intercepting external conversation: {e}")
-        return ConversationResponse(
-            intercepted=False,
-            action_taken=False,
-            message=f"Error processing conversation: {str(e)}"
-        )
-
 @app.post("/chat", response_model=MessageResponse)
 async def chat_endpoint(request: MessageRequest):
     """Main chat endpoint for processing user messages"""
@@ -246,38 +192,6 @@ async def publish_form_endpoint(form_id: str):
         logger.error(f"Error publishing form {form_id}: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/intercept-conversation", response_model=ConversationResponse)
-async def intercept_conversation(request: ConversationRequest):
-    """Endpoint for external systems to send conversations for interception"""
-    try:
-        logger.info(f"🕵️ Intercepting conversation - Prompt: {request.prompt[:100]}...")
-        
-        # Use the conversation interceptor to process
-        result = await conversation_interceptor._intercept_conversation(request.prompt, request.response)
-        
-        if result:
-            logger.info("✅ Successfully processed publishing request from external conversation")
-            return ConversationResponse(
-                intercepted=True,
-                action_taken=True,
-                message="Form publishing request detected and processed successfully"
-            )
-        else:
-            logger.debug("ℹ️ No publishing action needed for this conversation")
-            return ConversationResponse(
-                intercepted=True,
-                action_taken=False,
-                message="Conversation intercepted but no publishing keywords detected"
-            )
-            
-    except Exception as e:
-        logger.error(f"Error intercepting external conversation: {e}")
-        return ConversationResponse(
-            intercepted=False,
-            action_taken=False,
-            message=f"Error processing conversation: {str(e)}"
-        )
-
 @app.get("/")
 async def root():
     """Root endpoint"""
@@ -353,15 +267,13 @@ async def main():
         else:
             # Run FastAPI server
             import uvicorn
-            config_uvicorn = uvicorn.Config(
+            await uvicorn.run(
                 "main:app",
                 host=args.host,
                 port=args.port,
                 reload=False,
                 log_level="info"
             )
-            server = uvicorn.Server(config_uvicorn)
-            await server.serve()
     
     except Exception as e:
         logger.error(f"Application error: {e}")

@@ -21,69 +21,6 @@ export class ChatService {
     this.modelName = config.DEEPSEEK_MODEL_NAME;
   }
 
-  /**
-   * Filters out internal reasoning tags from AI model responses
-   * Removes content between <think> and </think> tags, and other similar patterns
-   */
-  private filterInternalReasoningTags(content: string): string {
-    if (!content) return content;
-
-    // Remove <think>...</think> blocks (case insensitive, multiline)
-    let filtered = content.replace(/<think>[\s\S]*?<\/think>/gi, '');
-    
-    // Remove <thinking>...</thinking> blocks
-    filtered = filtered.replace(/<thinking>[\s\S]*?<\/thinking>/gi, '');
-    
-    // Remove <reasoning>...</reasoning> blocks
-    filtered = filtered.replace(/<reasoning>[\s\S]*?<\/reasoning>/gi, '');
-    
-    // Remove <internal>...</internal> blocks
-    filtered = filtered.replace(/<internal>[\s\S]*?<\/internal>/gi, '');
-    
-    // Clean up extra whitespace that might be left behind
-    filtered = filtered.replace(/\n\s*\n\s*\n/g, '\n\n').trim();
-    
-    return filtered;
-  }
-
-  /**
-   * Send conversation to AI agent for potential interception and processing
-   */
-  private async sendToAIAgentInterceptor(prompt: string, response: string): Promise<void> {
-    try {
-      const aiAgentUrl = 'http://localhost:8001/intercept-conversation';
-      
-      const payload = {
-        prompt: prompt,
-        response: response
-      };
-
-      const interceptResponse = await fetch(aiAgentUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-        // Add a short timeout since this is non-critical
-        signal: AbortSignal.timeout(5000)
-      });
-
-      if (interceptResponse.ok) {
-        const result = await interceptResponse.json();
-        if (result.action_taken) {
-          console.log(`🤖 AI Agent detected and processed publishing request: ${result.message}`);
-        } else {
-          console.log(`🤖 AI Agent intercepted conversation but no action needed: ${result.message}`);
-        }
-      } else {
-        console.warn(`AI Agent interception failed: ${interceptResponse.status} ${interceptResponse.statusText}`);
-      }
-    } catch (error: any) {
-      // Log but don't throw - this is a non-critical feature
-      console.warn('Failed to send conversation to AI agent interceptor:', error.message);
-    }
-  }
-
   async sendMessage(message: string): Promise<ChatResponse> {
     const payload = {
       model: this.modelName,
@@ -124,17 +61,8 @@ export class ChatService {
       const result = await response.json() as OllamaGenerateResponse;
       console.log("Ollama chat generation complete.");
       
-      // Filter out internal reasoning tags before returning the response
-      const filteredResponse = this.filterInternalReasoningTags(result.response);
-      
-      // Send conversation to AI agent interceptor for potential form publishing detection
-      // This is done asynchronously and doesn't block the response
-      this.sendToAIAgentInterceptor(message, filteredResponse).catch(err => {
-        console.warn('AI agent interceptor call failed:', err.message);
-      });
-      
       return {
-        message: filteredResponse,
+        message: result.response,
         timestamp: new Date()
       };
     } catch (error: any) {

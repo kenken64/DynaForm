@@ -63,25 +63,14 @@ case $MODE in
         echo "🧪 Testing real-time interception capabilities..."
         python test_real_time_interception.py
         ;;
-    "test-workflow"|"complete-test")
-        echo "🧪 Testing complete end-to-end workflow..."
-        echo "This will test:"
-        echo "  ✅ MongoDB connectivity and form retrieval"
-        echo "  ✅ Automatic fingerprint generation"
-        echo "  ✅ Conversation interception simulation"
-        echo "  ✅ Blockchain publishing workflow"
-        echo ""
-        python test_complete_workflow.py
-        ;;
     "help"|"-h"|"--help")
         echo ""
         echo "📋 Available modes:"
-        echo "  interceptor       - Start real-time conversation interception (default)"
-        echo "  test <form_id>    - Test publishing a specific form"
-        echo "  simulate <text>   - Simulate a conversation"  
+        echo "  interceptor    - Start real-time conversation interception (default)"
+        echo "  test <form_id> - Test publishing a specific form"
+        echo "  simulate <text> - Simulate a conversation"  
         echo "  test-interception - Test the interception system"
-        echo "  test-workflow     - Test complete end-to-end workflow"
-        echo "  help              - Show this help message"
+        echo "  help           - Show this help message"
         echo ""
         echo "🔧 Configuration:"
         echo "  - Edit .env file for MongoDB, Ollama, and API settings"

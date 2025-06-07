@@ -77,6 +77,25 @@
           </div>
         </div>
       </div>
+
+      <!-- Loading indicator -->
+      <div *ngIf="isLoading" class="loading-message">
+        <div class="message-avatar">
+          <div class="avatar-circle assistant-avatar">
+            <mat-icon>psychology</mat-icon>
+          </div>
+        </div>
+        <div class="message-content">
+          <div class="thinking-indicator">
+            <div class="thinking-text">Thinking...</div>
+            <div class="thinking-animation">
+              <div class="thinking-dot"></div>
+              <div class="thinking-dot"></div>
+              <div class="thinking-dot"></div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
