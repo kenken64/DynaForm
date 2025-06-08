@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { ollamaService } from '../services';
+import { redisCacheService } from '../services/redisCacheService';
 import { OllamaError } from '../types';
 import { config } from '../config';
 
@@ -24,12 +25,108 @@ export class ImageController {
       const imageBuffer: Buffer = req.file.buffer;
       const imageBase64: string = imageBuffer.toString('base64');
 
-      const ollamaResult = await ollamaService.generateWithImage(imageBase64, prompt, model);
+      // Check if this is a form analysis request (OCR)
+      const isFormAnalysis = prompt.toLowerCase().includes('form') || 
+                             prompt.toLowerCase().includes('field') ||
+                             prompt.toLowerCase().includes('json');
+
+      let ollamaResult;
+      let cacheHit = false;
+
+      if (isFormAnalysis) {
+        // Generate fingerprint for caching
+        const jsonFingerprint = redisCacheService.generateJsonFingerprint(imageBuffer, prompt);
+        console.log(`🔍 Generated fingerprint for OCR request: ${jsonFingerprint}`);
+
+        // Check cache first
+        const cachedResult = await redisCacheService.getCachedOcrResult(jsonFingerprint);
+        
+        if (cachedResult) {
+          console.log(`✅ Using cached OCR result for fingerprint: ${jsonFingerprint}`);
+          cacheHit = true;
+          
+          // Return cached result in the same format as Ollama response
+          res.json({
+            description: `\`\`\`json
+${JSON.stringify({
+  forms: [{
+    title: cachedResult.formTitle,
+    fields: cachedResult.fields
+  }]
+}, null, 2)}
+\`\`\``,
+            modelUsed: model,
+            createdAt: new Date().toISOString(),
+            cached: true,
+            cacheTimestamp: cachedResult.cachedAt,
+            timings: {
+              totalDuration: 0,
+              promptEvalDuration: 0,
+              evalDuration: 0,
+            },
+            tokenCounts: {
+              promptEvalCount: 0,
+              evalCount: 0,
+            }
+          });
+          return;
+        }
+
+        // If not in cache, proceed with Ollama call
+        console.log(`🔄 Cache miss, proceeding with Ollama call for fingerprint: ${jsonFingerprint}`);
+        ollamaResult = await ollamaService.generateWithImage(imageBase64, prompt, model);
+
+        // Parse and cache the result for future use
+        try {
+          const jsonMatch = ollamaResult.response.match(/```json\s*([\s\S]*?)```/);
+          if (jsonMatch) {
+            const parsed = JSON.parse(jsonMatch[1]);
+            
+            // Handle different JSON response formats
+            let formData = null;
+            let fields = [];
+            let title = null;
+            
+            if (parsed.forms && parsed.forms[0]) {
+              // Format: { forms: [{ title: "...", fields: [...] }] }
+              formData = parsed.forms[0];
+              title = formData.title;
+              fields = formData.fields || [];
+            } else if (parsed.form) {
+              // Format: { form: { title: "...", sections: [...] } }
+              title = parsed.form.title;
+              fields = parsed.form.sections || parsed.form.fields || [];
+            } else if (parsed.title && parsed.fields) {
+              // Format: { title: "...", fields: [...] }
+              title = parsed.title;
+              fields = parsed.fields;
+            } else {
+              // Generic format - cache the entire parsed object
+              title = "Form Analysis Result";
+              fields = [parsed];
+            }
+            
+            await redisCacheService.cacheOcrResult(
+              jsonFingerprint,
+              title,
+              fields,
+              parsed
+            );
+            console.log(`💾 Cached OCR result for future use: ${jsonFingerprint}`);
+          }
+        } catch (parseError) {
+          console.warn(`⚠️ Could not parse OCR result for caching: ${parseError}`);
+        }
+      } else {
+        // For non-form requests, proceed directly with Ollama
+        ollamaResult = await ollamaService.generateWithImage(imageBase64, prompt, model);
+      }
 
       res.json({
         description: ollamaResult.response,
         modelUsed: ollamaResult.model,
         createdAt: ollamaResult.created_at,
+        cached: cacheHit,
         timings: {
           totalDuration: ollamaResult.total_duration,
           promptEvalDuration: ollamaResult.prompt_eval_duration,
@@ -64,9 +161,10 @@ export class ImageController {
   async healthCheck(req: Request, res: Response): Promise<void> {
     try {
       const isHealthy = await ollamaService.healthCheck();
+      const cacheHealth = await redisCacheService.healthCheck();
       
-      res.status(isHealthy ? 200 : 503).json({
-        status: isHealthy ? 'healthy' : 'unhealthy',
+      res.status((isHealthy && cacheHealth) ? 200 : 503).json({
+        status: (isHealthy && cacheHealth) ? 'healthy' : 'unhealthy',
         timestamp: new Date().toISOString(),
         service: config.SERVICE_NAME,
         version: config.API_VERSION,
@@ -74,6 +172,10 @@ export class ImageController {
           baseUrl: config.OLLAMA_BASE_URL,
           defaultModel: config.DEFAULT_MODEL_NAME,
           accessible: isHealthy
+        },
+        cache: {
+          accessible: cacheHealth,
+          stats: cacheHealth ? await redisCacheService.getCacheStats() : null
         }
       });
     } catch (error: any) {
@@ -133,6 +235,65 @@ export class ImageController {
           message: error.message
         });
       }
+    }
+  }
+
+  async getCacheStats(req: Request, res: Response): Promise<void> {
+    try {
+      const stats = await redisCacheService.getCacheStats();
+      res.json({
+        status: 'success',
+        timestamp: new Date().toISOString(),
+        cache: stats
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        status: 'error',
+        timestamp: new Date().toISOString(),
+        error: error.message
+      });
+    }
+  }
+
+  async getCachePerformance(req: Request, res: Response): Promise<void> {
+    try {
+      const { cachePerformanceMonitor } = await import('../utils/cachePerformanceMonitor');
+      const globalMetrics = cachePerformanceMonitor.getGlobalMetrics();
+      const topPerformers = cachePerformanceMonitor.getTopPerformers(5);
+      
+      res.json({
+        status: 'success',
+        timestamp: new Date().toISOString(),
+        performance: {
+          global: globalMetrics,
+          topPerformers,
+          memoryInfo: await redisCacheService.getCacheStats()
+        }
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        status: 'error',
+        timestamp: new Date().toISOString(),
+        error: error.message
+      });
+    }
+  }
+
+  async clearCache(req: Request, res: Response): Promise<void> {
+    try {
+      const clearedCount = await redisCacheService.clearOcrCache();
+      res.json({
+        status: 'success',
+        timestamp: new Date().toISOString(),
+        message: `Cleared ${clearedCount} cache entries`,
+        clearedCount
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        status: 'error',
+        timestamp: new Date().toISOString(),
+        error: error.message
+      });
     }
   }
 }

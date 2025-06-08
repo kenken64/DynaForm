@@ -53,6 +53,11 @@ export class DashboardComponent implements AfterViewInit, OnInit {
   // PDF metadata and fingerprint data
   pdfMetadata: PdfMetadata | null = null;
 
+  // Cache and performance tracking
+  isCachedResult = false;
+  cacheTimestamp: string | null = null;
+  processingTime: number = 0;
+
   // Side menu state
   isSideMenuCollapsed = false;
   selectedFormFromMenu: GeneratedForm | null = null;
@@ -207,6 +212,8 @@ export class DashboardComponent implements AfterViewInit, OnInit {
   fetchImageAndDescribe(): void {
     this.isFetchingForm = true; // Start spinner
     this.error = ''; // Clear any previous errors
+    this.isCachedResult = false; // Reset cache status
+    this.cacheTimestamp = null;
     
     if (!this.generatedImageUrl) {
       this.isFetchingForm = false; // Stop spinner if no image URL
@@ -215,6 +222,7 @@ export class DashboardComponent implements AfterViewInit, OnInit {
     }
 
     this.loading = true;
+    const startTime = Date.now();
 
     fetch(this.generatedImageUrl)
       .then(res => res.blob())
@@ -224,6 +232,17 @@ export class DashboardComponent implements AfterViewInit, OnInit {
         this.describeService.describeImage(file).subscribe({
           next: (res: any) => {
             try {
+              this.processingTime = Date.now() - startTime;
+              
+              // Check if result is from cache
+              if (res.cached) {
+                this.isCachedResult = true;
+                this.cacheTimestamp = res.cacheTimestamp;
+                console.log(`✅ Using cached OCR result (${this.processingTime}ms)`);
+              } else {
+                console.log(`🔄 Fresh OCR result (${this.processingTime}ms)`);
+              }
+
               const jsonStr = res.description.match(/```json\s*([\s\S]*?)```/)?.[1];
               if (!jsonStr) {
                 this.error = 'Failed to extract JSON from response.';
@@ -256,6 +275,8 @@ export class DashboardComponent implements AfterViewInit, OnInit {
             }
           },          error: (err: any) => {
             console.error('Image description error:', err);
+            this.processingTime = Date.now() - startTime;
+            
             // Provide more specific error messages based on error type
             if (err.status === 404) {
               this.error = 'The AI model is not available. Please ensure the Ollama service is running with the required model.';

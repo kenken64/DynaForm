@@ -198,4 +198,37 @@ export class FormsListComponent implements OnInit {
   trackByFormId(index: number, form: GeneratedForm): string {
     return form._id;
   }
+
+  isBlockchainVerified(form: GeneratedForm): boolean {
+    return form.status === 'verified' && !!form.blockchainInfo;
+  }
+
+  getVerificationTooltip(form: GeneratedForm): string {
+    if (this.isBlockchainVerified(form)) {
+      const blockchainInfo = form.blockchainInfo!;
+      return `Blockchain Verified\nTransaction: ${blockchainInfo.transactionHash || 'N/A'}\nVerified: ${blockchainInfo.verifiedAt ? new Date(blockchainInfo.verifiedAt).toLocaleString() : 'N/A'}`;
+    }
+    return 'Not verified on blockchain';
+  }
+
+  // Development method to demo blockchain verification
+  // This can be removed in production
+  mockBlockchainVerification(form: GeneratedForm): void {
+    if (this.isBlockchainVerified(form)) {
+      // Remove verification
+      form.status = undefined;
+      form.blockchainInfo = undefined;
+    } else {
+      // Add mock verification
+      form.status = 'verified';
+      form.blockchainInfo = {
+        publicUrl: `http://localhost:4200/public/form/${form._id}/mock123`,
+        transactionHash: '0x331cf982723264066e0dfd34af9583a7f63588136ecf26e1802bb18dc740d400',
+        blockNumber: 567890,
+        gasUsed: 45000,
+        verifiedAt: new Date().toISOString(),
+        contractResponse: { success: true }
+      };
+    }
+  }
 }

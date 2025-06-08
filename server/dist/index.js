@@ -3,10 +3,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const config_1 = require("./config");
 const app_1 = require("./app");
 const connection_1 = require("./database/connection");
+const redisCacheService_1 = require("./services/redisCacheService");
 async function startServer() {
     try {
         // Connect to MongoDB
         await (0, connection_1.connectToMongoDB)();
+        // Initialize Redis cache service
+        console.log('🔧 Initializing Redis cache service...');
+        const redisHealthy = await redisCacheService_1.redisCacheService.healthCheck();
+        if (redisHealthy) {
+            console.log('✅ Redis cache service initialized successfully');
+        }
+        else {
+            console.log('⚠️ Redis cache service not available, continuing without cache');
+        }
         // Create Express app
         const app = (0, app_1.createApp)();
         // Start server
@@ -24,6 +34,8 @@ async function startServer() {
             console.log(`\n📡 ${signal} received. Shutting down gracefully...`);
             server.close(async () => {
                 console.log('🔄 HTTP server closed.');
+                // Disconnect Redis
+                await redisCacheService_1.redisCacheService.disconnect();
                 await (0, connection_1.closeConnection)();
                 console.log('✅ Graceful shutdown complete.');
                 process.exit(0);

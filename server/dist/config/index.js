@@ -87,6 +87,19 @@ exports.config = {
     get JWT_REFRESH_EXPIRES_IN() {
         return process.env.JWT_REFRESH_EXPIRES_IN || '7d';
     },
+    // Redis Configuration
+    get REDIS_HOST() {
+        return process.env.REDIS_HOST || 'localhost';
+    },
+    get REDIS_PORT() {
+        return parseInt(process.env.REDIS_PORT || '6379', 10);
+    },
+    get REDIS_PASSWORD() {
+        return process.env.REDIS_PASSWORD || undefined;
+    },
+    get REDIS_DB() {
+        return parseInt(process.env.REDIS_DB || '0', 10);
+    },
     // MongoDB Configuration with secure password handling
     get MONGODB_URI() {
         // Check if full URI is provided (backward compatibility)
@@ -99,9 +112,9 @@ exports.config = {
     get MONGODB_DB_NAME() {
         return process.env.MONGODB_DATABASE || process.env.MONGODB_DB_NAME || 'doc2formjson';
     },
-    // Ollama Configuration
+    // Ollama Configuration (via AI Agent Proxy for conversation interception)
     get OLLAMA_BASE_URL() {
-        return process.env.OLLAMA_BASE_URL || 'http://localhost:11434';
+        return process.env.OLLAMA_BASE_URL || 'http://localhost:11435';
     },
     get DEFAULT_MODEL_NAME() {
         return process.env.DEFAULT_QWEN_MODEL_NAME || 'qwen2.5vl:latest';

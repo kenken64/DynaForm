@@ -167,20 +167,35 @@ class OllamaRealTimeInterceptor:
                                 if path in ['/api/generate', '/api/chat']:
                                     await self._intercept_response(data, result)
                                 
+                                # Clean headers to avoid conflicts
+                                clean_headers = {}
+                                for key, value in response.headers.items():
+                                    # Skip headers that can conflict with content-length
+                                    if key.lower() not in ['content-length', 'transfer-encoding']:
+                                        clean_headers[key] = value
+                                
                                 return web.Response(
                                     body=result,
                                     status=response.status,
-                                    headers=response.headers
+                                    headers=clean_headers
                                 )
                 else:
                     # GET requests
                     async with aiohttp.ClientSession() as session:
                         async with session.request(method, url) as response:
                             result = await response.read()
+                            
+                            # Clean headers to avoid conflicts
+                            clean_headers = {}
+                            for key, value in response.headers.items():
+                                # Skip headers that can conflict with content-length
+                                if key.lower() not in ['content-length', 'transfer-encoding']:
+                                    clean_headers[key] = value
+                            
                             return web.Response(
                                 body=result,
                                 status=response.status,
-                                headers=response.headers
+                                headers=clean_headers
                             )
                             
             except Exception as e:

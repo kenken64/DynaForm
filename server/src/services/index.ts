@@ -5,6 +5,7 @@ export { RecipientService, recipientService } from './recipientService';
 export { RecipientGroupService, recipientGroupService } from './recipientGroupService';
 export { PublicFormService, publicFormService } from './publicFormService';
 export { ChatService, chatService } from './chatService';
+export { RedisCacheService, redisCacheService } from './redisCacheService';
 export { 
   User, 
   PasskeyCredential, 

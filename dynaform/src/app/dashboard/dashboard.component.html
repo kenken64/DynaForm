@@ -244,6 +244,20 @@
         <p>Analyzing form structure...</p>
       </div>
 
+      <!-- Show cache and performance info -->
+      <div *ngIf="!isFetchingForm && !error && fields.length > 0" class="cache-info-container">
+        <div class="cache-status" [class.cached]="isCachedResult" [class.fresh]="!isCachedResult">
+          <mat-icon>{{ isCachedResult ? 'flash_on' : 'psychology' }}</mat-icon>
+          <span *ngIf="isCachedResult" class="cache-text">
+            ⚡ Cached result ({{ processingTime }}ms)
+            <small *ngIf="cacheTimestamp"> • Cached: {{ cacheTimestamp | date:'short' }}</small>
+          </span>
+          <span *ngIf="!isCachedResult" class="fresh-text">
+            🧠 Fresh analysis ({{ processingTime }}ms)
+          </span>
+        </div>
+      </div>
+
       <!-- Show error message if there's an error -->
       <div *ngIf="error && !isFetchingForm" class="error-container">
         <mat-error>{{ error }}</mat-error>

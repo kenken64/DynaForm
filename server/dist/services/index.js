@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.authService = exports.chatService = exports.ChatService = exports.publicFormService = exports.PublicFormService = exports.recipientGroupService = exports.RecipientGroupService = exports.recipientService = exports.RecipientService = exports.formDataService = exports.FormDataService = exports.formService = exports.FormService = exports.ollamaService = exports.OllamaService = void 0;
+exports.authService = exports.redisCacheService = exports.RedisCacheService = exports.chatService = exports.ChatService = exports.publicFormService = exports.PublicFormService = exports.recipientGroupService = exports.RecipientGroupService = exports.recipientService = exports.RecipientService = exports.formDataService = exports.FormDataService = exports.formService = exports.FormService = exports.ollamaService = exports.OllamaService = void 0;
 var ollamaService_1 = require("./ollamaService");
 Object.defineProperty(exports, "OllamaService", { enumerable: true, get: function () { return ollamaService_1.OllamaService; } });
 Object.defineProperty(exports, "ollamaService", { enumerable: true, get: function () { return ollamaService_1.ollamaService; } });
@@ -22,6 +22,9 @@ Object.defineProperty(exports, "publicFormService", { enumerable: true, get: fun
 var chatService_1 = require("./chatService");
 Object.defineProperty(exports, "ChatService", { enumerable: true, get: function () { return chatService_1.ChatService; } });
 Object.defineProperty(exports, "chatService", { enumerable: true, get: function () { return chatService_1.chatService; } });
+var redisCacheService_1 = require("./redisCacheService");
+Object.defineProperty(exports, "RedisCacheService", { enumerable: true, get: function () { return redisCacheService_1.RedisCacheService; } });
+Object.defineProperty(exports, "redisCacheService", { enumerable: true, get: function () { return redisCacheService_1.redisCacheService; } });
 var authService_1 = require("./authService");
 Object.defineProperty(exports, "authService", { enumerable: true, get: function () { return authService_1.authService; } });
 //# sourceMappingURL=index.js.map

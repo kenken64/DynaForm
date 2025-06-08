@@ -85,6 +85,20 @@ export const config = {
     return process.env.JWT_REFRESH_EXPIRES_IN || '7d';
   },
   
+  // Redis Configuration
+  get REDIS_HOST() {
+    return process.env.REDIS_HOST || 'localhost';
+  },
+  get REDIS_PORT() {
+    return parseInt(process.env.REDIS_PORT || '6379', 10);
+  },
+  get REDIS_PASSWORD() {
+    return process.env.REDIS_PASSWORD || undefined;
+  },
+  get REDIS_DB() {
+    return parseInt(process.env.REDIS_DB || '0', 10);
+  },
+  
   // MongoDB Configuration with secure password handling
   get MONGODB_URI() {
     // Check if full URI is provided (backward compatibility)

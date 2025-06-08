@@ -8,5 +8,11 @@ const router = (0, express_1.Router)();
 router.post('/describe-image', (0, upload_1.uploadSingle)('imageFile'), controllers_1.imageController.describeImage);
 // POST /api/summarize-text - Summarize text
 router.post('/summarize-text', controllers_1.imageController.summarizeText);
+// GET /api/health - Health check endpoint
+router.get('/health', controllers_1.imageController.healthCheck);
+// GET /api/cache/stats - Get cache statistics
+router.get('/cache/stats', controllers_1.imageController.getCacheStats);
+// DELETE /api/cache/clear - Clear all cache entries
+router.delete('/cache/clear', controllers_1.imageController.clearCache);
 exports.default = router;
 //# sourceMappingURL=imageRoutes.js.map

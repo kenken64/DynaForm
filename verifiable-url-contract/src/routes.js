@@ -16,10 +16,12 @@ router.get('/status', async (req, res) => {
 router.post('/urls', async (req, res) => {
   try {
     const { url } = req.body;
+    console.log(url);
     if (!url) {
       return res.status(400).json({ error: 'URL is required' });
     }
     const tx = await addURL(url);
+    console.log(tx.hash);
     res.json({ 
       message: 'URL added to blockchain',
       transactionHash: tx.hash 
@@ -33,10 +35,12 @@ router.post('/urls', async (req, res) => {
 router.get('/verify', async (req, res) => {
   try {
     const { url } = req.query;
+    console.log(url);
     if (!url) {
       return res.status(400).json({ error: 'URL parameter is required' });
     }
     const isVerified = await verifyURL(url);
+    console.log(isVerified);
     res.json({ url, isVerified });
   } catch (error) {
     res.status(500).json({ error: error.message });

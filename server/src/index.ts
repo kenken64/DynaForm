@@ -1,11 +1,21 @@
 import { config } from './config';
 import { createApp } from './app';
 import { connectToMongoDB, closeConnection } from './database/connection';
+import { redisCacheService } from './services/redisCacheService';
 
 async function startServer(): Promise<void> {
   try {
     // Connect to MongoDB
     await connectToMongoDB();
+    
+    // Initialize Redis cache service
+    console.log('🔧 Initializing Redis cache service...');
+    const redisHealthy = await redisCacheService.healthCheck();
+    if (redisHealthy) {
+      console.log('✅ Redis cache service initialized successfully');
+    } else {
+      console.log('⚠️ Redis cache service not available, continuing without cache');
+    }
     
     // Create Express app
     const app = createApp();
@@ -28,6 +38,10 @@ async function startServer(): Promise<void> {
       
       server.close(async () => {
         console.log('🔄 HTTP server closed.');
+        
+        // Disconnect Redis
+        await redisCacheService.disconnect();
+        
         await closeConnection();
         console.log('✅ Graceful shutdown complete.');
         process.exit(0);

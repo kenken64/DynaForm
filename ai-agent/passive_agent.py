@@ -149,7 +149,7 @@ class PassiveFormPublishingAgent:
         logger.info("✅ Cleanup complete")
     
     async def simulate_conversation(self, prompt: str):
-        """Simulate a conversation for testing"""
+        """Simulate a conversation for testing and continue monitoring"""
         logger.info(f"🧪 Simulating conversation: {prompt}")
         
         # Generate a mock response
@@ -157,9 +157,11 @@ class PassiveFormPublishingAgent:
         
         # Process through the callback
         await self._conversation_callback(prompt, mock_response)
+        
+        logger.info("🧪 Simulation completed, continuing to monitor for more conversations...")
     
     async def test_form_publishing(self, form_id: str):
-        """Test form publishing directly"""
+        """Test form publishing directly and continue monitoring"""
         logger.info(f"🧪 Testing direct form publishing for: {form_id}")
         
         try:
@@ -167,8 +169,89 @@ class PassiveFormPublishingAgent:
             test_prompt = f"Please publish form {form_id} to the blockchain"
             await self.simulate_conversation(test_prompt)
             
+            logger.info("🧪 Test completed, continuing to monitor for more conversations...")
+            
         except Exception as e:
             logger.error(f"Error in test: {e}")
+            logger.info("🧪 Test failed, but continuing to monitor for conversations...")
+    
+    async def start_continuous_monitoring(self):
+        """Start continuous monitoring that never stops unless interrupted"""
+        self.running = True
+        restart_count = 0
+        max_restarts = 10
+        
+        while self.running and restart_count < max_restarts:
+            try:
+                logger.info(f"🎧 Starting Continuous Form Publishing Agent... (attempt {restart_count + 1})")
+                logger.info("📋 Monitoring for keywords: " + ", ".join(config.LISTEN_KEYWORDS))
+                logger.info("🔄 Agent will run continuously until manually stopped (Ctrl+C)")
+                
+                # Initialize services
+                await self.initialize_services()
+                
+                # Start the real-time interceptor
+                self.interceptor = get_ollama_interceptor(self._conversation_callback)
+                
+                # Connect the response injector for custom response handling
+                self.interceptor.set_response_injector(conversation_interceptor)
+                logger.info("🔄 Connected response injector for successful publication handling")
+                
+                logger.info("🎯 Starting real-time Ollama conversation interception...")
+                
+                # Start all monitoring tasks
+                tasks = []
+                
+                # Real-time interceptor
+                interception_task = asyncio.create_task(self.interceptor.start_interception())
+                tasks.append(interception_task)
+                
+                # Legacy monitor for backup
+                self.monitor = OllamaConversationMonitor(self._conversation_callback)
+                monitor_task = asyncio.create_task(self.monitor.start_monitoring())
+                tasks.append(monitor_task)
+                
+                # Conversation interceptor service
+                interceptor_service_task = asyncio.create_task(conversation_interceptor.start_monitoring())
+                tasks.append(interceptor_service_task)
+                
+                logger.info("🚀 Passive agent is now actively monitoring conversations...")
+                logger.info("💡 Say something like 'I want to publish form abc123' in any Ollama conversation")
+                logger.info("🔧 Proxy server available at http://localhost:11435 (configure clients to use this)")
+                logger.info("🔄 Monitoring continuously - use Ctrl+C to stop")
+                
+                # Run all tasks concurrently - this will run indefinitely
+                await asyncio.gather(*tasks, return_exceptions=True)
+                
+                # If we reach here, tasks completed unexpectedly
+                logger.warning("⚠️ Monitoring tasks completed unexpectedly, will restart...")
+                restart_count += 1
+                
+            except KeyboardInterrupt:
+                logger.info("⌨️ Received keyboard interrupt")
+                break
+            except Exception as e:
+                restart_count += 1
+                logger.error(f"💥 Error in continuous monitoring (attempt {restart_count}): {e}")
+                logger.exception("Full error details:")
+                
+                if restart_count < max_restarts:
+                    logger.info(f"🔄 Attempting to restart monitoring in 5 seconds... ({restart_count}/{max_restarts})")
+                    await asyncio.sleep(5)  # Wait before restart
+                    await self.cleanup()  # Clean up before restart
+                else:
+                    logger.error(f"❌ Maximum restart attempts ({max_restarts}) reached. Stopping agent.")
+                    break
+            finally:
+                if self.interceptor:
+                    await self.interceptor.stop_interception()
+        
+        if restart_count >= max_restarts:
+            logger.error("❌ Agent stopped due to too many restart attempts")
+        else:
+            logger.info("✅ Agent stopped gracefully")
+        
+        await self.cleanup()
 
 # Global shutdown flag
 shutdown_event = asyncio.Event()

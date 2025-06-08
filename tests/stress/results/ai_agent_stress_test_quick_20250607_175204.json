@@ -1,0 +1,144 @@
+{
+  "test_name": "quick",
+  "timestamp": "20250607_175204",
+  "stats": {
+    "total_requests": 15,
+    "successful_requests": 0,
+    "failed_requests": 15,
+    "intercepted_requests": 0,
+    "avg_response_time": 24.130360285441082,
+    "min_response_time": 18.68295669555664,
+    "max_response_time": 30.72810173034668,
+    "p95_response_time": 30.72810173034668,
+    "p99_response_time": 30.72810173034668,
+    "errors_by_type": {
+      "Unknown": 15
+    },
+    "start_time": 1749289919.8499131,
+    "end_time": 1749289924.892514,
+    "peak_memory_mb": 79.2,
+    "peak_cpu_percent": 16.3
+  },
+  "individual_results": [
+    {
+      "success": false,
+      "response_time": 30.052900314331055,
+      "error_message": null,
+      "status_code": 404,
+      "response_size": 44,
+      "intercepted": false
+    },
+    {
+      "success": false,
+      "response_time": 30.72810173034668,
+      "error_message": null,
+      "status_code": 404,
+      "response_size": 44,
+      "intercepted": false
+    },
+    {
+      "success": false,
+      "response_time": 29.725074768066406,
+      "error_message": null,
+      "status_code": 404,
+      "response_size": 44,
+      "intercepted": false
+    },
+    {
+      "success": false,
+      "response_time": 30.416250228881836,
+      "error_message": null,
+      "status_code": 404,
+      "response_size": 44,
+      "intercepted": false
+    },
+    {
+      "success": false,
+      "response_time": 30.186891555786133,
+      "error_message": null,
+      "status_code": 404,
+      "response_size": 44,
+      "intercepted": false
+    },
+    {
+      "success": false,
+      "response_time": 20.628929138183594,
+      "error_message": null,
+      "status_code": 404,
+      "response_size": 44,
+      "intercepted": false
+    },
+    {
+      "success": false,
+      "response_time": 19.317150115966797,
+      "error_message": null,
+      "status_code": 404,
+      "response_size": 44,
+      "intercepted": false
+    },
+    {
+      "success": false,
+      "response_time": 18.68295669555664,
+      "error_message": null,
+      "status_code": 404,
+      "response_size": 44,
+      "intercepted": false
+    },
+    {
+      "success": false,
+      "response_time": 19.663095474243164,
+      "error_message": null,
+      "status_code": 404,
+      "response_size": 44,
+      "intercepted": false
+    },
+    {
+      "success": false,
+      "response_time": 20.781993865966797,
+      "error_message": null,
+      "status_code": 404,
+      "response_size": 44,
+      "intercepted": false
+    },
+    {
+      "success": false,
+      "response_time": 22.294998168945312,
+      "error_message": null,
+      "status_code": 404,
+      "response_size": 44,
+      "intercepted": false
+    },
+    {
+      "success": false,
+      "response_time": 22.35102653503418,
+      "error_message": null,
+      "status_code": 404,
+      "response_size": 44,
+      "intercepted": false
+    },
+    {
+      "success": false,
+      "response_time": 22.01390266418457,
+      "error_message": null,
+      "status_code": 404,
+      "response_size": 44,
+      "intercepted": false
+    },
+    {
+      "success": false,
+      "response_time": 22.20010757446289,
+      "error_message": null,
+      "status_code": 404,
+      "response_size": 44,
+      "intercepted": false
+    },
+    {
+      "success": false,
+      "response_time": 22.912025451660156,
+      "error_message": null,
+      "status_code": 404,
+      "response_size": 44,
+      "intercepted": false
+    }
+  ]
+}

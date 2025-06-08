@@ -80,9 +80,20 @@
             <mat-icon>description</mat-icon>
           </div>
           
-          <!-- Form Title with Edit Button -->
+          <!-- Form Title with Edit Button and Blockchain Badge -->
           <div class="title-section">
-            <mat-card-title>{{ form.metadata.formName || 'Untitled Form' }}</mat-card-title>
+            <div class="title-wrapper">
+              <div class="title-and-badge">
+                <mat-card-title>{{ form.metadata.formName || 'Untitled Form' }}</mat-card-title>
+                <div *ngIf="isBlockchainVerified(form)" 
+                     class="blockchain-badge"
+                     [matTooltip]="getVerificationTooltip(form)"
+                     matTooltipPosition="above">
+                  <mat-icon class="verified-icon">verified</mat-icon>
+                  <span class="badge-text">Blockchain Verified</span>
+                </div>
+              </div>
+            </div>
             <button 
               mat-icon-button 
               class="edit-title-btn"
@@ -133,6 +144,15 @@
             aria-label="Delete form"
             title="Delete form">
             <mat-icon>delete</mat-icon>
+          </button>
+          <!-- Development button to demo blockchain verification -->
+          <button 
+            mat-icon-button 
+            [color]="isBlockchainVerified(form) ? 'warn' : 'accent'"
+            (click)="mockBlockchainVerification(form); $event.stopPropagation()"
+            [attr.aria-label]="isBlockchainVerified(form) ? 'Remove verification' : 'Mock verification'"
+            [title]="isBlockchainVerified(form) ? 'Remove blockchain verification (demo)' : 'Add blockchain verification (demo)'">
+            <mat-icon>{{ isBlockchainVerified(form) ? 'link_off' : 'verified' }}</mat-icon>
           </button>
         </mat-card-actions>
       </mat-card>

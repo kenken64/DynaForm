@@ -44,6 +44,15 @@ export interface GeneratedForm {
     };
   };
   pdfFingerprint?: string; // Store the short_id for easy identification
+  status?: string; // Form status (e.g., 'verified' for blockchain-verified forms)
+  blockchainInfo?: {
+    publicUrl?: string;
+    transactionHash?: string;
+    blockNumber?: number;
+    gasUsed?: number;
+    verifiedAt?: string;
+    contractResponse?: any;
+  };
 }
 
 export interface FormsResponse {

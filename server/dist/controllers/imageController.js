@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.imageController = exports.ImageController = void 0;
 const services_1 = require("../services");
+const redisCacheService_1 = require("../services/redisCacheService");
 const config_1 = require("../config");
 class ImageController {
     async describeImage(req, res) {
@@ -20,11 +21,97 @@ class ImageController {
             }
             const imageBuffer = req.file.buffer;
             const imageBase64 = imageBuffer.toString('base64');
-            const ollamaResult = await services_1.ollamaService.generateWithImage(imageBase64, prompt, model);
+            // Check if this is a form analysis request (OCR)
+            const isFormAnalysis = prompt.toLowerCase().includes('form') ||
+                prompt.toLowerCase().includes('field') ||
+                prompt.toLowerCase().includes('json');
+            let ollamaResult;
+            let cacheHit = false;
+            if (isFormAnalysis) {
+                // Generate fingerprint for caching
+                const jsonFingerprint = redisCacheService_1.redisCacheService.generateJsonFingerprint(imageBuffer, prompt);
+                console.log(`🔍 Generated fingerprint for OCR request: ${jsonFingerprint}`);
+                // Check cache first
+                const cachedResult = await redisCacheService_1.redisCacheService.getCachedOcrResult(jsonFingerprint);
+                if (cachedResult) {
+                    console.log(`✅ Using cached OCR result for fingerprint: ${jsonFingerprint}`);
+                    cacheHit = true;
+                    // Return cached result in the same format as Ollama response
+                    res.json({
+                        description: `\`\`\`json
+${JSON.stringify({
+                            forms: [{
+                                    title: cachedResult.formTitle,
+                                    fields: cachedResult.fields
+                                }]
+                        }, null, 2)}
+\`\`\``,
+                        modelUsed: model,
+                        createdAt: new Date().toISOString(),
+                        cached: true,
+                        cacheTimestamp: cachedResult.cachedAt,
+                        timings: {
+                            totalDuration: 0,
+                            promptEvalDuration: 0,
+                            evalDuration: 0,
+                        },
+                        tokenCounts: {
+                            promptEvalCount: 0,
+                            evalCount: 0,
+                        }
+                    });
+                    return;
+                }
+                // If not in cache, proceed with Ollama call
+                console.log(`🔄 Cache miss, proceeding with Ollama call for fingerprint: ${jsonFingerprint}`);
+                ollamaResult = await services_1.ollamaService.generateWithImage(imageBase64, prompt, model);
+                // Parse and cache the result for future use
+                try {
+                    const jsonMatch = ollamaResult.response.match(/```json\s*([\s\S]*?)```/);
+                    if (jsonMatch) {
+                        const parsed = JSON.parse(jsonMatch[1]);
+                        // Handle different JSON response formats
+                        let formData = null;
+                        let fields = [];
+                        let title = null;
+                        if (parsed.forms && parsed.forms[0]) {
+                            // Format: { forms: [{ title: "...", fields: [...] }] }
+                            formData = parsed.forms[0];
+                            title = formData.title;
+                            fields = formData.fields || [];
+                        }
+                        else if (parsed.form) {
+                            // Format: { form: { title: "...", sections: [...] } }
+                            title = parsed.form.title;
+                            fields = parsed.form.sections || parsed.form.fields || [];
+                        }
+                        else if (parsed.title && parsed.fields) {
+                            // Format: { title: "...", fields: [...] }
+                            title = parsed.title;
+                            fields = parsed.fields;
+                        }
+                        else {
+                            // Generic format - cache the entire parsed object
+                            title = "Form Analysis Result";
+                            fields = [parsed];
+                        }
+                        await redisCacheService_1.redisCacheService.cacheOcrResult(jsonFingerprint, title, fields, parsed);
+                        console.log(`💾 Cached OCR result for future use: ${jsonFingerprint}`);
+                    }
+                }
+                catch (parseError) {
+                    console.warn(`⚠️ Could not parse OCR result for caching: ${parseError}`);
+                }
+            }
+            else {
+                // For non-form requests, proceed directly with Ollama
+                ollamaResult = await services_1.ollamaService.generateWithImage(imageBase64, prompt, model);
+            }
             res.json({
                 description: ollamaResult.response,
                 modelUsed: ollamaResult.model,
                 createdAt: ollamaResult.created_at,
+                cached: cacheHit,
                 timings: {
                     totalDuration: ollamaResult.total_duration,
                     promptEvalDuration: ollamaResult.prompt_eval_duration,
@@ -56,8 +143,9 @@ class ImageController {
     async healthCheck(req, res) {
         try {
             const isHealthy = await services_1.ollamaService.healthCheck();
-            res.status(isHealthy ? 200 : 503).json({
-                status: isHealthy ? 'healthy' : 'unhealthy',
+            const cacheHealth = await redisCacheService_1.redisCacheService.healthCheck();
+            res.status((isHealthy && cacheHealth) ? 200 : 503).json({
+                status: (isHealthy && cacheHealth) ? 'healthy' : 'unhealthy',
                 timestamp: new Date().toISOString(),
                 service: config_1.config.SERVICE_NAME,
                 version: config_1.config.API_VERSION,
@@ -65,6 +153,10 @@ class ImageController {
                     baseUrl: config_1.config.OLLAMA_BASE_URL,
                     defaultModel: config_1.config.DEFAULT_MODEL_NAME,
                     accessible: isHealthy
+                },
+                cache: {
+                    accessible: cacheHealth,
+                    stats: cacheHealth ? await redisCacheService_1.redisCacheService.getCacheStats() : null
                 }
             });
         }
@@ -120,6 +212,41 @@ class ImageController {
                     message: error.message
                 });
             }
+        }
+    }
+    async getCacheStats(req, res) {
+        try {
+            const stats = await redisCacheService_1.redisCacheService.getCacheStats();
+            res.json({
+                status: 'success',
+                timestamp: new Date().toISOString(),
+                cache: stats
+            });
+        }
+        catch (error) {
+            res.status(500).json({
+                status: 'error',
+                timestamp: new Date().toISOString(),
+                error: error.message
+            });
+        }
+    }
+    async clearCache(req, res) {
+        try {
+            const clearedCount = await redisCacheService_1.redisCacheService.clearOcrCache();
+            res.json({
+                status: 'success',
+                timestamp: new Date().toISOString(),
+                message: `Cleared ${clearedCount} cache entries`,
+                clearedCount
+            });
+        }
+        catch (error) {
+            res.status(500).json({
+                status: 'error',
+                timestamp: new Date().toISOString(),
+                error: error.message
+            });
         }
     }
 }

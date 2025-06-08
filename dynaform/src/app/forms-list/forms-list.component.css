@@ -286,8 +286,22 @@
   gap: 8px;
 }
 
-.title-section mat-card-title {
+.title-wrapper {
+  display: flex;
+  align-items: flex-start;
   flex: 1;
+  gap: 12px;
+}
+
+.title-and-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  flex: 1;
+}
+
+.title-section mat-card-title {
   margin: 0;
 }
 
@@ -296,8 +310,49 @@
   transition: opacity 0.2s ease;
   width: 32px;
   height: 32px;
+  margin-top: 4px;
 }
 
 .form-card:hover .edit-title-btn {
   opacity: 1;
+}
+
+/* Blockchain Verification Badge */
+.blockchain-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
+  cursor: help;
+  white-space: nowrap;
+  animation: verified-glow 2s ease-in-out infinite alternate;
+  align-self: flex-start;
+}
+
+.blockchain-badge .verified-icon {
+  font-size: 14px;
+  height: 14px;
+  width: 14px;
+}
+
+.blockchain-badge .badge-text {
+  font-size: 10px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+@keyframes verified-glow {
+  0% {
+    box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
+  }
+  100% {
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.5), 0 0 12px rgba(76, 175, 80, 0.2);
+  }
 }

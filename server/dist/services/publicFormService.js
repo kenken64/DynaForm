@@ -18,14 +18,22 @@ class PublicFormService {
                 return null;
             }
             const collection = this.getFormsCollection();
-            // Find form by ID
-            const form = await collection.findOne({ _id: new mongodb_1.ObjectId(formId) });
+            // Find form by ID and require verified status
+            const form = await collection.findOne({
+                _id: new mongodb_1.ObjectId(formId),
+                status: "verified"
+            });
             if (!form) {
+                console.log(`Form ${formId} not found or not verified for public access`);
                 return null;
             }
-            // For public forms, we allow access with any fingerprint for now
-            // In a production system, you might want to store and validate JSON fingerprints separately
-            console.log(`Public form retrieved successfully: ${formId} with fingerprint: ${jsonFingerprint}`);
+            // Validate JSON fingerprint matches what's stored in the form
+            const storedFingerprint = form.pdfMetadata?.hashes?.json_fingerprint;
+            if (storedFingerprint && storedFingerprint !== jsonFingerprint) {
+                console.log(`JSON fingerprint mismatch for form ${formId}. Expected: ${storedFingerprint}, Received: ${jsonFingerprint}`);
+                return null;
+            }
+            console.log(`Verified public form retrieved successfully: ${formId} with fingerprint: ${jsonFingerprint}`);
             return form;
         }
         catch (error) {
@@ -49,10 +57,10 @@ class PublicFormService {
     }
     async submitPublicForm(submission) {
         try {
-            // First verify the form exists and is accessible
+            // First verify the form exists, is verified, and is accessible
             const form = await this.getPublicForm(submission.formId, submission.jsonFingerprint);
             if (!form) {
-                throw new Error('Form not found or invalid fingerprint');
+                throw new Error('Form not found, not verified, or invalid fingerprint');
             }
             // Prepare submission document
             const submissionDocument = {

@@ -1,0 +1,65 @@
+{
+  "testName": "timeout_stress_test",
+  "timestamp": "2025-06-07T10-08-43.655Z",
+  "configuration": {
+    "SERVER_URL": "http://localhost:3000",
+    "AI_AGENT_PROXY_URL": "http://localhost:11435",
+    "OLLAMA_DIRECT_URL": "http://localhost:11434",
+    "CONCURRENT_USERS": {
+      "LOW": 10,
+      "MEDIUM": 50,
+      "HIGH": 100,
+      "EXTREME": 200
+    },
+    "DURATION": {
+      "SHORT": 30,
+      "MEDIUM": 120,
+      "LONG": 300
+    },
+    "MESSAGES": [
+      "Hello, I need help with form creation",
+      "Can you analyze this PDF document and create a form?",
+      "What are the best practices for dynamic form generation?",
+      "I'm having trouble with field validation. Can you help?",
+      "Create a form with the following fields: name, email, phone, address",
+      "How do I set up conditional logic in my forms?",
+      "Can you explain the different field types available?",
+      "I need to integrate this form with my database",
+      "What's the best way to handle file uploads in forms?",
+      "Help me troubleshoot form submission errors"
+    ],
+    "LONG_MESSAGES": [
+      "This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. ",
+      "Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Please create a comprehensive form with multiple sections, conditional fields, validation rules, and database integration.",
+      null
+    ],
+    "DEMO_TOKEN": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1MDdmMWY3N2JjZjg2Y2Q3OTk0MzkwMTEiLCJ1c2VybmFtZSI6InN0cmVzcy10ZXN0LXVzZXIiLCJlbWFpbCI6InN0cmVzcy10ZXN0QGR5bmFmb3JtLmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzQ5MjkwNzI4LCJleHAiOjE3NDkzNzcxMjh9.JIcxDAClR9n60Z5c0TrYPVtbSwzv6UXXw8kDpYcFvF4",
+    "RESULTS_DIR": "/Users/kennethphang/Projects/doc2formjson/tests/stress/results"
+  },
+  "results": {
+    "summary": {
+      "duration": "15.75",
+      "totalRequests": 6,
+      "requestsPerSecond": "0.38",
+      "successRate": "83.33",
+      "failureRate": "16.67",
+      "timeoutRate": "0.00",
+      "authFailureRate": "0.00",
+      "peakConcurrentUsers": 0
+    },
+    "performance": {
+      "averageResponseTime": "1622.56",
+      "minResponseTime": "18.66",
+      "maxResponseTime": "5886.36",
+      "p95ResponseTime": "5886.36",
+      "p99ResponseTime": "5886.36"
+    },
+    "errors": {
+      "HTTP_400": 1
+    },
+    "systemMetrics": {
+      "memoryUsage": [],
+      "peakMemoryUsage": 0
+    }
+  }
+}

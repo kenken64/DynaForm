@@ -1,0 +1,17 @@
+{
+  "name": "stress",
+  "version": "1.0.0",
+  "main": "chat-stress-test.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "axios": "^1.9.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.17.0"
+  }
+}

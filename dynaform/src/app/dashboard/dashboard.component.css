@@ -417,6 +417,66 @@
   color: #757575;
 }
 
+/* Cache Status Styling */
+.cache-info-container {
+  margin: 16px 0;
+  padding: 12px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border: 1px solid #e1e8ed;
+}
+
+.cache-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.cache-status.cached {
+  color: #2e7d32;
+}
+
+.cache-status.cached mat-icon {
+  color: #4caf50;
+}
+
+.cache-status.fresh {
+  color: #1565c0;
+}
+
+.cache-status.fresh mat-icon {
+  color: #2196f3;
+}
+
+.cache-text, .fresh-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cache-text small, .fresh-text small {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+/* Animation for cache status */
+.cache-status {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .carousel-container {

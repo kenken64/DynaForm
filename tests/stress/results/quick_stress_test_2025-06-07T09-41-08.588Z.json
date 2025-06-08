@@ -1,0 +1,472 @@
+{
+  "testName": "quick_stress_test",
+  "timestamp": "2025-06-07T09-41-08.588Z",
+  "configuration": {
+    "SERVER_URL": "http://localhost:3000",
+    "AI_AGENT_PROXY_URL": "http://localhost:11435",
+    "OLLAMA_DIRECT_URL": "http://localhost:11434",
+    "CONCURRENT_USERS": {
+      "LOW": 10,
+      "MEDIUM": 50,
+      "HIGH": 100,
+      "EXTREME": 200
+    },
+    "DURATION": {
+      "SHORT": 30,
+      "MEDIUM": 120,
+      "LONG": 300
+    },
+    "MESSAGES": [
+      "Hello, I need help with form creation",
+      "Can you analyze this PDF document and create a form?",
+      "What are the best practices for dynamic form generation?",
+      "I'm having trouble with field validation. Can you help?",
+      "Create a form with the following fields: name, email, phone, address",
+      "How do I set up conditional logic in my forms?",
+      "Can you explain the different field types available?",
+      "I need to integrate this form with my database",
+      "What's the best way to handle file uploads in forms?",
+      "Help me troubleshoot form submission errors"
+    ],
+    "LONG_MESSAGES": [
+      "This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. This is a very long message that tests the system's ability to handle large text inputs. ",
+      "Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Complex form requirements: Please create a comprehensive form with multiple sections, conditional fields, validation rules, and database integration.",
+      null
+    ],
+    "DEMO_TOKEN": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1MDdmMWY3N2JjZjg2Y2Q3OTk0MzkwMTEiLCJ1c2VybmFtZSI6InN0cmVzcy10ZXN0LXVzZXIiLCJlbWFpbCI6InN0cmVzcy10ZXN0QGR5bmFmb3JtLmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzQ5Mjg4NjgzLCJleHAiOjE3NDkzNzUwODN9.gQQkXlXPq5PhL2ypEiAGTAwhbK3_dbqyBuX0sgpEaf0",
+    "RESULTS_DIR": "/Users/kennethphang/Projects/doc2formjson/tests/stress/results"
+  },
+  "results": {
+    "summary": {
+      "duration": "58.52",
+      "totalRequests": 19,
+      "requestsPerSecond": "0.32",
+      "successRate": "94.74",
+      "failureRate": "5.26",
+      "timeoutRate": "0.00",
+      "authFailureRate": "0.00",
+      "peakConcurrentUsers": 10
+    },
+    "performance": {
+      "averageResponseTime": "17070.33",
+      "minResponseTime": "35.10",
+      "maxResponseTime": "28046.04",
+      "p95ResponseTime": "28046.04",
+      "p99ResponseTime": "28046.04"
+    },
+    "errors": {
+      "HTTP_400": 1
+    },
+    "systemMetrics": {
+      "memoryUsage": [
+        {
+          "timestamp": 1749289211072,
+          "rss": 40484864,
+          "heapUsed": 9924472,
+          "heapTotal": 13254656,
+          "external": 3975270
+        },
+        {
+          "timestamp": 1749289212073,
+          "rss": 40828928,
+          "heapUsed": 9928416,
+          "heapTotal": 13254656,
+          "external": 3975310
+        },
+        {
+          "timestamp": 1749289213075,
+          "rss": 43253760,
+          "heapUsed": 9992008,
+          "heapTotal": 13254656,
+          "external": 3976533
+        },
+        {
+          "timestamp": 1749289214075,
+          "rss": 43286528,
+          "heapUsed": 9992840,
+          "heapTotal": 13254656,
+          "external": 3976533
+        },
+        {
+          "timestamp": 1749289215076,
+          "rss": 43614208,
+          "heapUsed": 9999048,
+          "heapTotal": 13254656,
+          "external": 3976533
+        },
+        {
+          "timestamp": 1749289216077,
+          "rss": 43892736,
+          "heapUsed": 10034304,
+          "heapTotal": 13254656,
+          "external": 3979895
+        },
+        {
+          "timestamp": 1749289217078,
+          "rss": 45056000,
+          "heapUsed": 10130232,
+          "heapTotal": 13254656,
+          "external": 3984745
+        },
+        {
+          "timestamp": 1749289218079,
+          "rss": 45432832,
+          "heapUsed": 10434424,
+          "heapTotal": 13516800,
+          "external": 3985926
+        },
+        {
+          "timestamp": 1749289219081,
+          "rss": 45481984,
+          "heapUsed": 7551864,
+          "heapTotal": 9650176,
+          "external": 3957921
+        },
+        {
+          "timestamp": 1749289220082,
+          "rss": 45481984,
+          "heapUsed": 7575200,
+          "heapTotal": 9650176,
+          "external": 3957921
+        },
+        {
+          "timestamp": 1749289221082,
+          "rss": 45547520,
+          "heapUsed": 7823064,
+          "heapTotal": 9650176,
+          "external": 3957921
+        },
+        {
+          "timestamp": 1749289222082,
+          "rss": 45711360,
+          "heapUsed": 8080632,
+          "heapTotal": 9650176,
+          "external": 3957921
+        },
+        {
+          "timestamp": 1749289223083,
+          "rss": 45924352,
+          "heapUsed": 8155760,
+          "heapTotal": 9650176,
+          "external": 3957921
+        },
+        {
+          "timestamp": 1749289224084,
+          "rss": 45924352,
+          "heapUsed": 8156624,
+          "heapTotal": 9650176,
+          "external": 3957921
+        },
+        {
+          "timestamp": 1749289225085,
+          "rss": 46055424,
+          "heapUsed": 8228184,
+          "heapTotal": 9650176,
+          "external": 3957921
+        },
+        {
+          "timestamp": 1749289226087,
+          "rss": 46120960,
+          "heapUsed": 8274392,
+          "heapTotal": 9650176,
+          "external": 3965941
+        },
+        {
+          "timestamp": 1749289227088,
+          "rss": 46120960,
+          "heapUsed": 8275328,
+          "heapTotal": 9650176,
+          "external": 3965941
+        },
+        {
+          "timestamp": 1749289228089,
+          "rss": 46120960,
+          "heapUsed": 8276192,
+          "heapTotal": 9650176,
+          "external": 3965941
+        },
+        {
+          "timestamp": 1749289229090,
+          "rss": 46120960,
+          "heapUsed": 8277416,
+          "heapTotal": 9650176,
+          "external": 3965941
+        },
+        {
+          "timestamp": 1749289230091,
+          "rss": 46120960,
+          "heapUsed": 8278280,
+          "heapTotal": 9650176,
+          "external": 3965941
+        },
+        {
+          "timestamp": 1749289231092,
+          "rss": 46317568,
+          "heapUsed": 8396328,
+          "heapTotal": 9650176,
+          "external": 3979704
+        },
+        {
+          "timestamp": 1749289232093,
+          "rss": 45596672,
+          "heapUsed": 8431520,
+          "heapTotal": 9650176,
+          "external": 3985922
+        },
+        {
+          "timestamp": 1749289233094,
+          "rss": 45596672,
+          "heapUsed": 8432384,
+          "heapTotal": 9650176,
+          "external": 3985922
+        },
+        {
+          "timestamp": 1749289234095,
+          "rss": 45776896,
+          "heapUsed": 8463120,
+          "heapTotal": 9650176,
+          "external": 3987955
+        },
+        {
+          "timestamp": 1749289235096,
+          "rss": 45268992,
+          "heapUsed": 8463984,
+          "heapTotal": 9650176,
+          "external": 3987955
+        },
+        {
+          "timestamp": 1749289236097,
+          "rss": 45285376,
+          "heapUsed": 8469264,
+          "heapTotal": 9650176,
+          "external": 3987955
+        },
+        {
+          "timestamp": 1749289237098,
+          "rss": 45498368,
+          "heapUsed": 8588608,
+          "heapTotal": 9650176,
+          "external": 4002915
+        },
+        {
+          "timestamp": 1749289238099,
+          "rss": 45776896,
+          "heapUsed": 8706520,
+          "heapTotal": 9650176,
+          "external": 4009560
+        },
+        {
+          "timestamp": 1749289239100,
+          "rss": 46301184,
+          "heapUsed": 8763192,
+          "heapTotal": 9650176,
+          "external": 4009560
+        },
+        {
+          "timestamp": 1749289240101,
+          "rss": 46301184,
+          "heapUsed": 8764056,
+          "heapTotal": 9650176,
+          "external": 4009560
+        },
+        {
+          "timestamp": 1749289241102,
+          "rss": 46301184,
+          "heapUsed": 8764920,
+          "heapTotal": 9650176,
+          "external": 4009560
+        },
+        {
+          "timestamp": 1749289242103,
+          "rss": 46301184,
+          "heapUsed": 8770112,
+          "heapTotal": 9650176,
+          "external": 4009560
+        },
+        {
+          "timestamp": 1749289243104,
+          "rss": 46301184,
+          "heapUsed": 8773000,
+          "heapTotal": 9650176,
+          "external": 4009560
+        },
+        {
+          "timestamp": 1749289244105,
+          "rss": 46333952,
+          "heapUsed": 8809280,
+          "heapTotal": 9650176,
+          "external": 4015280
+        },
+        {
+          "timestamp": 1749289245106,
+          "rss": 46350336,
+          "heapUsed": 8812168,
+          "heapTotal": 9650176,
+          "external": 4015280
+        },
+        {
+          "timestamp": 1749289246108,
+          "rss": 46350336,
+          "heapUsed": 8842928,
+          "heapTotal": 9650176,
+          "external": 4017752
+        },
+        {
+          "timestamp": 1749289247109,
+          "rss": 46366720,
+          "heapUsed": 8843792,
+          "heapTotal": 9650176,
+          "external": 4017752
+        },
+        {
+          "timestamp": 1749289248109,
+          "rss": 46366720,
+          "heapUsed": 8844656,
+          "heapTotal": 9650176,
+          "external": 4017752
+        },
+        {
+          "timestamp": 1749289249110,
+          "rss": 46366720,
+          "heapUsed": 8849864,
+          "heapTotal": 9650176,
+          "external": 4017752
+        },
+        {
+          "timestamp": 1749289250111,
+          "rss": 46399488,
+          "heapUsed": 8852752,
+          "heapTotal": 9650176,
+          "external": 4017752
+        },
+        {
+          "timestamp": 1749289251111,
+          "rss": 46546944,
+          "heapUsed": 8896888,
+          "heapTotal": 9650176,
+          "external": 4028641
+        },
+        {
+          "timestamp": 1749289252112,
+          "rss": 43466752,
+          "heapUsed": 8930336,
+          "heapTotal": 9650176,
+          "external": 4033865
+        },
+        {
+          "timestamp": 1749289253113,
+          "rss": 43532288,
+          "heapUsed": 8960192,
+          "heapTotal": 9650176,
+          "external": 4035124
+        },
+        {
+          "timestamp": 1749289254115,
+          "rss": 43532288,
+          "heapUsed": 8961056,
+          "heapTotal": 9650176,
+          "external": 4035124
+        },
+        {
+          "timestamp": 1749289255115,
+          "rss": 43532288,
+          "heapUsed": 8962592,
+          "heapTotal": 9650176,
+          "external": 4035124
+        },
+        {
+          "timestamp": 1749289256116,
+          "rss": 43532288,
+          "heapUsed": 8967832,
+          "heapTotal": 9650176,
+          "external": 4035124
+        },
+        {
+          "timestamp": 1749289257117,
+          "rss": 43532288,
+          "heapUsed": 8973088,
+          "heapTotal": 9650176,
+          "external": 4035124
+        },
+        {
+          "timestamp": 1749289258118,
+          "rss": 43565056,
+          "heapUsed": 8976528,
+          "heapTotal": 9650176,
+          "external": 4035124
+        },
+        {
+          "timestamp": 1749289259119,
+          "rss": 43565056,
+          "heapUsed": 8981440,
+          "heapTotal": 9650176,
+          "external": 4035124
+        },
+        {
+          "timestamp": 1749289260120,
+          "rss": 43565056,
+          "heapUsed": 8982304,
+          "heapTotal": 9650176,
+          "external": 4035124
+        },
+        {
+          "timestamp": 1749289261121,
+          "rss": 44417024,
+          "heapUsed": 8202896,
+          "heapTotal": 10698752,
+          "external": 4043222
+        },
+        {
+          "timestamp": 1749289262121,
+          "rss": 42745856,
+          "heapUsed": 8203760,
+          "heapTotal": 10698752,
+          "external": 4043222
+        },
+        {
+          "timestamp": 1749289263122,
+          "rss": 42745856,
+          "heapUsed": 8248880,
+          "heapTotal": 10698752,
+          "external": 4015479
+        },
+        {
+          "timestamp": 1749289264123,
+          "rss": 42745856,
+          "heapUsed": 8249744,
+          "heapTotal": 10698752,
+          "external": 4015479
+        },
+        {
+          "timestamp": 1749289265125,
+          "rss": 42745856,
+          "heapUsed": 8250608,
+          "heapTotal": 10698752,
+          "external": 4015479
+        },
+        {
+          "timestamp": 1749289266126,
+          "rss": 42762240,
+          "heapUsed": 8256600,
+          "heapTotal": 10698752,
+          "external": 4015479
+        },
+        {
+          "timestamp": 1749289267128,
+          "rss": 42762240,
+          "heapUsed": 8257464,
+          "heapTotal": 10698752,
+          "external": 4015479
+        },
+        {
+          "timestamp": 1749289268129,
+          "rss": 42762240,
+          "heapUsed": 8262640,
+          "heapTotal": 10698752,
+          "external": 4015479
+        }
+      ],
+      "peakMemoryUsage": 10434424
+    }
+  }
+}
