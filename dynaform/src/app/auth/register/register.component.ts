@@ -15,6 +15,7 @@ export class RegisterComponent implements OnInit {
   successMessage = '';
   returnUrl = '';
   registrationStep = 1; // 1: form, 2: passkey setup
+  showCompatibilityWarning = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -37,6 +38,11 @@ export class RegisterComponent implements OnInit {
     if (this.authService.isAuthenticated()) {
       this.router.navigate([this.returnUrl]);
     }
+
+    // Check browser compatibility on init
+    const userAgent = navigator.userAgent.toLowerCase();
+    const browserInfo = this.getBrowserInfo(userAgent);
+    this.showCompatibilityWarning = !browserInfo.compatible;
   }
 
   onSubmit(): void {
@@ -88,7 +94,31 @@ export class RegisterComponent implements OnInit {
       }
     } catch (error: any) {
       this.loading = false;
-      this.errorMessage = error.message || 'Passkey registration failed. Please try again.';
+      console.error('Passkey setup error:', error);
+      
+      // Enhanced error handling for WebAuthn issues
+      if (error.message?.includes('secure context')) {
+        this.errorMessage = `
+          ⚠️ Secure Connection Required: Passkeys require HTTPS.
+          
+          • If you're testing locally, try accessing via: https://localhost:4200
+          • Make sure your browser supports secure contexts
+          • Contact support if this continues
+        `;
+      } else if (error.message?.includes('not supported')) {
+        this.errorMessage = `
+          🌐 Browser Compatibility Issue: Your browser doesn't support passkeys.
+          
+          ✅ Recommended browsers:
+          • Chrome 67+ • Firefox 60+ • Safari 14+ • Edge 18+
+          
+          🔄 Try refreshing the page or use a different browser
+        `;
+      } else if (error.message?.includes('User cancelled') || error.message?.includes('AbortError')) {
+        this.errorMessage = 'Passkey setup was cancelled. You can try again when ready.';
+      } else {
+        this.errorMessage = error.message || 'Passkey registration failed. Please try again.';
+      }
     }
   }
 
@@ -155,5 +185,66 @@ export class RegisterComponent implements OnInit {
 
   goToLogin(): void {
     this.router.navigate(['/login']);
+  }
+
+  // Browser compatibility and error handling methods
+  checkBrowserCompatibility(): void {
+    const userAgent = navigator.userAgent.toLowerCase();
+    const browserInfo = this.getBrowserInfo(userAgent);
+    
+    let compatibilityMessage = `🌐 Browser Detected: ${browserInfo.name} ${browserInfo.version}\n\n`;
+    
+    if (browserInfo.compatible) {
+      compatibilityMessage += '✅ Your browser supports passkeys!\n\n';
+      compatibilityMessage += 'Troubleshooting tips:\n';
+      compatibilityMessage += '• Make sure you\'re using HTTPS or localhost\n';
+      compatibilityMessage += '• Check if your device has biometric authentication\n';
+      compatibilityMessage += '• Try refreshing the page\n';
+      compatibilityMessage += '• Ensure pop-ups are not blocked';
+    } else {
+      compatibilityMessage += '❌ Your browser may not fully support passkeys.\n\n';
+      compatibilityMessage += '✅ Recommended browsers:\n';
+      compatibilityMessage += '• Chrome 67+ or Edge 18+\n';
+      compatibilityMessage += '• Firefox 60+\n';
+      compatibilityMessage += '• Safari 14+';
+    }
+    
+    alert(compatibilityMessage);
+  }
+
+  private getBrowserInfo(userAgent: string): {name: string, version: string, compatible: boolean} {
+    let name = 'Unknown';
+    let version = 'Unknown';
+    let compatible = false;
+
+    if (userAgent.includes('chrome')) {
+      name = 'Chrome';
+      const match = userAgent.match(/chrome\/(\d+)/);
+      version = match ? match[1] : 'Unknown';
+      compatible = parseInt(version) >= 67;
+    } else if (userAgent.includes('firefox')) {
+      name = 'Firefox';
+      const match = userAgent.match(/firefox\/(\d+)/);
+      version = match ? match[1] : 'Unknown';
+      compatible = parseInt(version) >= 60;
+    } else if (userAgent.includes('safari') && !userAgent.includes('chrome')) {
+      name = 'Safari';
+      const match = userAgent.match(/version\/(\d+)/);
+      version = match ? match[1] : 'Unknown';
+      compatible = parseInt(version) >= 14;
+    } else if (userAgent.includes('edge')) {
+      name = 'Edge';
+      const match = userAgent.match(/edge\/(\d+)/);
+      version = match ? match[1] : 'Unknown';
+      compatible = parseInt(version) >= 18;
+    }
+
+    return { name, version, compatible };
+  }
+
+  clearError(): void {
+    this.errorMessage = '';
+    this.successMessage = '';
+    this.showCompatibilityWarning = false;
   }
 }

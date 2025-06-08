@@ -182,6 +182,114 @@
   color: #f44336;
 }
 
+/* Enhanced Error Display and Compatibility Warnings */
+.compatibility-warning {
+  background: rgba(255, 193, 7, 0.1);
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.compatibility-warning mat-icon {
+  color: #ff9800;
+  margin-top: 2px;
+}
+
+.warning-content {
+  flex: 1;
+}
+
+.warning-content p {
+  margin: 0 0 8px 0;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.warning-content ul {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.warning-content li {
+  font-size: 0.85rem;
+  color: #555;
+  margin-bottom: 4px;
+}
+
+.error-display {
+  background: rgba(244, 67, 54, 0.1);
+  border: 1px solid #f44336;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.error-display mat-icon {
+  color: #f44336;
+  margin-top: 2px;
+}
+
+.error-content {
+  flex: 1;
+}
+
+.error-content pre {
+  background: rgba(0, 0, 0, 0.05);
+  padding: 12px;
+  border-radius: 4px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  margin: 8px 0;
+  color: #333;
+}
+
+.error-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.error-actions button {
+  font-size: 0.85rem;
+  padding: 6px 16px;
+}
+
+.success-display {
+  background: rgba(76, 175, 80, 0.1);
+  border: 1px solid #4caf50;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.success-display mat-icon {
+  color: #4caf50;
+  margin-top: 2px;
+}
+
+.success-content {
+  flex: 1;
+}
+
+.success-content p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #333;
+}
+
 /* Form field styling */
 .mat-mdc-form-field {
   --mdc-filled-text-field-container-color: rgba(255, 255, 255, 0.8);

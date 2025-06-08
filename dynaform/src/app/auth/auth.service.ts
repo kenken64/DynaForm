@@ -109,9 +109,10 @@ export class AuthService {
   // Passkey Authentication Methods
   async registerPasskey(): Promise<boolean> {
     try {
-      // Check if WebAuthn is supported
-      if (!window.PublicKeyCredential) {
-        throw new Error('WebAuthn is not supported in this browser');
+      // Enhanced WebAuthn support check
+      const isWebAuthnSupported = await this.checkWebAuthnSupport();
+      if (!isWebAuthnSupported.supported) {
+        throw new Error(isWebAuthnSupported.reason);
       }
 
       // Check if we have a userId from registration
@@ -152,9 +153,10 @@ export class AuthService {
 
   async authenticateWithPasskey(): Promise<boolean> {
     try {
-      // Check if WebAuthn is supported
-      if (!window.PublicKeyCredential) {
-        throw new Error('WebAuthn is not supported in this browser');
+      // Enhanced WebAuthn support check
+      const isWebAuthnSupported = await this.checkWebAuthnSupport();
+      if (!isWebAuthnSupported.supported) {
+        throw new Error(isWebAuthnSupported.reason);
       }
 
       // Get authentication options from server
@@ -326,5 +328,55 @@ export class AuthService {
   // getCurrentUser method - returns current authenticated user
   getCurrentUser(): User | null {
     return this.currentUserSubject.value;
+  }
+
+  // WebAuthn Support Detection
+  private async checkWebAuthnSupport(): Promise<{supported: boolean, reason: string}> {
+    try {
+      // Check if we're in a secure context (HTTPS or localhost)
+      if (!window.isSecureContext) {
+        return {
+          supported: false,
+          reason: 'WebAuthn requires a secure context (HTTPS). Please ensure you are accessing the application over HTTPS.'
+        };
+      }
+
+      // Check if PublicKeyCredential is available
+      if (!window.PublicKeyCredential) {
+        return {
+          supported: false,
+          reason: 'WebAuthn is not supported in this browser. Please use a modern browser like Chrome, Firefox, Safari, or Edge.'
+        };
+      }
+
+      // Check if authenticator is available
+      try {
+        const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+        if (!available) {
+          // Still allow cross-platform authenticators (like security keys)
+          console.log('Platform authenticator not available, but cross-platform authenticators may still work');
+        }
+      } catch (error) {
+        console.warn('Could not check platform authenticator availability:', error);
+      }
+
+      // Check if conditional mediation is supported (optional)
+      if ('isConditionalMediationAvailable' in PublicKeyCredential.prototype) {
+        try {
+          const conditionalAvailable = await PublicKeyCredential.isConditionalMediationAvailable();
+          console.log('Conditional mediation available:', conditionalAvailable);
+        } catch (error) {
+          console.warn('Could not check conditional mediation availability:', error);
+        }
+      }
+
+      return { supported: true, reason: '' };
+    } catch (error) {
+      console.error('Error checking WebAuthn support:', error);
+      return {
+        supported: false,
+        reason: 'Unable to verify WebAuthn support. Please ensure you are using a compatible browser and secure connection.'
+      };
+    }
   }
 }

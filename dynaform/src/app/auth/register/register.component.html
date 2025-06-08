@@ -94,6 +94,45 @@
           </div>
 
           <div class="passkey-actions">
+            <!-- Browser Compatibility Warning -->
+            <div *ngIf="showCompatibilityWarning" class="compatibility-warning">
+              <mat-icon color="warn">warning</mat-icon>
+              <div class="warning-content">
+                <p><strong>Browser Compatibility Notice:</strong></p>
+                <p>Passkeys work best with:</p>
+                <ul>
+                  <li>Chrome 67+ or Edge 18+</li>
+                  <li>Firefox 60+</li>
+                  <li>Safari 14+</li>
+                </ul>
+                <p>Make sure you're using HTTPS or localhost.</p>
+              </div>
+            </div>
+
+            <!-- Enhanced Error Display -->
+            <div *ngIf="errorMessage" class="error-display">
+              <mat-icon color="warn">error_outline</mat-icon>
+              <div class="error-content">
+                <pre>{{ errorMessage }}</pre>
+                <div class="error-actions">
+                  <button mat-button color="primary" (click)="checkBrowserCompatibility()">
+                    Check Browser
+                  </button>
+                  <button mat-button color="accent" (click)="clearError()">
+                    Try Again
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Success Message -->
+            <div *ngIf="successMessage" class="success-display">
+              <mat-icon color="primary">check_circle</mat-icon>
+              <div class="success-content">
+                <p>{{ successMessage }}</p>
+              </div>
+            </div>
+
             <!-- Setup Passkey Button -->
             <button 
               mat-raised-button 
