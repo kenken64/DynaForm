@@ -25,4 +25,7 @@ router.put('/:id', verifyToken, formController.updateForm);
 // DELETE /api/forms/:id - Delete a form by ID (requires authentication)
 router.delete('/:id', verifyToken, formController.deleteForm);
 
+// GET /api/forms/verify/:formId - Verify form on blockchain (public endpoint, no auth required)
+router.get('/verify/:formId', formController.verifyForm);
+
 export default router;

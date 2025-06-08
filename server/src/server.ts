@@ -116,6 +116,14 @@ interface GeneratedForm {
         version: string;
         updatedAt?: string;
     };
+    status?: string;
+    blockchainInfo?: {
+        publicUrl?: string;
+        transactionHash?: string;
+        blockNumber?: number;
+        verifiedAt?: string;
+        gasUsed?: number;
+    };
 }
 
 
@@ -600,6 +608,84 @@ app.get('/api/form-data', async (req: Request, res: Response): Promise<void> => 
         console.error('Error retrieving all form data submissions:', error);
         res.status(500).json({ 
             error: 'Failed to retrieve form data submissions', 
+            message: error.message 
+        });
+    }
+});
+
+// --- Verify Form Status Endpoint (Public - No Authentication Required) ---
+app.get('/api/verify-form/:formId', async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { formId } = req.params;
+        
+        // Validate form ID format
+        if (!formId || formId.length !== 24) {
+            res.status(400).json({
+                success: false,
+                error: 'Invalid form ID format. Must be a 24-character hex string.'
+            });
+            return;
+        }
+
+        const collection: Collection<GeneratedForm> = db.collection('generated_form');
+        
+        // Use MongoDB ObjectId to find the form
+        const { ObjectId } = require('mongodb');
+        let form;
+        
+        try {
+            form = await collection.findOne({ _id: new ObjectId(formId) });
+        } catch (error) {
+            res.status(400).json({
+                success: false,
+                error: 'Invalid form ID format.'
+            });
+            return;
+        }
+
+        if (!form) {
+            res.status(404).json({
+                success: false,
+                error: 'Form not found',
+                message: `No form found with ID: ${formId}`
+            });
+            return;
+        }
+
+        // Check if form is verified on blockchain
+        const isVerified = form.status === 'verified' && form.blockchainInfo;
+        
+        if (isVerified) {
+            res.status(200).json({
+                success: true,
+                verified: true,
+                message: 'Form is verified on blockchain',
+                formId: formId,
+                formName: form.metadata?.formName || 'Untitled Form',
+                verificationData: {
+                    status: form.status,
+                    publicUrl: form.blockchainInfo?.publicUrl,
+                    transactionHash: form.blockchainInfo?.transactionHash,
+                    blockNumber: form.blockchainInfo?.blockNumber,
+                    verifiedAt: form.blockchainInfo?.verifiedAt,
+                    gasUsed: form.blockchainInfo?.gasUsed
+                }
+            });
+        } else {
+            res.status(200).json({
+                success: true,
+                verified: false,
+                message: 'Form is not verified on blockchain',
+                formId: formId,
+                formName: form.metadata?.formName || 'Untitled Form'
+            });
+        }
+
+    } catch (error: any) {
+        console.error('Error verifying form status:', error);
+        res.status(500).json({ 
+            success: false,
+            error: 'Failed to verify form status', 
             message: error.message 
         });
     }

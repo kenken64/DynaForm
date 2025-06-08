@@ -162,6 +162,54 @@ class FormService {
         console.log(`Found ${forms.length} forms with PDF fingerprint: ${pdfFingerprint}${userId ? ` for user: ${userId}` : ''}`);
         return forms;
     }
+    async verifyFormStatus(formId) {
+        try {
+            const collection = this.getCollection();
+            const form = await collection.findOne({ _id: new mongodb_1.ObjectId(formId) });
+            if (!form) {
+                return {
+                    success: false,
+                    error: 'Form not found',
+                    message: `No form found with ID: ${formId}`
+                };
+            }
+            // Check if form is verified on blockchain
+            const isVerified = form.status === 'verified' && form.blockchainInfo;
+            if (!isVerified) {
+                return {
+                    success: false,
+                    verified: false,
+                    message: 'Form is not verified on blockchain yet.',
+                    formId: formId,
+                    formName: form.metadata?.formName || 'Untitled Form'
+                };
+            }
+            // Return successful verification with blockchain details
+            return {
+                success: true,
+                verified: true,
+                message: 'Form successfully verified on blockchain!',
+                formId: formId,
+                formName: form.metadata?.formName || 'Untitled Form',
+                verificationData: {
+                    status: form.status,
+                    publicUrl: form.blockchainInfo?.publicUrl,
+                    transactionHash: form.blockchainInfo?.transactionHash,
+                    blockNumber: form.blockchainInfo?.blockNumber,
+                    verifiedAt: form.blockchainInfo?.verifiedAt,
+                    gasUsed: form.blockchainInfo?.gasUsed
+                }
+            };
+        }
+        catch (error) {
+            console.error('Error verifying form status:', error);
+            return {
+                success: false,
+                error: 'Internal server error',
+                message: error.message
+            };
+        }
+    }
 }
 exports.FormService = FormService;
 exports.formService = new FormService();

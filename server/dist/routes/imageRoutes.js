@@ -12,6 +12,8 @@ router.post('/summarize-text', controllers_1.imageController.summarizeText);
 router.get('/health', controllers_1.imageController.healthCheck);
 // GET /api/cache/stats - Get cache statistics
 router.get('/cache/stats', controllers_1.imageController.getCacheStats);
+// GET /api/cache/performance - Get detailed cache performance metrics
+router.get('/cache/performance', controllers_1.imageController.getCachePerformance);
 // DELETE /api/cache/clear - Clear all cache entries
 router.delete('/cache/clear', controllers_1.imageController.clearCache);
 exports.default = router;

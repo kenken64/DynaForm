@@ -244,6 +244,33 @@ class FormController {
             });
         }
     }
+    async verifyForm(req, res) {
+        try {
+            const { formId } = req.params;
+            // Validate MongoDB ObjectId format (24 hex characters)
+            if (!formId || !/^[0-9a-fA-F]{24}$/.test(formId)) {
+                res.status(400).json({
+                    success: false,
+                    error: 'Invalid form ID format.'
+                });
+                return;
+            }
+            const result = await services_1.formService.verifyFormStatus(formId);
+            if (!result.success) {
+                res.status(404).json(result);
+                return;
+            }
+            res.status(200).json(result);
+        }
+        catch (error) {
+            console.error('Error verifying form:', error);
+            res.status(500).json({
+                success: false,
+                error: 'Failed to verify form',
+                message: error.message
+            });
+        }
+    }
 }
 exports.FormController = FormController;
 exports.formController = new FormController();

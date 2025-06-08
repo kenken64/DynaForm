@@ -56,7 +56,9 @@ import { DebugFormsComponent } from './debug-forms.component';
 import { LandingComponent } from './landing/landing.component';
 import { PublicFormComponent } from './public-form/public-form.component';
 import { BlockchainService } from './services/blockchain.service';
+import { FormVerificationService } from './services/form-verification.service';
 import { AskDynaformComponent } from './ask-dynaform/ask-dynaform.component';
+import { FireworksComponent } from './shared/fireworks/fireworks.component';
 
 @NgModule({
   declarations: [
@@ -80,7 +82,8 @@ import { AskDynaformComponent } from './ask-dynaform/ask-dynaform.component';
     DebugFormsComponent,
     LandingComponent,
     PublicFormComponent,
-    AskDynaformComponent
+    AskDynaformComponent,
+    FireworksComponent
   ],
   imports: [
     BrowserModule,
@@ -121,7 +124,8 @@ import { AskDynaformComponent } from './ask-dynaform/ask-dynaform.component';
     DatePipe,
     TitleCasePipe,
     FormsService,
-    BlockchainService
+    BlockchainService,
+    FormVerificationService
   ],
   bootstrap: [AppComponent]
 })

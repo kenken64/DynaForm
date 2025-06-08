@@ -123,7 +123,12 @@ exports.config = {
         return process.env.DEEPSEEK_MODEL_NAME || 'deepseek-r1:8b';
     },
     // Ollama Timeout Configuration
-    OLLAMA_TIMEOUT_MS: 120000, // 2 minutes timeout for image processing
+    get OLLAMA_TIMEOUT_MS() {
+        return parseInt(process.env.OLLAMA_TIMEOUT_MS || '180000', 10); // Default 3 minutes, configurable via env
+    },
+    get OLLAMA_KEEP_ALIVE() {
+        return process.env.OLLAMA_KEEP_ALIVE || '5m';
+    },
     // File Upload Configuration
     MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB
     JSON_LIMIT: '50mb',

@@ -20,13 +20,16 @@ export class AppComponent {
     ).subscribe((event: NavigationEnd) => {
       // Use the URL to detect public routes instead of route config path
       const currentUrl = event.url;
+      // Extract the pathname without query parameters
+      const urlPath = currentUrl.split('?')[0];
       console.log('Current URL:', currentUrl);
+      console.log('URL Path:', urlPath);
       
       // Check if the route is login, register, landing page, or public form
-      if (currentUrl === '/' || 
-          currentUrl === '/login' || 
-          currentUrl === '/register' ||
-          currentUrl.startsWith('/public/form/')) {
+      if (urlPath === '/' || 
+          urlPath === '/login' || 
+          urlPath === '/register' ||
+          urlPath.startsWith('/public/form/')) {
         this.showSideMenu = false;
       } else {
         this.showSideMenu = true;

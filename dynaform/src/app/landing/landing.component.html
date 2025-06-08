@@ -23,45 +23,98 @@
         <h3 class="search-title">Verify DynaForm on Blockchain</h3>
         <div class="search-container">
           <mat-form-field class="search-field" appearance="outline">
-            <mat-label>Enter DynaForm form url with ID and hash </mat-label>
+            <mat-label>Enter DynaForm form URL or ID</mat-label>
             <input 
               matInput 
               [(ngModel)]="searchQuery" 
               (keyup)="onSearchKeyup($event)"
-              placeholder="0x1234567890abcdef..."
-              class="search-input">
+              placeholder="http://localhost:4200/public/form/6845ca285a88a8c1282af178/9fda53adc47ad259e739faff83b0d69c... or 6845ca285a88a8c1282af178"
+              class="search-input"
+              [disabled]="isVerified">
             <mat-icon matSuffix>search</mat-icon>
           </mat-form-field>
+          
+          <!-- Verify Button (normal state) -->
           <button 
             mat-raised-button 
             color="primary" 
             class="verify-button"
             (click)="verifyBlockchain()"
-            [disabled]="!searchQuery.trim() || isVerifying">
+            [disabled]="!searchQuery.trim() || isVerifying || isVerified"
+            *ngIf="!isVerified">
             <mat-icon *ngIf="isVerifying" class="spinning">refresh</mat-icon>
             <mat-icon *ngIf="!isVerifying">verified</mat-icon>
             {{ isVerifying ? 'Verifying...' : 'Verify' }}
           </button>
+          
+          <!-- Verified Button (success state) -->
+          <button 
+            mat-raised-button 
+            class="verify-button verified-button"
+            *ngIf="isVerified"
+            disabled>
+            <mat-icon>check_circle</mat-icon>
+            Verified
+          </button>
+          
+          <!-- Reset Button -->
+          <button 
+            mat-raised-button 
+            color="accent" 
+            class="reset-button"
+            (click)="resetVerification()"
+            *ngIf="isVerified">
+            <mat-icon>refresh</mat-icon>
+            Reset
+          </button>
+        </div>
+        
+        <!-- Error Message (displayed just below textbox) -->
+        <div *ngIf="verificationResult && (!verificationResult.success || !verificationResult.verified)" 
+             class="error-message">
+          <mat-icon>error</mat-icon>
+          <span>{{ verificationResult.message }}</span>
         </div>
         
         <!-- Verification Result -->
-        <div *ngIf="verificationResult" class="verification-result" 
-             [class.success]="verificationResult.isValid"
-             [class.error]="!verificationResult.isValid">
-          <mat-icon>{{ verificationResult.isValid ? 'check_circle' : 'error' }}</mat-icon>
+        <div *ngIf="verificationResult && verificationResult.success && verificationResult.verified" 
+             class="verification-result success">
+          <mat-icon>check_circle</mat-icon>
           <div class="result-content">
             <div class="result-message">{{ verificationResult.message }}</div>
-            <div *ngIf="verificationResult.isValid && verificationResult.timestamp" class="result-details">
-              <small>Block: #{{ verificationResult.blockNumber }} | {{ verificationResult.timestamp | date:'medium' }}</small>
+            <div class="result-details">
+              <div class="form-info">
+                <strong>Form:</strong> {{ verificationResult.formName }}
+                <br>
+                <strong>Form ID:</strong> {{ verificationResult.formId }}
+              </div>
+              <div *ngIf="verificationResult.verificationData" class="blockchain-details">
+                <div *ngIf="verificationResult.verificationData.transactionHash" class="detail-item">
+                  <strong>Transaction:</strong> 
+                  <code>{{ verificationResult.verificationData.transactionHash }}</code>
+                </div>
+                <div *ngIf="verificationResult.verificationData.blockNumber" class="detail-item">
+                  <strong>Block:</strong> #{{ verificationResult.verificationData.blockNumber }}
+                </div>
+                <div *ngIf="verificationResult.verificationData.verifiedAt" class="detail-item">
+                  <strong>Verified:</strong> {{ verificationResult.verificationData.verifiedAt | date:'medium' }}
+                </div>
+                <div *ngIf="verificationResult.verificationData.publicUrl" class="detail-item">
+                  <strong>Public URL:</strong> 
+                  <a [href]="verificationResult.verificationData.publicUrl" target="_blank" class="public-url-link">
+                    {{ verificationResult.verificationData.publicUrl }}
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- Sample Hash Button -->
         <div class="sample-section">
-          <button mat-button class="sample-button" (click)="generateSampleHash()">
+          <button mat-button class="sample-button" (click)="generateSampleHash()" [disabled]="isVerified">
             <mat-icon>content_copy</mat-icon>
-            Try Sample Hash
+            Try Sample Form ID
           </button>
         </div>
       </div>
@@ -197,4 +250,7 @@
       </button>
     </div>
   </section>
+
+  <!-- Fireworks Animation -->
+  <app-fireworks [show]="showFireworks"></app-fireworks>
 </div>
