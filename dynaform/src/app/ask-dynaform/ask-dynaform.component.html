@@ -99,8 +99,7 @@
             cdkTextareaAutosize
             cdkAutosizeMinRows="1"
             cdkAutosizeMaxRows="6"
-            (keydown)="onKeyDown($event)"
-            [disabled]="hasStreamingMessage()"></textarea>
+            (keydown)="onKeyDown($event)"></textarea>
         </mat-form-field>
         
         <button 
@@ -108,7 +107,7 @@
           color="primary"
           type="submit"
           class="send-button"
-          [disabled]="chatForm.invalid || hasStreamingMessage()"
+          [disabled]="isSendButtonDisabled"
           aria-label="Send message">
           <mat-icon *ngIf="!hasStreamingMessage()">send</mat-icon>
           <mat-spinner *ngIf="hasStreamingMessage()" diameter="24"></mat-spinner>

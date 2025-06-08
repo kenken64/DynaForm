@@ -1,8 +1,14 @@
+import argparse
 import asyncio
 import logging
 import signal
 import sys
 from contextlib import asynccontextmanager
+
+# FastAPI imports
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 # Local imports
 from config import config
@@ -11,6 +17,7 @@ from verifiable_contract_service import verifiable_contract_service
 from ollama_service import ollama_service
 from conversation_interceptor import conversation_interceptor
 from ollama_monitor import OllamaConversationMonitor
+from ai_agent import form_publishing_agent
 
 # Configure logging
 logging.basicConfig(
@@ -146,6 +153,10 @@ async def get_form_info(form_id: str):
         if not form_data:
             raise HTTPException(status_code=404, detail="Form not found")
         
+        # Convert ObjectId to string for JSON serialization
+        if isinstance(form_data, dict) and '_id' in form_data:
+            form_data['_id'] = str(form_data['_id'])
+        
         fingerprint = await mongodb_service.get_form_fingerprint(form_id)
         
         return {
@@ -166,9 +177,21 @@ async def list_forms():
     """List all available forms"""
     try:
         forms = await mongodb_service.get_all_forms()
+        
+        # Convert ObjectIds to strings for JSON serialization
+        serialized_forms = []
+        for form in forms:
+            if isinstance(form, dict):
+                # Convert ObjectId to string
+                if '_id' in form:
+                    form['_id'] = str(form['_id'])
+                serialized_forms.append(form)
+            else:
+                serialized_forms.append(form)
+        
         return {
-            "forms": forms,
-            "count": len(forms)
+            "forms": serialized_forms,
+            "count": len(serialized_forms)
         }
     except Exception as e:
         logger.error(f"Error listing forms: {e}")
@@ -243,8 +266,22 @@ async def run_interactive_chat():
             print(f"🤖 Agent: ❌ An error occurred: {str(e)}")
 
 async def main():
-    """Main function"""
-    import argparse
+    """Main function for chat mode only"""
+    try:
+        # Initialize services manually for chat mode
+        await mongodb_service.connect()
+        await ollama_service.check_ollama_status()
+        await run_interactive_chat()
+    
+    except Exception as e:
+        logger.error(f"Application error: {e}")
+        sys.exit(1)
+    
+    finally:
+        await mongodb_service.disconnect()
+
+if __name__ == "__main__":
+    import asyncio
     
     parser = argparse.ArgumentParser(description="Form Publishing AI Agent")
     parser.add_argument("--mode", choices=["server", "chat"], default="server",
@@ -260,14 +297,12 @@ async def main():
     
     try:
         if args.mode == "chat":
-            # Initialize services manually for chat mode
-            await mongodb_service.connect()
-            await ollama_service.check_ollama_status()
-            await run_interactive_chat()
+            # Run chat mode with asyncio
+            asyncio.run(main())
         else:
-            # Run FastAPI server
+            # Run FastAPI server directly
             import uvicorn
-            await uvicorn.run(
+            uvicorn.run(
                 "main:app",
                 host=args.host,
                 port=args.port,
@@ -278,9 +313,3 @@ async def main():
     except Exception as e:
         logger.error(f"Application error: {e}")
         sys.exit(1)
-    
-    finally:
-        await mongodb_service.disconnect()
-
-if __name__ == "__main__":
-    asyncio.run(main())

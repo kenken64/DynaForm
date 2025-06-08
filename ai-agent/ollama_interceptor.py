@@ -92,24 +92,43 @@ class OllamaRealTimeInterceptor:
                     elif path == '/api/chat' and data:
                         await self._intercept_chat_request(data)
                     
-                    # Check for custom response injection before forwarding
+                    # NEW: Wait for conversation processing before checking for response injection
                     custom_response = None
-                    if self.response_injector and path == '/api/generate':
+                    if self.response_injector and path in ['/api/generate', '/api/chat']:
                         try:
                             request_json = json.loads(data.decode('utf-8'))
-                            prompt = request_json.get('prompt', '')
+                            
+                            # Extract prompt based on endpoint type
+                            prompt = ''
+                            if path == '/api/generate':
+                                prompt = request_json.get('prompt', '')
+                            elif path == '/api/chat':
+                                messages = request_json.get('messages', [])
+                                if messages and isinstance(messages, list):
+                                    # Get the last user message
+                                    for message in reversed(messages):
+                                        if message.get('role') == 'user':
+                                            prompt = message.get('content', '')
+                                            break
+                            
                             if prompt:
+                                logger.info(f"🔄 Processing conversation for potential publishing: {prompt[:50]}...")
+                                
+                                # Trigger conversation processing and wait for completion
+                                await self._process_conversation_and_wait(prompt)
+                                
+                                # Now check for custom response injection
                                 custom_response = self.response_injector.should_inject_response(prompt)
                                 if custom_response:
-                                    logger.info(f"🔄 Injecting custom response for prompt: {prompt[:50]}...")
+                                    logger.info(f"✅ Found custom response for prompt: {prompt[:50]}...")
                         except Exception as e:
-                            logger.error(f"Error checking for response injection: {e}")
+                            logger.error(f"Error processing conversation or checking response injection: {e}")
                     
                     if custom_response:
                         # Return custom response instead of forwarding to Ollama
                         logger.info(f"✅ Returning injected success response")
                         
-                        # Format as Ollama response
+                        # Format as Ollama response based on endpoint
                         stream = False
                         try:
                             request_json = json.loads(data.decode('utf-8'))
@@ -117,34 +136,69 @@ class OllamaRealTimeInterceptor:
                         except:
                             pass
                         
-                        if stream:
-                            # Streaming response format
-                            response_data = json.dumps({
-                                "model": "auto-publisher",
-                                "created_at": datetime.now().isoformat(),
-                                "response": custom_response,
-                                "done": True
-                            })
+                        if path == '/api/chat':
+                            # Chat endpoint format
+                            if stream:
+                                response_data = json.dumps({
+                                    "model": "auto-publisher",
+                                    "created_at": datetime.now().isoformat(),
+                                    "message": {"role": "assistant", "content": custom_response},
+                                    "done": True
+                                })
+                            else:
+                                response_data = json.dumps({
+                                    "model": "auto-publisher", 
+                                    "created_at": datetime.now().isoformat(),
+                                    "message": {"role": "assistant", "content": custom_response},
+                                    "done_reason": "stop",
+                                    "done": True,
+                                    "total_duration": 1000000000,
+                                    "load_duration": 500000000,
+                                    "prompt_eval_count": 0,
+                                    "prompt_eval_duration": 0,
+                                    "eval_count": len(custom_response.split()),
+                                    "eval_duration": 500000000
+                                })
                         else:
-                            # Non-streaming response format
-                            response_data = json.dumps({
-                                "model": "auto-publisher",
-                                "created_at": datetime.now().isoformat(),
-                                "response": custom_response,
-                                "done": True,
-                                "context": [],
-                                "total_duration": 1000000000,
-                                "load_duration": 500000000,
-                                "prompt_eval_count": 0,
-                                "prompt_eval_duration": 0,
-                                "eval_count": len(custom_response.split()),
-                                "eval_duration": 500000000
-                            })
+                            # Generate endpoint format
+                            if stream:
+                                response_data = json.dumps({
+                                    "model": "auto-publisher",
+                                    "created_at": datetime.now().isoformat(),
+                                    "response": custom_response,
+                                    "done": True
+                                })
+                            else:
+                                response_data = json.dumps({
+                                    "model": "auto-publisher",
+                                    "created_at": datetime.now().isoformat(),
+                                    "response": custom_response,
+                                    "done": True,
+                                    "context": [],
+                                    "total_duration": 1000000000,
+                                    "load_duration": 500000000,
+                                    "prompt_eval_count": 0,
+                                    "prompt_eval_duration": 0,
+                                    "eval_count": len(custom_response.split()),
+                                    "eval_duration": 500000000
+                                })
                         
                         # Also trigger the conversation callback for consistency
                         try:
                             request_json = json.loads(data.decode('utf-8'))
-                            prompt = request_json.get('prompt', '')
+                            
+                            # Extract prompt based on endpoint type
+                            prompt = ''
+                            if path == '/api/generate':
+                                prompt = request_json.get('prompt', '')
+                            elif path == '/api/chat':
+                                messages = request_json.get('messages', [])
+                                if messages and isinstance(messages, list):
+                                    for message in reversed(messages):
+                                        if message.get('role') == 'user':
+                                            prompt = message.get('content', '')
+                                            break
+                            
                             if prompt:
                                 await self.conversation_callback(prompt, custom_response)
                         except Exception as e:
@@ -314,9 +368,16 @@ class OllamaRealTimeInterceptor:
                 if line.strip():
                     try:
                         part = json.loads(line)
-                        if 'response' in part:
-                            response_parts.append(part['response'])
-                            logger.debug(f"🔍 [DEBUG] Extracted response part {i}: {part['response'][:50]}...")
+                        # Handle both /api/generate and /api/chat response formats
+                        response_content = None
+                        if 'response' in part:  # /api/generate format
+                            response_content = part['response']
+                        elif 'message' in part and isinstance(part['message'], dict) and 'content' in part['message']:  # /api/chat format
+                            response_content = part['message']['content']
+                        
+                        if response_content:
+                            response_parts.append(response_content)
+                            logger.debug(f"🔍 [DEBUG] Extracted response part {i}: {response_content[:50]}...")
                     except json.JSONDecodeError as e:
                         logger.debug(f"🔍 [DEBUG] Failed to parse line {i}: {e}")
                         continue
@@ -496,6 +557,45 @@ class OllamaRealTimeInterceptor:
         except Exception as e:
             logger.error(f"Error parsing log line: {e}")
     
+    async def _process_conversation_and_wait(self, prompt: str, max_wait_seconds: int = 10):
+        """Process conversation with mock response and wait for completion"""
+        try:
+            logger.info(f"🔄 Processing conversation with prompt: {prompt[:50]}...")
+            
+            # Generate a mock response since we don't have the actual Ollama response yet
+            mock_response = "I'll help you with that request."
+            
+            # Start conversation processing
+            start_time = asyncio.get_event_loop().time()
+            
+            # Call the conversation callback (this will trigger publishing if needed)
+            await self.conversation_callback(prompt, mock_response)
+            
+            # Wait a bit for any background publishing process to complete
+            # In most cases, publishing is fast, but we give it some time
+            wait_start = asyncio.get_event_loop().time()
+            max_wait = min(max_wait_seconds, 10)  # Cap at 10 seconds
+            
+            # Check if response injection is available periodically
+            while (asyncio.get_event_loop().time() - wait_start) < max_wait:
+                if self.response_injector:
+                    # Use the non-consuming check to avoid deleting the response injection
+                    has_response = self.response_injector.has_pending_response(prompt)
+                    if has_response:
+                        total_time = asyncio.get_event_loop().time() - start_time
+                        logger.info(f"✅ Publishing completed in {total_time:.2f}s, response injection ready")
+                        break
+                
+                # Small delay before checking again
+                await asyncio.sleep(0.2)
+            
+            total_time = asyncio.get_event_loop().time() - start_time
+            logger.info(f"🔄 Conversation processing completed in {total_time:.2f}s")
+            
+        except Exception as e:
+            logger.error(f"Error in conversation processing: {e}")
+            logger.exception("Full exception details:")
+
     async def inject_test_conversation(self, prompt: str, response: str = None):
         """Inject a test conversation for testing purposes"""
         if response is None:

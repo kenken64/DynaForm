@@ -12,11 +12,14 @@ class OllamaService:
         self.host = config.OLLAMA_HOST
         self.model = config.OLLAMA_MODEL
         self.keywords = config.LISTEN_KEYWORDS
+        # Set timeout for Ollama requests (configurable via environment)
+        self.timeout = aiohttp.ClientTimeout(total=config.OLLAMA_TIMEOUT)
+        self.keep_alive = config.OLLAMA_KEEP_ALIVE
         
     async def check_ollama_status(self) -> bool:
         """Check if Ollama is running and accessible"""
         try:
-            async with aiohttp.ClientSession() as session:
+            async with aiohttp.ClientSession(timeout=self.timeout) as session:
                 async with session.get(f"{self.host}/api/tags") as response:
                     if response.status == 200:
                         models = await response.json()
@@ -35,13 +38,14 @@ class OllamaService:
             payload = {
                 "model": self.model,
                 "prompt": prompt,
-                "stream": False
+                "stream": False,
+                "keep_alive": self.keep_alive
             }
             
             if system_prompt:
                 payload["system"] = system_prompt
             
-            async with aiohttp.ClientSession() as session:
+            async with aiohttp.ClientSession(timeout=self.timeout) as session:
                 async with session.post(
                     f"{self.host}/api/generate",
                     json=payload,

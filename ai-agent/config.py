@@ -12,6 +12,8 @@ class Config:
     # Ollama Configuration
     OLLAMA_HOST = os.getenv('OLLAMA_HOST', 'http://localhost:11434')
     OLLAMA_MODEL = os.getenv('OLLAMA_MODEL', 'llama3.2:3b')
+    OLLAMA_TIMEOUT = int(os.getenv('OLLAMA_TIMEOUT', 300))  # Default 5 minutes
+    OLLAMA_KEEP_ALIVE = os.getenv('OLLAMA_KEEP_ALIVE', '5m')
     
     # API Endpoints
     VERIFIABLE_CONTRACT_API = os.getenv('VERIFIABLE_CONTRACT_API', 'http://localhost:3002/api/urls')

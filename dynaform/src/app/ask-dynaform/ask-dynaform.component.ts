@@ -99,6 +99,7 @@ export class AskDynaformComponent implements OnInit, OnDestroy, AfterViewChecked
 
   private sendMessage(message: string): void {
     this.error = '';
+    this.setFormEnabled(false); // Disable form during processing
 
     // Add streaming assistant message
     const assistantMessageId = this.generateMessageId();
@@ -121,11 +122,13 @@ export class AskDynaformComponent implements OnInit, OnDestroy, AfterViewChecked
     ).subscribe({
       next: (response) => {
         this.updateMessage(assistantMessageId, response.data.message, false);
+        this.setFormEnabled(true); // Re-enable form when done
       },
       error: (error) => {
         console.error('Chat error:', error);
         this.updateMessage(assistantMessageId, 'Sorry, I encountered an error while processing your request. Please try again.', false);
         this.error = 'Failed to send message. Please try again.';
+        this.setFormEnabled(true); // Re-enable form on error
       }
     });
   }
@@ -176,6 +179,18 @@ export class AskDynaformComponent implements OnInit, OnDestroy, AfterViewChecked
     return this.messages.some(message => message.isStreaming);
   }
 
+  private setFormEnabled(enabled: boolean): void {
+    if (enabled) {
+      this.chatForm.get('message')?.enable();
+    } else {
+      this.chatForm.get('message')?.disable();
+    }
+  }
+
+  get isSendButtonDisabled(): boolean {
+    return this.chatForm.invalid || this.hasStreamingMessage();
+  }
+
   onKeyDown(event: KeyboardEvent): void {
     // Send message on Enter, but allow Shift+Enter for new lines
     if (event.key === 'Enter' && !event.shiftKey) {
@@ -187,6 +202,7 @@ export class AskDynaformComponent implements OnInit, OnDestroy, AfterViewChecked
   clearChat(): void {
     this.messages = [];
     this.error = '';
+    this.setFormEnabled(true); // Ensure form is enabled when chat is cleared
     // Add welcome message back
     this.addMessage({
       id: this.generateMessageId(),

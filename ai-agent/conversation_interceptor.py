@@ -58,7 +58,8 @@ class ConversationInterceptor:
                 return False
             
             # Check if the conversation contains publishing keywords
-            full_text = f"{prompt} {response}"
+            #full_text = f"{prompt} {response}"
+            full_text = f"{prompt}"
             logger.debug(f"🔍 [DEBUG] Full conversation text: {full_text}")
             logger.debug(f"🔍 [DEBUG] Checking for keywords: {self.keywords}")
             
@@ -92,24 +93,41 @@ class ConversationInterceptor:
                 
                 # Perform the form publishing
                 logger.info(f"🚀 Starting auto-publication process for form {form_id}")
-                success = await self._auto_publish_form(form_id, prompt)
+                publish_result = await self._auto_publish_form(form_id, prompt)
                 
-                if success:
+                if publish_result and publish_result.get('success'):
                     logger.info(f"✅ Successfully auto-published form {form_id}")
                     
-                    # Store for response injection using just the prompt as key for simpler matching
+                    # Store for response injection using a more predictable key
+                    # Use both the original prompt and a simplified version for better matching
                     prompt_key = prompt.strip().lower()
-                    self.pending_response_injections[prompt_key] = {
+                    simplified_key = " ".join(prompt.lower().split())  # Normalize whitespace
+                    
+                    # Get the public URL from the publish result
+                    public_url = publish_result.get('url', '')
+                    transaction_hash = publish_result.get('transaction_hash', '')
+                    
+                    success_message = f"✅ Form {form_id} has been successfully published to the blockchain!\n\n🔗 Your form is now available at the public URL and verified on the blockchain.\n\n📋 Form ID: {form_id}\n🎯 Status: Published\n⛓️ Blockchain: Verified\n🌐 Public URL: {public_url}\n🔖 Transaction Hash: {transaction_hash}\n\n🎉 Your form is now immutably stored and publicly accessible!"
+                    
+                    injection_data = {
                         "form_id": form_id,
-                        "success_message": f"✅ Form {form_id} has been successfully published to the blockchain!\n\n🔗 Your form is now available at the public URL and verified on the blockchain.\n\n📋 Form ID: {form_id}\n🎯 Status: Published\n⛓️ Blockchain: Verified",
+                        "success_message": success_message,
                         "timestamp": datetime.now()
                     }
+                    
+                    # Store with multiple keys for better matching reliability
+                    self.pending_response_injections[prompt_key] = injection_data
+                    if simplified_key != prompt_key:
+                        self.pending_response_injections[simplified_key] = injection_data
+                    
                     logger.info(f"🔄 Stored response injection for prompt: {prompt[:50]}...")
+                    logger.debug(f"🔄 Injection keys: {prompt_key[:50]}...")
                     
                     # Also inject a response back to the conversation
                     await self._inject_success_response(form_id)
                 else:
-                    logger.error(f"❌ Failed to auto-publish form {form_id}")
+                    error_msg = publish_result.get('error', 'Unknown error') if publish_result else 'Publication failed'
+                    logger.error(f"❌ Failed to auto-publish form {form_id}: {error_msg}")
                 
                 return True
             else:
@@ -179,15 +197,15 @@ class ConversationInterceptor:
                 
                 # Log the auto-publication event
                 await self._log_auto_publication(form_id, result, original_prompt)
-                return True
+                return result  # Return the full result with URL and transaction details
             else:
                 logger.error(f"🚀 [AUTO-PUBLISH] ❌ Blockchain registration failed: {result.get('error')}")
-                return False
+                return {"success": False, "error": result.get('error')}
                 
         except Exception as e:
             logger.error(f"🚀 [AUTO-PUBLISH] ❌ Error in auto-publish: {e}")
             logger.exception("🚀 [AUTO-PUBLISH] Full exception details:")
-            return False
+            return {"success": False, "error": str(e)}
     
     async def _update_form_status(self, form_id: str, status: str, blockchain_result: Dict[str, Any]) -> bool:
         """Update the form status in MongoDB after successful blockchain registration"""
@@ -254,22 +272,57 @@ class ConversationInterceptor:
             prompt_key = prompt.strip().lower()
             
             logger.debug(f"🔄 Checking for response injection with key: {prompt_key[:50]}...")
-            logger.debug(f"🔄 Available injection keys: {list(self.pending_response_injections.keys())}")
+            logger.debug(f"🔄 Available injection keys: {[key[:50] + '...' if len(key) > 50 else key for key in self.pending_response_injections.keys()]}")
             
+            # Try exact match first
             if prompt_key in self.pending_response_injections:
                 injection_data = self.pending_response_injections[prompt_key]
-                logger.info(f"🔄 Found pending response injection for prompt: {prompt[:50]}...")
+                logger.info(f"✅ Found exact match for response injection: {prompt[:50]}...")
                 
                 # Remove from pending (use only once)
                 del self.pending_response_injections[prompt_key]
                 
                 return injection_data["success_message"]
             
+            # Try partial matching for more flexibility
+            for stored_key, injection_data in list(self.pending_response_injections.items()):
+                # Check if the stored key is contained in the prompt or vice versa
+                if (len(stored_key) > 10 and stored_key in prompt_key) or (len(prompt_key) > 10 and prompt_key in stored_key):
+                    logger.info(f"✅ Found partial match for response injection: {prompt[:50]}...")
+                    logger.debug(f"🔄 Stored key: {stored_key[:50]}... matched with prompt key: {prompt_key[:50]}...")
+                    
+                    # Remove from pending (use only once)
+                    del self.pending_response_injections[stored_key]
+                    
+                    return injection_data["success_message"]
+            
+            logger.debug(f"🔄 No response injection found for prompt: {prompt[:50]}...")
             return None
             
         except Exception as e:
             logger.error(f"Error checking response injection: {e}")
             return None
+
+    def has_pending_response(self, prompt: str) -> bool:
+        """Check if there's a pending response for this prompt WITHOUT consuming it"""
+        try:
+            prompt_key = prompt.strip().lower()
+            
+            # Try exact match first
+            if prompt_key in self.pending_response_injections:
+                return True
+            
+            # Try partial matching for more flexibility
+            for stored_key in self.pending_response_injections.keys():
+                # Check if the stored key is contained in the prompt or vice versa
+                if (len(stored_key) > 10 and stored_key in prompt_key) or (len(prompt_key) > 10 and prompt_key in stored_key):
+                    return True
+            
+            return False
+            
+        except Exception as e:
+            logger.error(f"Error checking pending response: {e}")
+            return False
 
     async def _inject_success_response(self, form_id: str):
         """Inject a success response back to the conversation flow"""
