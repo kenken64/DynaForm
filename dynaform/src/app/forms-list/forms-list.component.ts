@@ -89,6 +89,11 @@ export class FormsListComponent implements OnInit {
     });
   }
 
+  createNewForm(): void {
+    // Navigate to form editor for creating a new form
+    this.router.navigate(['/form-editor']);
+  }
+
   onDeleteForm(form: GeneratedForm): void {
     if (confirm(`Are you sure you want to delete "${form.metadata.formName || 'Untitled Form'}"?`)) {
       this.formsService.deleteForm(form._id).subscribe({

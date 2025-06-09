@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms'
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { GeneratedForm, FieldConfiguration } from '../interfaces/form.interface';
+import { GeneratedForm, FieldConfiguration, FieldConfigurationValue } from '../interfaces/form.interface';
 
 @Component({
   selector: 'app-public-form',
@@ -25,7 +25,7 @@ export class PublicFormComponent implements OnInit {
   dynamicForm!: FormGroup;
   fields: any[] = [];
   formTitle: string = '';
-  fieldConfigurations: Record<string, string[]> = {};
+  fieldConfigurations: Record<string, FieldConfigurationValue> = {};
   
   // Utility
   objectKeys = Object.keys;
@@ -138,7 +138,29 @@ export class PublicFormComponent implements OnInit {
   }
 
   getFieldConfiguration(fieldName: string): string[] {
-    return this.fieldConfigurations[fieldName] || [];
+    const config = this.fieldConfigurations[fieldName];
+    
+    // Handle different field configuration formats for backward compatibility
+    if (!config) {
+      return [];
+    }
+    
+    // Handle object format: { mandatory: boolean, validation: boolean }
+    if (typeof config === 'object' && config !== null && !Array.isArray(config)) {
+      const result: string[] = [];
+      const configObj = config as any; // Type assertion for flexibility
+      if (configObj.mandatory) result.push('mandatory');
+      if (configObj.validation) result.push('validation');
+      return result;
+    }
+    
+    // Handle legacy array format: ['mandatory', 'validation'] or []
+    if (Array.isArray(config)) {
+      return config;
+    }
+    
+    // Fallback for unknown formats
+    return [];
   }
 
   hasRelevantConfiguration(fieldName: string): boolean {

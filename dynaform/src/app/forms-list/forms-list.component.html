@@ -11,25 +11,38 @@
     <p class="page-description">View and manage all your forms</p>
   </div>
 
-  <!-- Search Bar -->
-  <div class="search-section">
-    <mat-form-field appearance="outline" class="search-field">
-      <mat-icon matPrefix>search</mat-icon>
-      <input 
-        matInput 
-        placeholder="Search forms..." 
-        [(ngModel)]="searchQuery"
-        (input)="onSearch(searchQuery)"
-        [disabled]="loading">
+  <!-- Search Bar and Actions -->
+  <div class="search-actions-section">
+    <div class="search-section">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-icon matPrefix>search</mat-icon>
+        <input 
+          matInput 
+          placeholder="Search forms..." 
+          [(ngModel)]="searchQuery"
+          (input)="onSearch(searchQuery)"
+          [disabled]="loading">
+        <button 
+          *ngIf="searchQuery" 
+          matSuffix 
+          mat-icon-button 
+          (click)="clearSearch()"
+          aria-label="Clear search">
+          <mat-icon>clear</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+    
+    <div class="actions-section">
       <button 
-        *ngIf="searchQuery" 
-        matSuffix 
-        mat-icon-button 
-        (click)="clearSearch()"
-        aria-label="Clear search">
-        <mat-icon>clear</mat-icon>
+        mat-raised-button 
+        color="primary" 
+        (click)="createNewForm()"
+        class="create-form-btn">
+        <mat-icon>add</mat-icon>
+        Create New Form
       </button>
-    </mat-form-field>
+    </div>
   </div>
 
   <!-- Loading State -->

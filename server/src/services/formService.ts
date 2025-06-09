@@ -1,10 +1,81 @@
 import { Collection, ObjectId } from 'mongodb';
 import { getDatabase } from '../database/connection';
 import { GeneratedForm, SaveFormRequest, PaginatedResponse } from '../types';
+import * as crypto from 'crypto';
 
 export class FormService {
   private getCollection(): Collection<GeneratedForm> {
     return getDatabase().collection('generated_form');
+  }
+
+  /**
+   * Generate a JSON fingerprint from form data for forms created without PDF upload
+   * This provides consistent fingerprint generation similar to the AI agent's implementation
+   */
+  private generateJsonFingerprint(formData: any): string {
+    try {
+      // Create a canonical representation of the form structure
+      const canonicalData = {
+        formData: formData.formData || [],
+        originalJson: formData.originalJson || {},
+        metadata: {
+          formName: formData.metadata?.formName || "",
+          version: formData.metadata?.version || "1.0.0"
+        }
+      };
+      
+      // Convert to JSON string with sorted keys for consistency
+      const jsonString = JSON.stringify(canonicalData, Object.keys(canonicalData).sort());
+      
+      // Generate SHA256 hash
+      const fingerprint = crypto.createHash('sha256').update(jsonString, 'utf8').digest('hex');
+      console.log(`Generated JSON fingerprint for form without PDF: ${fingerprint}`);
+      return fingerprint;
+      
+    } catch (error) {
+      console.error('Error generating JSON fingerprint:', error);
+      // Fallback to a simple hash of current timestamp and random data
+      const fallbackData = `form_${Date.now()}_${Math.random()}`;
+      return crypto.createHash('sha256').update(fallbackData, 'utf8').digest('hex');
+    }
+  }
+
+  /**
+   * Generate a short ID from a hash (first 8 characters)
+   */
+  private generateShortId(hash: string): string {
+    return hash.substring(0, 8);
+  }
+
+  /**
+   * Generate PDF metadata and fingerprint for forms created without PDF upload
+   */
+  private generateFormMetadata(formData: any): { pdfMetadata: any; pdfFingerprint: string } {
+    const jsonFingerprint = this.generateJsonFingerprint(formData);
+    const shortId = this.generateShortId(jsonFingerprint);
+    
+    // Create PDF-like metadata structure for consistency
+    const pdfMetadata = {
+      title: formData.metadata?.formName || 'Generated Form',
+      creator: 'Form Editor',
+      producer: 'DynaForm Form Builder',
+      creation_date: new Date().toISOString(),
+      page_count: 1, // Forms created without PDF are considered single-page
+      hashes: {
+        md5: crypto.createHash('md5').update(JSON.stringify(formData.formData || [])).digest('hex'),
+        sha1: crypto.createHash('sha1').update(JSON.stringify(formData.formData || [])).digest('hex'),
+        sha256: crypto.createHash('sha256').update(JSON.stringify(formData.formData || [])).digest('hex'),
+        short_id: shortId,
+        json_fingerprint: jsonFingerprint
+      }
+    };
+    
+    console.log(`Generated form metadata for PDF-less form: ${JSON.stringify(pdfMetadata.hashes)}`);
+    
+    return {
+      pdfMetadata,
+      pdfFingerprint: shortId
+    };
   }
 
   async saveForm(formRequest: SaveFormRequest, userId: string): Promise<{ formId: string; savedAt: string }> {
@@ -39,10 +110,18 @@ export class FormService {
       ...(pdfFingerprint && { pdfFingerprint }) // Include PDF fingerprint if provided
     };
 
+    // Generate PDF metadata and fingerprint if not provided (for forms created without PDF upload)
+    if (!pdfMetadata && !pdfFingerprint) {
+      console.log('No PDF metadata provided, generating JSON fingerprint for form created without PDF upload');
+      const { pdfMetadata: generatedPdfMetadata, pdfFingerprint: generatedPdfFingerprint } = this.generateFormMetadata(formDocument);
+      formDocument.pdfMetadata = generatedPdfMetadata;
+      formDocument.pdfFingerprint = generatedPdfFingerprint;
+    }
+
     const collection = this.getCollection();
     const result = await collection.insertOne(formDocument);
 
-    console.log(`Form saved successfully with ID: ${result.insertedId} for user: ${userId}${pdfFingerprint ? ` with PDF fingerprint: ${pdfFingerprint}` : ''}`);
+    console.log(`Form saved successfully with ID: ${result.insertedId} for user: ${userId}${formDocument.pdfFingerprint ? ` with fingerprint: ${formDocument.pdfFingerprint}` : ''}`);
 
     return {
       formId: result.insertedId.toString(),
