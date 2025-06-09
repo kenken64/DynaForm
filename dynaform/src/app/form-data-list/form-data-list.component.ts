@@ -361,7 +361,24 @@ export class FormDataListComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Export functionality removed
+  exportData() {
+    // Only export current user's data
+    if (!this.currentUser) {
+      alert('You must be logged in to export data.');
+      return;
+    }
+    
+    this.formDataService.exportFormData('csv')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(blob => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `my-form-submissions-${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+        URL.revokeObjectURL(url);
+      });
+  }
 
   formatDate(date: Date | string): string {
     return new Date(date).toLocaleDateString();
@@ -371,7 +388,22 @@ export class FormDataListComponent implements OnInit, OnDestroy {
     return new Date(date).toLocaleDateString() + ' ' + new Date(date).toLocaleTimeString();
   }
 
-  // Export submission functionality removed
+  exportSubmission(submission: FormDataEntry) {
+    // Security check: ensure user can only export their own submissions
+    if (!this.canUserAccessSubmission(submission)) {
+      alert('You can only export your own form submissions.');
+      return;
+    }
+    
+    const dataStr = JSON.stringify(submission, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `form-submission-${submission._id}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
 
   trackBySubmissionId(index: number, submission: FormDataEntry): string {
     return submission._id;
@@ -437,23 +469,41 @@ export class FormDataListComponent implements OnInit, OnDestroy {
     this.loadPublicSubmissions();
   }
 
-  // Export public submissions by form - retained for public tab action column
+  exportPublicData(): void {
+    this.formDataService.exportPublicSubmissions()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (blob: Blob) => {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `public-form-submissions-${new Date().toISOString().split('T')[0]}.xlsx`;
+          link.click();
+          URL.revokeObjectURL(url);
+        },
+        error: (error) => {
+          console.error('Error exporting public data:', error);
+          alert('Failed to export public data. Please try again.');
+        }
+      });
+  }
+
   exportPublicSubmissionsByForm(formId: string): void {
-    if (!formId) {
-      console.error('Form ID is required for export');
-      return;
-    }
-
-    console.log('Exporting public submissions for form:', formId);
-
-    // Create a temporary link element to trigger download
-    const link = document.createElement('a');
-    link.href = `/api/public/export-submissions?formId=${formId}`;
-    link.download = `form_${formId}_submissions_${new Date().toISOString().split('T')[0]}.xlsx`;
-    
-    // Append to body, click, and remove
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    this.formDataService.exportPublicSubmissions(formId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (blob: Blob) => {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `form-${formId}-submissions-${new Date().toISOString().split('T')[0]}.xlsx`;
+          link.click();
+          URL.revokeObjectURL(url);
+        },
+        error: (error) => {
+          console.error('Error exporting form submissions:', error);
+          alert('Failed to export form submissions. Please try again.');
+        }
+      });
   }
 }

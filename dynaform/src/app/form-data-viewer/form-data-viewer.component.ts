@@ -78,7 +78,18 @@ export class FormDataViewerComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Export submission functionality removed
+  exportSubmission() {
+    if (!this.submission) return;
+    
+    const dataStr = JSON.stringify(this.submission, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `form-submission-${this.submission._id}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
 
   formatDate(date: string): string {
     return new Date(date).toLocaleDateString() + ' ' + new Date(date).toLocaleTimeString();

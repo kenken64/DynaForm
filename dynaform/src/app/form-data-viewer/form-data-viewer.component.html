@@ -19,7 +19,10 @@
     </div>
     
     <div class="action-buttons" *ngIf="submission">
-      <!-- Export button removed -->
+      <button mat-raised-button (click)="exportSubmission()">
+        <mat-icon>download</mat-icon>
+        Export
+      </button>
       <button mat-raised-button color="warn" (click)="deleteSubmission()">
         <mat-icon>delete</mat-icon>
         Delete

@@ -32,10 +32,13 @@
       <mat-tab label="Internal">
         <ng-template matTabContent>
           <div class="tab-content">
-            <!-- Export Action for Internal - Removed -->
+            <!-- Export Action for Internal -->
             <div class="controls-section">
               <div class="action-buttons">
-                <!-- Export functionality removed -->
+                <button mat-raised-button color="accent" (click)="exportData()">
+                  <mat-icon>download</mat-icon>
+                  Export All
+                </button>
               </div>
             </div>
 
@@ -106,7 +109,10 @@
                         <mat-icon>visibility</mat-icon>
                         View
                       </button>
-                      <!-- Export button removed -->
+                      <button mat-button (click)="exportSubmission(submission)">
+                        <mat-icon>download</mat-icon>
+                        Export
+                      </button>
                       <button mat-button color="warn" (click)="deleteSubmission(submission)">
                         <mat-icon>delete</mat-icon>
                         Delete
@@ -164,10 +170,13 @@
       <mat-tab label="Public">
         <ng-template matTabContent>
           <div class="tab-content">
-            <!-- Export Action for Public - Removed -->
+            <!-- Export Action for Public -->
             <div class="controls-section">
               <div class="action-buttons">
-                <!-- Export Excel functionality removed -->
+                <button mat-raised-button color="accent" (click)="exportPublicData()">
+                  <mat-icon>download</mat-icon>
+                  Export Excel
+                </button>
               </div>
             </div>
 
@@ -232,13 +241,10 @@
                     <ng-container matColumnDef="actions">
                       <mat-header-cell *matHeaderCellDef>Action</mat-header-cell>
                       <mat-cell *matCellDef="let element">
-                        <button 
-                          mat-stroked-button 
-                          color="primary" 
-                          (click)="exportPublicSubmissionsByForm(element.formId)"
-                          matTooltip="Export Excel">
+                        <button mat-icon-button color="accent" 
+                                (click)="exportPublicSubmissionsByForm(element.formId)"
+                                matTooltip="Export Excel ({{ element.submissionCount }} submissions for this form)">
                           <mat-icon>download</mat-icon>
-                          Export
                         </button>
                       </mat-cell>
                     </ng-container>

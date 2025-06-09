@@ -173,9 +173,60 @@ export class FormDataService {
     );
   }
 
-  // Export form data functionality removed
+  // Export form data (using real data from server)
+  exportFormData(format: 'csv' | 'excel' = 'csv'): Observable<Blob> {
+    // Get all data first, then convert to desired format
+    return this.getAllFormData(1, 1000).pipe( // Get up to 1000 records for export
+      map(response => {
+        const data = response.submissions;
+        
+        if (format === 'csv') {
+          const csvContent = this.convertToCSV(data);
+          return new Blob([csvContent], { type: 'text/csv' });
+        } else {
+          // For Excel, we'd typically use a library like xlsx
+          const csvContent = this.convertToCSV(data);
+          return new Blob([csvContent], { type: 'application/vnd.ms-excel' });
+        }
+      }),
+      catchError(error => {
+        console.error('Error exporting form data:', error);
+        return throwError(() => error);
+      })
+    );
+  }
 
-  // Convert data to CSV format functionality removed
+  // Convert data to CSV format
+  private convertToCSV(data: FormDataEntry[]): string {
+    if (data.length === 0) return '';
+    
+    // Headers
+    const headers = [
+      'Submission ID',
+      'Form Title',
+      'Submitted By',
+      'Submitted Date',
+      'Total Fields',
+      'Filled Fields'
+    ];
+    
+    // Rows
+    const rows = data.map(item => [
+      item._id,
+      item.formTitle || 'Untitled Form',
+      item.userInfo.submittedBy,
+      new Date(item.submissionMetadata.submittedAt).toLocaleDateString(),
+      item.submissionMetadata.totalFields.toString(),
+      item.submissionMetadata.filledFields.toString()
+    ]);
+    
+    // Combine headers and rows
+    const csvContent = [headers, ...rows]
+      .map(row => row.map(field => `"${field}"`).join(','))
+      .join('\n');
+    
+    return csvContent;
+  }
 
   // Submit form data
   submitFormData(formData: FormDataSubmission): Observable<FormDataResponse> {
@@ -294,5 +345,17 @@ export class FormDataService {
     return this.http.get<any>(`${this.baseUrl}/public/submissions/aggregated`);
   }
 
-  // Export public form submissions functionality removed
+  /**
+   * Export public form submissions as Excel file
+   */
+  exportPublicSubmissions(formId?: string): Observable<Blob> {
+    let url = `${this.baseUrl}/public/submissions/export`;
+    if (formId) {
+      url += `?formId=${formId}`;
+    }
+    
+    return this.http.get(url, {
+      responseType: 'blob'
+    });
+  }
 }

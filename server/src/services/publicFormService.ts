@@ -504,62 +504,30 @@ export class PublicFormService {
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('Public Submissions');
 
-      // Collect all unique field keys from all submissions
-      const allFieldKeys = new Set<string>();
-      submissions.forEach(submission => {
-        if (submission.submissionData && typeof submission.submissionData === 'object') {
-          Object.keys(submission.submissionData).forEach(key => {
-            allFieldKeys.add(key);
-          });
-        }
-      });
-
-      // Sort field keys for consistent column order
-      const sortedFieldKeys = Array.from(allFieldKeys).sort();
-
-      // Define base columns for the worksheet
-      const baseColumns = [
+      // Define columns for the worksheet
+      worksheet.columns = [
         { header: 'Submission ID', key: 'submissionId', width: 30 },
         { header: 'Form ID', key: 'formId', width: 30 },
         { header: 'JSON Fingerprint', key: 'jsonFingerprint', width: 50 },
         { header: 'Submitted At', key: 'submittedAt', width: 30 },
         { header: 'User ID', key: 'userId', width: 30 },
         { header: 'Username', key: 'username', width: 30 },
-        { header: 'User Full Name', key: 'userFullName', width: 30 }
+        { header: 'User Full Name', key: 'userFullName', width: 30 },
+        { header: 'Submission Data', key: 'submissionData', width: 50 }
       ];
-
-      // Add dynamic columns for each field
-      const fieldColumns = sortedFieldKeys.map(fieldKey => ({
-        header: fieldKey,
-        key: fieldKey,
-        width: 20
-      }));
-
-      // Combine base and field columns
-      worksheet.columns = [...baseColumns, ...fieldColumns];
 
       // Add rows to the worksheet
       submissions.forEach(submission => {
-        const rowData: any = {
+        worksheet.addRow({
           submissionId: submission._id?.toString(),
           formId: submission.formId,
           jsonFingerprint: submission.jsonFingerprint,
           submittedAt: submission.submittedAt,
           userId: submission.userInfo?.userId,
           username: submission.userInfo?.username,
-          userFullName: submission.userInfo?.userFullName
-        };
-
-        // Add field values to the row
-        if (submission.submissionData && typeof submission.submissionData === 'object') {
-          sortedFieldKeys.forEach(fieldKey => {
-            const value = submission.submissionData[fieldKey];
-            // Convert value to string with proper handling for form field objects
-            rowData[fieldKey] = this.formatValueForExcel(value);
-          });
-        }
-
-        worksheet.addRow(rowData);
+          userFullName: submission.userInfo?.userFullName,
+          submissionData: JSON.stringify(submission.submissionData)
+        });
       });
 
       // Auto-fit columns based on content
@@ -623,53 +591,6 @@ export class PublicFormService {
       console.error('Error in export submissions to Excel:', error);
       throw new Error(`Failed to export submissions to Excel: ${error.message}`);
     }
-  }
-
-  /**
-   * Formats a value for Excel export, handling various form field types
-   * @param value The value to format
-   * @returns Formatted string for Excel
-   */
-  private formatValueForExcel(value: any): string {
-    if (value === undefined || value === null) {
-      return '';
-    }
-
-    // Handle string and number values directly
-    if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
-      return String(value);
-    }
-
-    // Handle objects (checkboxes, dropdowns, etc.)
-    if (typeof value === 'object') {
-      // Check if it's a checkbox/dropdown object with boolean values
-      const entries = Object.entries(value);
-      if (entries.every(([key, val]) => typeof val === 'boolean')) {
-        // For checkbox groups and dropdowns, show selected options
-        const selectedOptions = entries
-          .filter(([key, val]) => val === true)
-          .map(([key, val]) => key);
-        
-        if (selectedOptions.length === 0) {
-          return 'None selected';
-        } else if (selectedOptions.length === 1) {
-          return selectedOptions[0];
-        } else {
-          return selectedOptions.join(', ');
-        }
-      }
-      
-      // For other object types, fall back to JSON string
-      return JSON.stringify(value);
-    }
-
-    // For arrays and other types
-    if (Array.isArray(value)) {
-      return value.join(', ');
-    }
-
-    // Default fallback
-    return String(value);
   }
 }
 
