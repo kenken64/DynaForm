@@ -3,7 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Subscription } from 'rxjs';
+import { Subscription, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 import { FormsService } from '../services/forms.service';
 import { AuthService } from '../auth/auth.service';
@@ -62,10 +63,16 @@ export class FormEditorComponent implements OnInit, OnDestroy {
   // State management
   loading = false;
   saving = false;
+  autoSaving = false;
   error = '';
   
   // Subscriptions
   private routeSubscription: Subscription = new Subscription();
+  private destroy$ = new Subject<void>();
+  
+  // Debounced form title updates
+  private titleSubject = new Subject<string>();
+  private descriptionSubject = new Subject<string>();
   
   constructor(
     private route: ActivatedRoute,
@@ -79,6 +86,30 @@ export class FormEditorComponent implements OnInit, OnDestroy {
     this.editorForm = this.fb.group({
       title: [this.formTitle, Validators.required],
       description: [this.formDescription]
+    });
+    
+    // Set up debounced auto-save for form title
+    this.titleSubject.pipe(
+      debounceTime(1000), // Wait 1 second after user stops typing
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
+    ).subscribe(title => {
+      this.formTitle = title;
+      if (this.editingFormId && title) {
+        this.autoSaveFormInfo();
+      }
+    });
+    
+    // Set up debounced auto-save for form description
+    this.descriptionSubject.pipe(
+      debounceTime(1000),
+      distinctUntilChanged(), 
+      takeUntil(this.destroy$)
+    ).subscribe(description => {
+      this.formDescription = description;
+      if (this.editingFormId) {
+        this.autoSaveFormInfo();
+      }
     });
   }
 
@@ -111,6 +142,8 @@ export class FormEditorComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.routeSubscription.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadForm(formId: string): void {
@@ -426,9 +459,74 @@ export class FormEditorComponent implements OnInit, OnDestroy {
 
   // Form management
   updateFormInfo(): void {
-    const formData = this.editorForm.value;
-    this.formTitle = formData.title;
-    this.formDescription = formData.description;
+    // Don't override the current values - they're already up to date via ngModel
+    // Just update the form controls to match the current values
+    this.editorForm.patchValue({
+      title: this.formTitle,
+      description: this.formDescription
+    });
+    
+    // Auto-save form title and description changes if editing an existing form
+    if (this.editingFormId && this.formTitle) {
+      this.autoSaveFormInfo();
+    }
+  }
+  
+  onTitleChange(title: string): void {
+    this.titleSubject.next(title);
+    // Keep form control in sync
+    this.editorForm.patchValue({ title: title });
+  }
+  
+  onDescriptionChange(description: string): void {
+    this.descriptionSubject.next(description);
+    // Keep form control in sync
+    this.editorForm.patchValue({ description: description });
+  }
+
+  private autoSaveFormInfo(): void {
+    if (!this.editingFormId) return;
+
+    this.autoSaving = true;
+
+    const currentMetadata = this.form?.metadata || {
+      formName: '',
+      createdAt: new Date().toISOString(),
+      version: '1.0'
+    };
+
+    const updateData = {
+      metadata: {
+        ...currentMetadata,
+        formName: this.formTitle,
+        formDescription: this.formDescription || '',
+        updatedAt: new Date().toISOString()
+      }
+    };
+
+    this.formsService.updateForm(this.editingFormId, updateData).subscribe({
+      next: (updatedForm) => {
+        this.autoSaving = false;
+        // Update the local form reference
+        if (this.form) {
+          this.form.metadata = updatedForm.metadata;
+        }
+        console.log('Form info auto-saved successfully');
+        
+        // Show subtle success feedback
+        this.snackBar.open('Changes saved automatically', '', { 
+          duration: 2000,
+          panelClass: ['auto-save-snackbar'],
+          horizontalPosition: 'end',
+          verticalPosition: 'bottom'
+        });
+      },
+      error: (error) => {
+        this.autoSaving = false;
+        console.error('Error auto-saving form info:', error);
+        // Don't show error to user for auto-save to avoid disruption
+      }
+    });
   }
 
   previewForm(): void {

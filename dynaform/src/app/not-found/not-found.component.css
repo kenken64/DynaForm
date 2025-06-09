@@ -1,0 +1,77 @@
+.not-found-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.not-found-content {
+  text-align: center;
+  background: white;
+  padding: 60px 40px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  width: 100%;
+}
+
+.error-code {
+  font-size: 120px;
+  font-weight: bold;
+  color: #e0e7ff;
+  line-height: 1;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  font-size: 32px;
+  color: #374151;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.error-message {
+  font-size: 16px;
+  color: #6b7280;
+  margin-bottom: 40px;
+  line-height: 1.6;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.action-buttons button {
+  min-width: 120px;
+}
+
+@media (max-width: 480px) {
+  .not-found-content {
+    padding: 40px 20px;
+  }
+  
+  .error-code {
+    font-size: 80px;
+  }
+  
+  h1 {
+    font-size: 24px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .action-buttons button {
+    width: 100%;
+    max-width: 200px;
+  }
+}

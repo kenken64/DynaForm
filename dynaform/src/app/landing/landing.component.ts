@@ -103,10 +103,10 @@ export class LandingComponent {
           this.isVerified = true;
           this.showFireworks = true;
           
-          // Hide fireworks after animation
+          // Hide fireworks after longer animation (6 seconds)
           setTimeout(() => {
             this.showFireworks = false;
-          }, 3000);
+          }, 6000);
         }
       },
       error: (error) => {

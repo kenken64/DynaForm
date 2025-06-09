@@ -867,3 +867,32 @@
   color: #333 !important;
   font-weight: 500 !important;
 }
+
+/* Auto-save indicator styles */
+.auto-save-hint {
+  display: flex !important;
+  align-items: center !important;
+  color: #4CAF50 !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+.auto-save-icon {
+  font-size: 14px !important;
+  height: 14px !important;
+  width: 14px !important;
+  margin-right: 4px !important;
+  animation: spin 1s linear infinite !important;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Auto-save snackbar styles */
+::ng-deep .auto-save-snackbar {
+  background-color: #4CAF50 !important;
+  color: white !important;
+  font-weight: 500 !important;
+}

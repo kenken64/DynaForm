@@ -16,13 +16,19 @@
           <input matInput 
                  placeholder="Enter form title" 
                  [(ngModel)]="formTitle"
+                 (input)="onTitleChange(formTitle)"
                  (blur)="updateFormInfo()">
+          <mat-hint *ngIf="autoSaving" class="auto-save-hint">
+            <mat-icon class="auto-save-icon">sync</mat-icon>
+            Auto-saving...
+          </mat-hint>
         </mat-form-field>
         <mat-form-field appearance="outline" class="form-description-field">
           <mat-label>Form description</mat-label>
           <input matInput 
                  placeholder="Enter form description (optional)" 
                  [(ngModel)]="formDescription"
+                 (input)="onDescriptionChange(formDescription)"
                  (blur)="updateFormInfo()">
         </mat-form-field>
       </div>

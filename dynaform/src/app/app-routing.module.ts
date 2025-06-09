@@ -14,6 +14,7 @@ import { PublicFormComponent } from './public-form/public-form.component';
 import { AuthGuard } from './auth/auth.guard';
 import { DebugFormsComponent } from './debug-forms.component';
 import { AskDynaformComponent } from './ask-dynaform/ask-dynaform.component';
+import { NotFoundComponent } from './not-found/not-found.component';
 
 const routes: Routes = [
   { path: '', component: LandingComponent },
@@ -30,7 +31,7 @@ const routes: Routes = [
   { path: 'ask-dynaform', component: AskDynaformComponent, canActivate: [AuthGuard] },
   { path: 'debug-forms', component: DebugFormsComponent, canActivate: [AuthGuard] },
   { path: 'public/form/:formId/:fingerprint', component: PublicFormComponent },
-  { path: '**', redirectTo: '' }
+  { path: '**', component: NotFoundComponent }
 ];
 
 @NgModule({

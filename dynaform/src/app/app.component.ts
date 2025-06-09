@@ -25,15 +25,27 @@ export class AppComponent {
       console.log('Current URL:', currentUrl);
       console.log('URL Path:', urlPath);
       
-      // Check if the route is login, register, landing page, or public form
-      if (urlPath === '/' || 
-          urlPath === '/login' || 
-          urlPath === '/register' ||
-          urlPath.startsWith('/public/form/')) {
-        this.showSideMenu = false;
-      } else {
-        this.showSideMenu = true;
-      }
+      // Define valid authenticated routes that should show the side menu
+      const validAuthenticatedRoutes = [
+        '/dashboard',
+        '/forms',
+        '/form-editor',
+        '/form-data',
+        '/recipients',
+        '/ask-dynaform',
+        '/debug-forms'
+      ];
+      
+      // Check if current path matches any valid authenticated route (including dynamic segments)
+      const isValidAuthenticatedRoute = validAuthenticatedRoutes.some(route => {
+        // Handle exact matches and routes with parameters
+        return urlPath === route || urlPath.startsWith(route + '/');
+      });
+      
+      // Only show side menu for valid authenticated routes
+      this.showSideMenu = isValidAuthenticatedRoute;
+      
+      console.log('Valid authenticated route:', isValidAuthenticatedRoute);
       console.log('Show side menu:', this.showSideMenu);
     });
   }

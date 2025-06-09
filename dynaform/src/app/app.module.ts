@@ -59,6 +59,7 @@ import { BlockchainService } from './services/blockchain.service';
 import { FormVerificationService } from './services/form-verification.service';
 import { AskDynaformComponent } from './ask-dynaform/ask-dynaform.component';
 import { FireworksComponent } from './shared/fireworks/fireworks.component';
+import { NotFoundComponent } from './not-found/not-found.component';
 
 @NgModule({
   declarations: [
@@ -83,7 +84,8 @@ import { FireworksComponent } from './shared/fireworks/fireworks.component';
     LandingComponent,
     PublicFormComponent,
     AskDynaformComponent,
-    FireworksComponent
+    FireworksComponent,
+    NotFoundComponent
   ],
   imports: [
     BrowserModule,
