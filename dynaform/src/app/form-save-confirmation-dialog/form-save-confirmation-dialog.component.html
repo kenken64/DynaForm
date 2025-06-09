@@ -1,0 +1,36 @@
+<div class="confirmation-dialog">
+  <div class="dialog-header">
+    <mat-icon class="success-icon">check_circle</mat-icon>
+    <h2 mat-dialog-title>Form Saved Successfully!</h2>
+  </div>
+  
+  <mat-dialog-content>
+    <div class="form-details">
+      <h3>{{ data.formTitle }}</h3>
+      <p class="form-id">Form ID: <span class="form-id-value">{{ data.formId }}</span></p>
+      <p class="saved-time">{{ data.isUpdate ? 'Updated' : 'Saved' }} at: {{ formatDateTime(data.savedAt) }}</p>
+      
+      <div class="actions-info">
+        <p>What would you like to do next?</p>
+      </div>
+    </div>
+  </mat-dialog-content>
+  
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onViewForms()">
+      <mat-icon>list</mat-icon>
+      View All Forms
+    </button>
+    <button mat-button (click)="onPreviewForm()">
+      <mat-icon>visibility</mat-icon>
+      Preview Form
+    </button>
+    <button 
+      mat-raised-button 
+      color="primary" 
+      (click)="onContinueEditing()">
+      <mat-icon>edit</mat-icon>
+      Continue Editing
+    </button>
+  </mat-dialog-actions>
+</div>

@@ -25,6 +25,16 @@ export interface GeneratedForm {
     formName: string;
     version: string;
     updatedAt?: string;
+    createdBy?: {
+      userId: string;
+      username: string;
+      userFullName: string;
+    };
+    updatedBy?: {
+      userId: string;
+      username: string;
+      userFullName: string;
+    };
   };
   pdfMetadata?: {
     title?: string;

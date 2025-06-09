@@ -14,6 +14,32 @@
   box-sizing: border-box;
 }
 
+/* Global Search Section */
+.global-search-section {
+  margin-bottom: 24px;
+  padding: 16px 0;
+}
+
+.search-container-centered {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.search-container-centered .search-field {
+  flex: 1;
+  min-width: 300px;
+}
+
+/* Section Divider */
+.section-divider {
+  margin: 24px 0;
+  border-color: #e0e0e0;
+}
+
 .header-section {
   margin-bottom: 32px;
 }
@@ -51,7 +77,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 64px 24px;
+  padding: 40px;
   text-align: center;
 }
 
@@ -65,9 +91,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 64px 24px;
+  padding: 40px 20px;
   text-align: center;
-  color: #f44336;
+  color: #d32f2f;
 }
 
 .error-container mat-icon {
@@ -87,8 +113,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 64px 24px;
   text-align: center;
+  padding: 40px 20px;
+  color: #666;
 }
 
 .empty-icon {
@@ -265,6 +292,78 @@
   font-size: 1.2rem;
   width: 1.2rem;
   height: 1.2rem;
+}
+
+/* Tab Styles */
+.tab-container {
+  margin-top: 24px;
+}
+
+.mat-mdc-tab-group {
+  margin-bottom: 24px;
+}
+
+.mat-mdc-tab-header {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.public-submissions-container {
+  padding: 16px 0;
+}
+
+.public-table-container {
+  margin-top: 16px;
+}
+
+.public-submissions-table {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.public-submissions-table .mat-column-actions {
+  width: 200px;
+  text-align: right;
+}
+
+.public-submissions-table .mat-column-submissionCount {
+  width: 120px;
+  text-align: center;
+}
+
+.public-submissions-table .mat-column-latestSubmission {
+  width: 150px;
+}
+
+/* Form ID styling */
+.form-id {
+  font-family: 'Courier New', monospace;
+  font-size: 0.85em;
+  background-color: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 3px;
+  color: #333;
+}
+
+/* Form description styling */
+.form-description {
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+  color: #666;
+  font-style: italic;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.action-buttons .mat-mdc-button {
+  min-width: auto;
+  padding: 0 8px;
 }
 
 /* Responsive Design */

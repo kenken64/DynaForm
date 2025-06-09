@@ -119,6 +119,178 @@ class PublicFormController {
             });
         }
     }
+    async getPublicSubmissions(req, res) {
+        try {
+            const page = parseInt(req.query.page) || 1;
+            const pageSize = parseInt(req.query.pageSize) || 10;
+            const search = req.query.search;
+            const result = await services_1.publicFormService.getPublicSubmissions(page, pageSize, search);
+            res.status(200).json({
+                success: true,
+                submissions: result.submissions,
+                totalCount: result.totalCount,
+                page,
+                pageSize,
+                totalPages: Math.ceil(result.totalCount / pageSize)
+            });
+        }
+        catch (error) {
+            console.error('Error getting public submissions:', error);
+            res.status(500).json({
+                success: false,
+                error: 'Failed to get public submissions',
+                message: error.message
+            });
+        }
+    }
+    async getPublicSubmissionsByForm(req, res) {
+        console.log('🔴 FORM SUBMISSIONS CONTROLLER METHOD CALLED - URL:', req.url, 'Params:', req.params);
+        try {
+            const { formId } = req.params;
+            const page = parseInt(req.query.page) || 1;
+            const pageSize = parseInt(req.query.pageSize) || 10;
+            if (!formId) {
+                res.status(400).json({
+                    success: false,
+                    error: 'Invalid request',
+                    message: 'Form ID is required'
+                });
+                return;
+            }
+            const result = await services_1.publicFormService.getPublicSubmissionsByForm(formId, page, pageSize);
+            res.status(200).json({
+                success: true,
+                submissions: result.submissions,
+                totalCount: result.totalCount,
+                page,
+                pageSize,
+                totalPages: Math.ceil(result.totalCount / pageSize)
+            });
+        }
+        catch (error) {
+            console.error('Error getting public submissions by form:', error);
+            res.status(500).json({
+                success: false,
+                error: 'Failed to get public submissions',
+                message: error.message
+            });
+        }
+    }
+    async getAggregatedPublicSubmissions(req, res) {
+        try {
+            const result = await services_1.publicFormService.getAggregatedPublicSubmissions();
+            res.status(200).json({
+                success: true,
+                aggregatedData: result
+            });
+        }
+        catch (error) {
+            console.error('Error getting aggregated public submissions:', error);
+            res.status(500).json({
+                success: false,
+                error: 'Failed to get aggregated public submissions',
+                message: error.message
+            });
+        }
+    }
+    async getUserPublicSubmissions(req, res) {
+        try {
+            const { userId } = req.params;
+            const page = parseInt(req.query.page) || 1;
+            const pageSize = parseInt(req.query.pageSize) || 10;
+            const search = req.query.search;
+            if (!userId) {
+                res.status(400).json({
+                    success: false,
+                    error: 'Invalid request',
+                    message: 'User ID is required'
+                });
+                return;
+            }
+            const result = await services_1.publicFormService.getUserPublicSubmissions(userId, page, pageSize, search);
+            res.status(200).json({
+                success: true,
+                submissions: result.submissions,
+                totalCount: result.totalCount,
+                page,
+                pageSize,
+                totalPages: Math.ceil(result.totalCount / pageSize)
+            });
+        }
+        catch (error) {
+            console.error('Error getting user public submissions:', error);
+            res.status(500).json({
+                success: false,
+                error: 'Failed to get user public submissions',
+                message: error.message
+            });
+        }
+    }
+    async getUserPublicFormsAggregated(req, res) {
+        try {
+            const { userId } = req.params;
+            const page = parseInt(req.query.page) || 1;
+            const pageSize = parseInt(req.query.pageSize) || 10;
+            const search = req.query.search;
+            if (!userId) {
+                res.status(400).json({
+                    success: false,
+                    error: 'Invalid request',
+                    message: 'User ID is required'
+                });
+                return;
+            }
+            const result = await services_1.publicFormService.getUserPublicFormsAggregated(userId, page, pageSize, search);
+            res.status(200).json({
+                success: true,
+                forms: result.forms,
+                totalCount: result.totalCount,
+                page,
+                pageSize,
+                totalPages: Math.ceil(result.totalCount / pageSize)
+            });
+        }
+        catch (error) {
+            console.error('Error getting user aggregated public forms:', error);
+            res.status(500).json({
+                success: false,
+                error: 'Failed to get user aggregated public forms',
+                message: error.message
+            });
+        }
+    }
+    async exportPublicSubmissions(req, res) {
+        console.log('🎯 EXPORT CONTROLLER METHOD CALLED - URL:', req.url, 'Query:', req.query);
+        try {
+            const { formId } = req.query;
+            if (formId && (typeof formId !== 'string' || formId.length !== 24 || !/^[0-9a-fA-F]{24}$/.test(formId))) {
+                res.status(400).json({
+                    success: false,
+                    error: 'Invalid formId format',
+                    message: 'formId must be a valid 24-character MongoDB ObjectId'
+                });
+                return;
+            }
+            const buffer = await services_1.publicFormService.exportSubmissionsToExcel(formId);
+            const filename = formId
+                ? `form_${formId}_submissions_${new Date().toISOString().split('T')[0]}.xlsx`
+                : `all_public_submissions_${new Date().toISOString().split('T')[0]}.xlsx`;
+            res.set({
+                'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'Content-Disposition': `attachment; filename="${filename}"`,
+                'Content-Length': buffer.length.toString()
+            });
+            res.status(200).send(buffer);
+        }
+        catch (error) {
+            console.error('Error exporting public submissions:', error);
+            res.status(500).json({
+                success: false,
+                error: 'Failed to export submissions',
+                message: error.message
+            });
+        }
+    }
 }
 exports.PublicFormController = PublicFormController;
 exports.publicFormController = new PublicFormController();

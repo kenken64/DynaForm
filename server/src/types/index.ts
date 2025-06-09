@@ -40,6 +40,16 @@ export interface SaveFormRequest {
     createdAt?: string;
     formName?: string;
     version?: string;
+    createdBy?: {
+      userId: string;
+      username: string;
+      userFullName: string;
+    };
+    updatedBy?: {
+      userId: string;
+      username: string;
+      userFullName: string;
+    };
   };
   pdfMetadata?: {
     title?: string;
@@ -71,7 +81,16 @@ export interface GeneratedForm {
     formName?: string;
     version: string;
     updatedAt?: string;
-    createdBy: string; // User ID of the form creator
+    createdBy?: {
+      userId: string;
+      username: string;
+      userFullName: string;
+    };
+    updatedBy?: {
+      userId: string;
+      username: string;
+      userFullName: string;
+    };
   };
   pdfMetadata?: {
     title?: string;

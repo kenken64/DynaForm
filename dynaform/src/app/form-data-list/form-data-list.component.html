@@ -3,150 +3,255 @@
   <app-header subtitle="Form Data Management"></app-header>
 
   <div class="form-data-container">
-    <!-- Search and Controls -->
-  <div class="controls-section">
-    <div class="search-container">
-      <mat-form-field appearance="outline" class="search-field">
-        <mat-label>Search submissions</mat-label>
-        <input matInput 
-               [(ngModel)]="searchTerm" 
-               (keyup.enter)="onSearch()"
-               placeholder="Search by form title or user...">
-        <mat-icon matSuffix>search</mat-icon>
-      </mat-form-field>
-      <button mat-raised-button color="primary" (click)="onSearch()">
-        Search
-      </button>
-      <button mat-button *ngIf="searchTerm" (click)="clearSearch()">
-        Clear
-      </button>
-    </div>
-    <div class="action-buttons">
-      <button mat-raised-button color="accent" (click)="exportData()">
-        <mat-icon>download</mat-icon>
-        Export All
-      </button>
-    </div>
-  </div>
-
-  <!-- Loading State -->
-  <div *ngIf="loading" class="loading-container">
-    <mat-progress-spinner diameter="50" mode="indeterminate"></mat-progress-spinner>
-    <p>Loading form submissions...</p>
-  </div>
-
-  <!-- Error State -->
-  <div *ngIf="error" class="error-container">
-    <mat-icon color="warn">error</mat-icon>
-    <p>{{ error }}</p>
-    <button mat-button color="primary" (click)="loadFormData()">
-      Try Again
-    </button>
-  </div>
-
-  <!-- Form Submissions List -->
-  <div *ngIf="!loading && !error" class="submissions-container">
-    <!-- Client-side filtering notification -->
-    <div *ngIf="isClientSideFiltering" class="filtering-notice">
-      <mat-icon>info</mat-icon>
-      <span>Showing your form submissions only. Pagination is disabled for accurate results.</span>
+    <!-- Search Controls -->
+    <div class="global-search-section">
+      <div class="search-container-centered">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>{{ selectedTab === 0 ? 'Search submissions' : 'Search public submissions' }}</mat-label>
+          <input matInput 
+                 [(ngModel)]="searchTerm" 
+                 (keyup.enter)="onSearch()"
+                 [placeholder]="selectedTab === 0 ? 'Search by form title or user...' : 'Search by form title or creator...'">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="onSearch()">
+          Search
+        </button>
+        <button mat-button *ngIf="searchTerm" (click)="clearSearch()">
+          Clear
+        </button>
+      </div>
     </div>
 
-    <div *ngIf="formSubmissions.length === 0" class="empty-state">
-      <mat-icon class="empty-icon">inbox</mat-icon>
-      <h3>No form submissions found</h3>
-      <p>No form submissions match your current search criteria.</p>
-    </div>
+    <!-- Divider -->
+    <mat-divider class="section-divider"></mat-divider>
 
-    <div *ngIf="formSubmissions.length > 0" class="submissions-grid">
-      <mat-card *ngFor="let submission of formSubmissions; trackBy: trackBySubmissionId" 
-                class="submission-card">
-        <mat-card-header>
-          <mat-icon mat-card-avatar>description</mat-icon>
-          <mat-card-title>{{ submission.formTitle || 'Untitled Form' }}</mat-card-title>
-          <mat-card-subtitle>
-            Submitted by {{ submission.userInfo.submittedBy }} • 
-            {{ formatDate(submission.submissionMetadata.submittedAt) }}
-          </mat-card-subtitle>
-        </mat-card-header>
-
-        <mat-card-content>
-          <div class="submission-stats">
-            <div class="stat-item">
-              <span class="stat-label">Fields Filled:</span>
-              <span class="stat-value">
-                {{ submission.submissionMetadata.filledFields }} / {{ submission.submissionMetadata.totalFields }}
-              </span>
+    <!-- Tab Navigation -->
+    <mat-tab-group [(selectedIndex)]="selectedTab" (selectedTabChange)="onTabChange($event)">
+      <!-- Internal Submissions Tab -->
+      <mat-tab label="Internal">
+        <ng-template matTabContent>
+          <div class="tab-content">
+            <!-- Export Action for Internal - Removed -->
+            <div class="controls-section">
+              <div class="action-buttons">
+                <!-- Export functionality removed -->
+              </div>
             </div>
-            <div class="stat-item" *ngIf="submission.submissionMetadata.formVersion">
-              <span class="stat-label">Form Version:</span>
-              <span class="stat-value">{{ submission.submissionMetadata.formVersion }}</span>
-            </div>
-            <div class="stat-item" *ngIf="submission.submissionMetadata.formVersion">
-              <span class="stat-label">Form Id:</span>
-              <span class="stat-value">{{ submission.formId}}</span>
+
+            <!-- Internal Submissions Content -->
+            <div class="internal-submissions">
+              <!-- Loading State -->
+              <div *ngIf="loading" class="loading-container">
+                <mat-progress-spinner diameter="50" mode="indeterminate"></mat-progress-spinner>
+                <p>Loading form submissions...</p>
+              </div>
+
+              <!-- Error State -->
+              <div *ngIf="error" class="error-container">
+                <mat-icon color="warn">error</mat-icon>
+                <p>{{ error }}</p>
+                <button mat-button color="primary" (click)="loadFormData()">
+                  Try Again
+                </button>
+              </div>
+
+              <!-- Form Submissions List -->
+              <div *ngIf="!loading && !error" class="submissions-container">
+                <!-- Client-side filtering notification -->
+                <div *ngIf="isClientSideFiltering" class="filtering-notice">
+                  <mat-icon>info</mat-icon>
+                  <span>Showing your form submissions only. Pagination is disabled for accurate results.</span>
+                </div>
+
+                <div *ngIf="formSubmissions.length === 0" class="empty-state">
+                  <mat-icon class="empty-icon">inbox</mat-icon>
+                  <h3>No form submissions found</h3>
+                  <p>No form submissions match your current search criteria.</p>
+                </div>
+
+                <div *ngIf="formSubmissions.length > 0" class="submissions-grid">
+                  <mat-card *ngFor="let submission of formSubmissions; trackBy: trackBySubmissionId" 
+                            class="submission-card">
+                    <mat-card-header>
+                      <mat-icon mat-card-avatar>description</mat-icon>
+                      <mat-card-title>{{ submission.formTitle || 'Untitled Form' }}</mat-card-title>
+                      <mat-card-subtitle>
+                        Submitted by {{ submission.userInfo.submittedBy }} • 
+                        {{ formatDate(submission.submissionMetadata.submittedAt) }}
+                      </mat-card-subtitle>
+                    </mat-card-header>
+
+                    <mat-card-content>
+                      <div class="submission-stats">
+                        <div class="stat-item">
+                          <span class="stat-label">Fields Filled:</span>
+                          <span class="stat-value">
+                            {{ submission.submissionMetadata.filledFields }} / {{ submission.submissionMetadata.totalFields }}
+                          </span>
+                        </div>
+                        <div class="stat-item" *ngIf="submission.submissionMetadata.formVersion">
+                          <span class="stat-label">Form Version:</span>
+                          <span class="stat-value">{{ submission.submissionMetadata.formVersion }}</span>
+                        </div>
+                        <div class="stat-item" *ngIf="submission.submissionMetadata.formVersion">
+                          <span class="stat-label">Form Id:</span>
+                          <span class="stat-value">{{ submission.formId}}</span>
+                        </div>
+                      </div>
+                    </mat-card-content>
+
+                    <mat-card-actions>
+                      <button mat-button color="primary" (click)="viewSubmission(submission)">
+                        <mat-icon>visibility</mat-icon>
+                        View
+                      </button>
+                      <!-- Export button removed -->
+                      <button mat-button color="warn" (click)="deleteSubmission(submission)">
+                        <mat-icon>delete</mat-icon>
+                        Delete
+                      </button>
+                    </mat-card-actions>
+                  </mat-card>
+                </div>
+
+                <!-- Pagination for Internal -->
+                <div class="pagination-wrapper" *ngIf="formSubmissions.length > 0">
+                  <div class="pagination-info">
+                    <span *ngIf="!isClientSideFiltering">
+                      Showing {{ ((currentPage - 1) * pageSize) + 1 }} to {{ Math.min(currentPage * pageSize, totalCount) }} of {{ totalCount }} submissions
+                    </span>
+                    <span *ngIf="isClientSideFiltering">
+                      Showing {{ formSubmissions.length }} of your submissions
+                    </span>
+                  </div>
+                  
+                  <div class="pagination-controls" *ngIf="shouldShowPagination()">
+                    <button mat-button 
+                            class="pagination-btn"
+                            [disabled]="currentPage === 1" 
+                            (click)="previousPage()">
+                      <mat-icon>chevron_left</mat-icon>
+                      Previous
+                    </button>
+                    
+                    <div class="page-numbers">
+                      <button *ngFor="let page of getPageNumbers()" 
+                              mat-button 
+                              class="page-number-btn"
+                              [class.active]="page === currentPage"
+                              (click)="onPageChange(page)">
+                        {{ page }}
+                      </button>
+                    </div>
+                    
+                    <button mat-button 
+                            class="pagination-btn"
+                            [disabled]="currentPage >= totalPages"
+                            (click)="nextPage()">
+                      Next
+                      <mat-icon>chevron_right</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </mat-card-content>
+        </ng-template>
+      </mat-tab>
 
-        <mat-card-actions>
-          <button mat-button color="primary" (click)="viewSubmission(submission)">
-            <mat-icon>visibility</mat-icon>
-            View
-          </button>
-          <button mat-button (click)="exportSubmission(submission)">
-            <mat-icon>download</mat-icon>
-            Export
-          </button>
-          <button mat-button color="warn" (click)="deleteSubmission(submission)">
-            <mat-icon>delete</mat-icon>
-            Delete
-          </button>
-        </mat-card-actions>
-      </mat-card>
-    </div>
+      <!-- Public Submissions Tab -->
+      <mat-tab label="Public">
+        <ng-template matTabContent>
+          <div class="tab-content">
+            <!-- Export Action for Public - Removed -->
+            <div class="controls-section">
+              <div class="action-buttons">
+                <!-- Export Excel functionality removed -->
+              </div>
+            </div>
 
-    <!-- Pagination -->
-    <div class="pagination-wrapper" *ngIf="formSubmissions.length > 0">
-      <!-- Pagination Info - Always show when we have data -->
-      <div class="pagination-info">
-        <span *ngIf="!isClientSideFiltering">
-          Showing {{ ((currentPage - 1) * pageSize) + 1 }} to {{ Math.min(currentPage * pageSize, totalCount) }} of {{ totalCount }} submissions
-        </span>
-        <span *ngIf="isClientSideFiltering">
-          Showing {{ formSubmissions.length }} of your submissions
-        </span>
-      </div>
-      
-      <!-- Pagination Controls - Only show when needed -->
-      <div class="pagination-controls" *ngIf="shouldShowPagination()">
-        <button mat-button 
-                class="pagination-btn"
-                [disabled]="currentPage === 1" 
-                (click)="previousPage()">
-          <mat-icon>chevron_left</mat-icon>
-          Previous
-        </button>
-        
-        <div class="page-numbers">
-          <button *ngFor="let page of getPageNumbers()" 
-                  mat-button 
-                  class="page-number-btn"
-                  [class.active]="page === currentPage"
-                  (click)="onPageChange(page)">
-            {{ page }}
-          </button>
-        </div>
-        
-        <button mat-button 
-                class="pagination-btn"
-                [disabled]="currentPage >= totalPages"
-                (click)="nextPage()">
-          Next
-          <mat-icon>chevron_right</mat-icon>
-        </button>
-      </div>
-    </div>
-  </div>
+            <!-- Public Submissions Content -->
+            <div class="public-submissions">
+              <!-- Loading State -->
+              <div *ngIf="publicLoading" class="loading-container">
+                <mat-progress-spinner diameter="50" mode="indeterminate"></mat-progress-spinner>
+                <p>Loading public submissions...</p>
+              </div>
+
+              <!-- Error State -->
+              <div *ngIf="publicError" class="error-container">
+                <mat-icon color="warn">error</mat-icon>
+                <p>{{ publicError }}</p>
+                <button mat-button color="primary" (click)="loadPublicSubmissions()">
+                  Try Again
+                </button>
+              </div>
+
+              <!-- Individual Public Submissions Table -->
+              <div *ngIf="!publicLoading && !publicError" class="public-submissions-container">
+                <div *ngIf="userPublicSubmissions.length === 0" class="empty-state">
+                  <mat-icon class="empty-icon">public_off</mat-icon>
+                  <h3>No public submissions found</h3>
+                  <p>You haven't made any public form submissions yet.</p>
+                </div>
+
+                <div *ngIf="userPublicSubmissions.length > 0" class="public-table-container">
+                  <mat-table [dataSource]="userPublicSubmissions" class="public-submissions-table">
+                    <!-- Form ID Column -->
+                    <ng-container matColumnDef="formId">
+                      <mat-header-cell *matHeaderCellDef>Form ID</mat-header-cell>
+                      <mat-cell *matCellDef="let element">
+                        <code class="form-id">{{ element.formId }}</code>
+                      </mat-cell>
+                    </ng-container>
+
+                    <!-- Form Title Column -->
+                    <ng-container matColumnDef="formTitle">
+                      <mat-header-cell *matHeaderCellDef>Form Title</mat-header-cell>
+                      <mat-cell *matCellDef="let element">{{ element.formTitle || 'Untitled Form' }}</mat-cell>
+                    </ng-container>
+
+                    <!-- Form Description Column -->
+                    <ng-container matColumnDef="formDescription">
+                      <mat-header-cell *matHeaderCellDef>Form Description</mat-header-cell>
+                      <mat-cell *matCellDef="let element">
+                        <span class="form-description">{{ element.formDescription || 'No description available' }}</span>
+                      </mat-cell>
+                    </ng-container>
+
+                    <!-- Submission Count Column -->
+                    <ng-container matColumnDef="submissionCount">
+                      <mat-header-cell *matHeaderCellDef>Submissions</mat-header-cell>
+                      <mat-cell *matCellDef="let element">
+                        <mat-chip color="accent" selected>{{ element.submissionCount }}</mat-chip>
+                      </mat-cell>
+                    </ng-container>
+
+                    <!-- Actions Column -->
+                    <ng-container matColumnDef="actions">
+                      <mat-header-cell *matHeaderCellDef>Action</mat-header-cell>
+                      <mat-cell *matCellDef="let element">
+                        <button 
+                          mat-stroked-button 
+                          color="primary" 
+                          (click)="exportPublicSubmissionsByForm(element.formId)"
+                          matTooltip="Export Excel">
+                          <mat-icon>download</mat-icon>
+                          Export
+                        </button>
+                      </mat-cell>
+                    </ng-container>
+
+                    <mat-header-row *matHeaderRowDef="userPublicDisplayedColumns"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: userPublicDisplayedColumns;"></mat-row>
+                  </mat-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </mat-tab>
+    </mat-tab-group>
   </div>
 </div>

@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { PdfUploadService } from '../pdf-upload.service';
 import { DescribeImageService } from '../describe-image.service';
 import { FormsService } from '../services/forms.service';
+import { AuthService } from '../auth/auth.service';
 import { GeneratedForm, FieldConfiguration } from '../interfaces/form.interface';
 import { PdfMetadata } from '../pdf-upload-response.model';
 import { environment } from '../../environments/environment';
@@ -71,7 +72,8 @@ export class DashboardComponent implements AfterViewInit, OnInit {
     private describeService: DescribeImageService,
     private http: HttpClient,
     private formsService: FormsService, // Inject FormsService
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private authService: AuthService // Inject AuthService for user tracking
   ) { 
     // Initialize empty form to prevent template errors
     this.dynamicForm = this.fb.group({});
@@ -757,6 +759,10 @@ export class DashboardComponent implements AfterViewInit, OnInit {
     
     console.log('Processed Form Data:', processedData);
     
+    // Get current user information for tracking
+    const currentUser = this.authService.getCurrentUser();
+    console.log('Current user during form creation:', currentUser);
+    
     // Prepare data for backend
     const saveFormData = {
       formData: formFields,
@@ -768,7 +774,13 @@ export class DashboardComponent implements AfterViewInit, OnInit {
       metadata: {
         formName: this.formTitle || 'Generated Form',
         createdAt: new Date().toISOString(),
-        version: '1.0.0'
+        version: '1.0.0',
+        // Add user information similar to form submissions
+        createdBy: {
+          userId: currentUser?.id || currentUser?.username || 'anonymous',
+          username: currentUser?.username || 'anonymous',
+          userFullName: currentUser?.name || 'Unknown User'
+        }
       },
       pdfMetadata: this.pdfMetadata, // Include PDF metadata and fingerprint data
       pdfFingerprint: this.pdfMetadata?.hashes?.short_id || undefined // Include short_id fingerprint specifically
@@ -802,7 +814,13 @@ export class DashboardComponent implements AfterViewInit, OnInit {
           metadata: {
             formName: this.formTitle || 'Generated Form',
             createdAt: new Date().toISOString(),
-            version: '1.0.0'
+            version: '1.0.0',
+            // Include user information in the saved form metadata
+            createdBy: {
+              userId: currentUser?.id || currentUser?.username || 'anonymous',
+              username: currentUser?.username || 'anonymous',
+              userFullName: currentUser?.name || 'Unknown User'
+            }
           },
           pdfMetadata: this.pdfMetadata || undefined,
           pdfFingerprint: this.pdfMetadata?.hashes?.short_id || undefined

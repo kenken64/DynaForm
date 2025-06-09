@@ -196,9 +196,9 @@ export class FormController {
     try {
       const { id } = req.params;
       const formData = req.body;
-      const userId = req.user?.userId; // Get user ID from auth middleware
+      const user = req.user; // Get user from auth middleware
 
-      if (!userId) {
+      if (!user || !user.userId) {
         res.status(401).json({
           success: false,
           error: 'Authentication required',
@@ -206,8 +206,15 @@ export class FormController {
         });
         return;
       }
+
+      // Extract complete user information for tracking
+      const userInfo = {
+        userId: user.userId,
+        username: user.username,
+        userFullName: user.fullName
+      };
       
-      const updatedForm = await formService.updateForm(id, formData, userId);
+      const updatedForm = await formService.updateForm(id, formData, user.userId, userInfo);
 
       if (!updatedForm) {
         res.status(404).json({

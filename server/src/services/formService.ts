@@ -78,7 +78,7 @@ export class FormService {
     };
   }
 
-  async saveForm(formRequest: SaveFormRequest, userId: string): Promise<{ formId: string; savedAt: string }> {
+  async saveForm(formRequest: SaveFormRequest, userId?: string): Promise<{ formId: string; savedAt: string }> {
     const { formData, fieldConfigurations, originalJson, metadata, pdfMetadata, pdfFingerprint } = formRequest;
 
     // Validate required fields
@@ -90,10 +90,6 @@ export class FormService {
       throw new Error('Invalid field configurations. Expected fieldConfigurations to be an object.');
     }
 
-    if (!userId) {
-      throw new Error('User ID is required to save form.');
-    }
-
     // Prepare document to save
     const formDocument: GeneratedForm = {
       formData,
@@ -103,7 +99,9 @@ export class FormService {
         createdAt: new Date().toISOString(),
         formName: metadata?.formName || 'Untitled Form',
         version: '1.0.0',
-        createdBy: userId, // Add user ID to track ownership
+        // Use the user metadata from the request if provided, otherwise fallback to userId
+        ...(metadata?.createdBy ? { createdBy: metadata.createdBy } : 
+           userId ? { createdBy: { userId, username: userId, userFullName: 'Unknown User' } } : {}),
         ...metadata
       },
       ...(pdfMetadata && { pdfMetadata }), // Include PDF metadata if provided
@@ -121,7 +119,8 @@ export class FormService {
     const collection = this.getCollection();
     const result = await collection.insertOne(formDocument);
 
-    console.log(`Form saved successfully with ID: ${result.insertedId} for user: ${userId}${formDocument.pdfFingerprint ? ` with fingerprint: ${formDocument.pdfFingerprint}` : ''}`);
+    const createdByUserId = formDocument.metadata.createdBy?.userId || userId || 'anonymous';
+    console.log(`Form saved successfully with ID: ${result.insertedId} for user: ${createdByUserId}${formDocument.pdfFingerprint ? ` with fingerprint: ${formDocument.pdfFingerprint}` : ''}`);
 
     return {
       formId: result.insertedId.toString(),
@@ -134,8 +133,13 @@ export class FormService {
     
     const skip = (page - 1) * pageSize;
     
-    // Create filter for user-specific forms
-    const filter = userId ? { 'metadata.createdBy': userId } : {};
+    // Create filter for user-specific forms - support both old and new format
+    const filter = userId ? {
+      $or: [
+        { 'metadata.createdBy.userId': userId }, // New format
+        { 'metadata.createdBy': userId } // Old format for backward compatibility
+      ]
+    } : {};
     
     // Get total count
     const totalCount = await collection.countDocuments(filter);
@@ -164,7 +168,10 @@ export class FormService {
     // Create filter to include user ownership verification if userId is provided
     const filter: any = { _id: new ObjectId(id) };
     if (userId) {
-      filter['metadata.createdBy'] = userId;
+      filter.$or = [
+        { 'metadata.createdBy.userId': userId }, // New format
+        { 'metadata.createdBy': userId } // Old format for backward compatibility
+      ];
     }
     
     return await collection.findOne(filter);
@@ -178,9 +185,12 @@ export class FormService {
     // Create search filter
     const searchFilter: any = {};
     
-    // Add user ownership filter if userId is provided
+    // Add user ownership filter if userId is provided - support both old and new format
     if (userId) {
-      searchFilter['metadata.createdBy'] = userId;
+      searchFilter.$or = [
+        { 'metadata.createdBy.userId': userId }, // New format
+        { 'metadata.createdBy': userId } // Old format for backward compatibility
+      ];
     }
     
     // Add search query filter
@@ -195,10 +205,15 @@ export class FormService {
       // Combine user filter and search filter
       if (userId) {
         searchFilter.$and = [
-          { 'metadata.createdBy': userId },
+          {
+            $or: [
+              { 'metadata.createdBy.userId': userId }, // New format
+              { 'metadata.createdBy': userId } // Old format for backward compatibility
+            ]
+          },
           textSearchFilter
         ];
-        delete searchFilter['metadata.createdBy']; // Remove duplicate
+        delete searchFilter.$or; // Remove duplicate
       } else {
         Object.assign(searchFilter, textSearchFilter);
       }
@@ -225,26 +240,43 @@ export class FormService {
     };
   }
 
-  async updateForm(id: string, updateData: Partial<GeneratedForm>, userId?: string): Promise<GeneratedForm | null> {
+  async updateForm(id: string, updateData: Partial<GeneratedForm>, userId?: string, userInfo?: { userId: string; username: string; userFullName: string }): Promise<GeneratedForm | null> {
     const collection = this.getCollection();
     
     // Create filter to include user ownership verification if userId is provided
     const filter: any = { _id: new ObjectId(id) };
     if (userId) {
-      filter['metadata.createdBy'] = userId;
+      filter.$or = [
+        { 'metadata.createdBy.userId': userId }, // New format
+        { 'metadata.createdBy': userId } // Old format for backward compatibility
+      ];
     }
     
-    // If updating metadata, ensure we preserve existing metadata fields
+    // Prepare update object
+    const updateObject: any = { ...updateData };
+    
+    // If updating metadata, ensure we preserve existing metadata fields and add updatedBy
     if (updateData.metadata) {
-      updateData.metadata = {
+      updateObject.metadata = {
         ...updateData.metadata,
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
+        // Add user info for who updated the form
+        ...(userInfo ? { updatedBy: userInfo } : 
+           userId ? { updatedBy: { userId, username: userId, userFullName: 'Unknown User' } } : {})
       };
+    } else if (userId || userInfo) {
+      // If no metadata update but we have user info, add the updatedBy field using $set for specific fields
+      updateObject['metadata.updatedAt'] = new Date().toISOString();
+      if (userInfo) {
+        updateObject['metadata.updatedBy'] = userInfo;
+      } else if (userId) {
+        updateObject['metadata.updatedBy'] = { userId, username: userId, userFullName: 'Unknown User' };
+      }
     }
 
     const result = await collection.findOneAndUpdate(
       filter,
-      { $set: updateData },
+      { $set: updateObject },
       { returnDocument: 'after' }
     );
 
@@ -257,7 +289,10 @@ export class FormService {
     // Create filter to include user ownership verification if userId is provided
     const filter: any = { _id: new ObjectId(id) };
     if (userId) {
-      filter['metadata.createdBy'] = userId;
+      filter.$or = [
+        { 'metadata.createdBy.userId': userId }, // New format
+        { 'metadata.createdBy': userId } // Old format for backward compatibility
+      ];
     }
     
     const result = await collection.deleteOne(filter);
@@ -270,7 +305,10 @@ export class FormService {
     // Create filter for PDF fingerprint and user ownership
     const filter: any = { pdfFingerprint };
     if (userId) {
-      filter['metadata.createdBy'] = userId;
+      filter.$or = [
+        { 'metadata.createdBy.userId': userId }, // New format
+        { 'metadata.createdBy': userId } // Old format for backward compatibility
+      ];
     }
     
     const forms = await collection

@@ -3,12 +3,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 import { Subscription, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 import { FormsService } from '../services/forms.service';
 import { AuthService } from '../auth/auth.service';
 import { GeneratedForm, FormField, FieldConfiguration } from '../interfaces/form.interface';
+import { FormSaveConfirmationDialogComponent, FormSaveConfirmationData } from '../form-save-confirmation-dialog/form-save-confirmation-dialog.component';
 
 export interface FormElementType {
   id: string;
@@ -81,6 +83,7 @@ export class FormEditorComponent implements OnInit, OnDestroy {
     private formsService: FormsService,
     private authService: AuthService,
     private snackBar: MatSnackBar,
+    private dialog: MatDialog,
     private cdr: ChangeDetectorRef
   ) {
     this.editorForm = this.fb.group({
@@ -584,7 +587,11 @@ export class FormEditorComponent implements OnInit, OnDestroy {
         version: '1.0',
         createdAt: this.form?.metadata.createdAt || new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        createdBy: currentUser.id // Add user ID to track ownership
+        createdBy: {
+          userId: currentUser.id || currentUser.username || 'anonymous',
+          username: currentUser.username || currentUser.email || 'unknown',
+          userFullName: currentUser.name || 'Unknown User'
+        }
       }
     };
 
@@ -594,7 +601,7 @@ export class FormEditorComponent implements OnInit, OnDestroy {
       this.formsService.updateForm(this.editingFormId, formData).subscribe({
         next: (response: GeneratedForm) => {
           this.saving = false;
-          this.snackBar.open('Form updated successfully', 'Close', { duration: 3000 });
+          this.openSaveConfirmationDialog(true, this.editingFormId!, new Date().toISOString());
         },
         error: (error: any) => {
           this.saving = false;
@@ -608,13 +615,14 @@ export class FormEditorComponent implements OnInit, OnDestroy {
       this.formsService.saveForm(formData).subscribe({
         next: (response: { success: boolean; data: { formId: string; savedAt: string } }) => {
           this.saving = false;
-          this.snackBar.open('Form saved successfully', 'Close', { duration: 3000 });
           
           if (response.data && response.data.formId) {
             this.formId = response.data.formId;
             this.editingFormId = response.data.formId;
             // Update URL to include form ID
             this.router.navigate(['/form-editor', this.formId], { replaceUrl: true });
+            
+            this.openSaveConfirmationDialog(false, response.data.formId, response.data.savedAt);
           }
         },
         error: (error: any) => {
@@ -714,5 +722,31 @@ export class FormEditorComponent implements OnInit, OnDestroy {
     
     console.log(`- Unknown config format for '${fieldName}', returning false`);
     return false;
+  }
+
+  private openSaveConfirmationDialog(isUpdate: boolean, formId: string, savedAt: string): void {
+    const dialogData: FormSaveConfirmationData = {
+      formTitle: this.formTitle,
+      formId: formId,
+      savedAt: savedAt,
+      isUpdate: isUpdate
+    };
+
+    const dialogRef = this.dialog.open(FormSaveConfirmationDialogComponent, {
+      width: '500px',
+      data: dialogData,
+      disableClose: false
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 'viewForms') {
+        this.router.navigate(['/forms']);
+      } else if (result === 'preview') {
+        if (formId) {
+          this.router.navigate(['/form-viewer', formId]);
+        }
+      }
+      // If result is 'continue' or undefined, stay on the current editor page
+    });
   }
 }

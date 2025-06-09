@@ -174,8 +174,8 @@ class FormController {
         try {
             const { id } = req.params;
             const formData = req.body;
-            const userId = req.user?.userId; // Get user ID from auth middleware
-            if (!userId) {
+            const user = req.user; // Get user from auth middleware
+            if (!user || !user.userId) {
                 res.status(401).json({
                     success: false,
                     error: 'Authentication required',
@@ -183,7 +183,13 @@ class FormController {
                 });
                 return;
             }
-            const updatedForm = await services_1.formService.updateForm(id, formData, userId);
+            // Extract complete user information for tracking
+            const userInfo = {
+                userId: user.userId,
+                username: user.username,
+                userFullName: user.fullName
+            };
+            const updatedForm = await services_1.formService.updateForm(id, formData, user.userId, userInfo);
             if (!updatedForm) {
                 res.status(404).json({
                     success: false,

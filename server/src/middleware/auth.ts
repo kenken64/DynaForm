@@ -13,6 +13,7 @@ declare global {
         username: string;
         email: string;
         role: string;
+        fullName: string;
       };
     }
   }
@@ -92,7 +93,8 @@ export class AuthMiddleware {
         userId: decoded.userId,
         username: decoded.username,
         email: decoded.email,
-        role: decoded.role
+        role: decoded.role,
+        fullName: user.fullName || 'Unknown User'
       };
 
       next();
@@ -175,7 +177,8 @@ export class AuthMiddleware {
           userId: decoded.userId,
           username: decoded.username,
           email: decoded.email,
-          role: decoded.role
+          role: decoded.role,
+          fullName: user.fullName || 'Unknown User'
         };
       }
 

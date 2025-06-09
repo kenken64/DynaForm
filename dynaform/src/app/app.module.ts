@@ -22,6 +22,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatTableModule } from '@angular/material/table';
+import { MatTabsModule } from '@angular/material/tabs';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -60,6 +61,7 @@ import { FormVerificationService } from './services/form-verification.service';
 import { AskDynaformComponent } from './ask-dynaform/ask-dynaform.component';
 import { FireworksComponent } from './shared/fireworks/fireworks.component';
 import { NotFoundComponent } from './not-found/not-found.component';
+import { FormSaveConfirmationDialogComponent } from './form-save-confirmation-dialog/form-save-confirmation-dialog.component';
 
 @NgModule({
   declarations: [
@@ -85,7 +87,8 @@ import { NotFoundComponent } from './not-found/not-found.component';
     PublicFormComponent,
     AskDynaformComponent,
     FireworksComponent,
-    NotFoundComponent
+    NotFoundComponent,
+    FormSaveConfirmationDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -108,6 +111,7 @@ import { NotFoundComponent } from './not-found/not-found.component';
     MatRippleModule,
     MatDialogModule,
     MatTableModule,
+    MatTabsModule,
     MatSnackBarModule,
     MatTooltipModule,
     MatButtonToggleModule,

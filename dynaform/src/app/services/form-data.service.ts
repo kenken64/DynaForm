@@ -173,60 +173,9 @@ export class FormDataService {
     );
   }
 
-  // Export form data (using real data from server)
-  exportFormData(format: 'csv' | 'excel' = 'csv'): Observable<Blob> {
-    // Get all data first, then convert to desired format
-    return this.getAllFormData(1, 1000).pipe( // Get up to 1000 records for export
-      map(response => {
-        const data = response.submissions;
-        
-        if (format === 'csv') {
-          const csvContent = this.convertToCSV(data);
-          return new Blob([csvContent], { type: 'text/csv' });
-        } else {
-          // For Excel, we'd typically use a library like xlsx
-          const csvContent = this.convertToCSV(data);
-          return new Blob([csvContent], { type: 'application/vnd.ms-excel' });
-        }
-      }),
-      catchError(error => {
-        console.error('Error exporting form data:', error);
-        return throwError(() => error);
-      })
-    );
-  }
+  // Export form data functionality removed
 
-  // Convert data to CSV format
-  private convertToCSV(data: FormDataEntry[]): string {
-    if (data.length === 0) return '';
-    
-    // Headers
-    const headers = [
-      'Submission ID',
-      'Form Title',
-      'Submitted By',
-      'Submitted Date',
-      'Total Fields',
-      'Filled Fields'
-    ];
-    
-    // Rows
-    const rows = data.map(item => [
-      item._id,
-      item.formTitle || 'Untitled Form',
-      item.userInfo.submittedBy,
-      new Date(item.submissionMetadata.submittedAt).toLocaleDateString(),
-      item.submissionMetadata.totalFields.toString(),
-      item.submissionMetadata.filledFields.toString()
-    ]);
-    
-    // Combine headers and rows
-    const csvContent = [headers, ...rows]
-      .map(row => row.map(field => `"${field}"`).join(','))
-      .join('\n');
-    
-    return csvContent;
-  }
+  // Convert data to CSV format functionality removed
 
   // Submit form data
   submitFormData(formData: FormDataSubmission): Observable<FormDataResponse> {
@@ -322,4 +271,28 @@ export class FormDataService {
       })
     );
   }
+
+  /**
+   * Get public form submissions with pagination and search
+   */
+  getPublicSubmissions(page: number = 1, pageSize: number = 10, search?: string): Observable<any> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('pageSize', pageSize.toString());
+      
+    if (search) {
+      params = params.set('search', search);
+    }
+
+    return this.http.get<any>(`${this.baseUrl}/public/submissions`, { params });
+  }
+
+  /**
+   * Get aggregated public form submissions by form ID
+   */
+  getAggregatedPublicSubmissions(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/public/submissions/aggregated`);
+  }
+
+  // Export public form submissions functionality removed
 }

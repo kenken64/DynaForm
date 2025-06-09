@@ -3,7 +3,9 @@ import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FormDataService, FormDataEntry, FormDataListResponse } from '../services/form-data.service';
+import { PublicFormService } from '../services/public-form.service';
 import { AuthService, User } from '../auth/auth.service';
+import { MatTabChangeEvent } from '@angular/material/tabs';
 
 @Component({
   selector: 'app-form-data-list',
@@ -13,6 +15,10 @@ import { AuthService, User } from '../auth/auth.service';
 export class FormDataListComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   
+  // Tab functionality
+  selectedTab = 0;
+  
+  // Internal form submissions (existing)
   formSubmissions: FormDataEntry[] = [];
   loading = false;
   error = '';
@@ -22,13 +28,23 @@ export class FormDataListComponent implements OnInit, OnDestroy {
   totalCount = 0;
   totalPages = 0;
   currentUser: User | null = null;
-  isClientSideFiltering = false; // Track when we're doing client-side filtering
+  isClientSideFiltering = false;
+
+  // Public form submissions
+  aggregatedPublicSubmissions: any[] = [];
+  userPublicSubmissions: any[] = [];  // Now contains aggregated forms data (one record per form)
+  publicLoading = false;
+  publicError = '';
+  publicSearchTerm = '';
+  publicDisplayedColumns: string[] = ['formTitle', 'formCreator', 'submissionCount', 'latestSubmission', 'actions'];
+  userPublicDisplayedColumns: string[] = ['formId', 'formTitle', 'formDescription', 'submissionCount', 'actions'];  // Updated columns
 
   // Expose Math to template
   Math = Math;
 
   constructor(
     private formDataService: FormDataService,
+    private publicFormService: PublicFormService,
     private router: Router,
     private authService: AuthService
   ) {}
@@ -255,14 +271,26 @@ export class FormDataListComponent implements OnInit, OnDestroy {
   }
 
   onSearch() {
-    this.currentPage = 1;
-    this.loadFormData();
+    if (this.selectedTab === 0) {
+      // Internal tab - use existing search logic
+      this.currentPage = 1;
+      this.loadFormData();
+    } else if (this.selectedTab === 1) {
+      // Public tab - use public search logic
+      this.onPublicSearch();
+    }
   }
 
   clearSearch() {
     this.searchTerm = '';
-    this.currentPage = 1;
-    this.loadFormData();
+    if (this.selectedTab === 0) {
+      // Internal tab
+      this.currentPage = 1;
+      this.loadFormData();
+    } else if (this.selectedTab === 1) {
+      // Public tab
+      this.clearPublicSearch();
+    }
   }
 
   onPageChange(page: number) {
@@ -333,24 +361,7 @@ export class FormDataListComponent implements OnInit, OnDestroy {
     }
   }
 
-  exportData() {
-    // Only export current user's data
-    if (!this.currentUser) {
-      alert('You must be logged in to export data.');
-      return;
-    }
-    
-    this.formDataService.exportFormData('csv')
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(blob => {
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `my-form-submissions-${new Date().toISOString().split('T')[0]}.csv`;
-        link.click();
-        URL.revokeObjectURL(url);
-      });
-  }
+  // Export functionality removed
 
   formatDate(date: Date | string): string {
     return new Date(date).toLocaleDateString();
@@ -360,22 +371,7 @@ export class FormDataListComponent implements OnInit, OnDestroy {
     return new Date(date).toLocaleDateString() + ' ' + new Date(date).toLocaleTimeString();
   }
 
-  exportSubmission(submission: FormDataEntry) {
-    // Security check: ensure user can only export their own submissions
-    if (!this.canUserAccessSubmission(submission)) {
-      alert('You can only export your own form submissions.');
-      return;
-    }
-    
-    const dataStr = JSON.stringify(submission, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `form-submission-${submission._id}.json`;
-    link.click();
-    URL.revokeObjectURL(url);
-  }
+  // Export submission functionality removed
 
   trackBySubmissionId(index: number, submission: FormDataEntry): string {
     return submission._id;
@@ -385,5 +381,79 @@ export class FormDataListComponent implements OnInit, OnDestroy {
   shouldShowPagination(): boolean {
     // Show pagination if we have more than one page OR if we have data that could span multiple pages
     return this.totalCount > this.pageSize && !this.isClientSideFiltering;
+  }
+
+  // Tab functionality methods
+  onTabChange(event: MatTabChangeEvent): void {
+    this.selectedTab = event.index;
+    
+    // Clear search when switching tabs for better UX
+    this.searchTerm = '';
+    this.publicSearchTerm = '';
+    
+    if (this.selectedTab === 1) {
+      // Load public submissions when switching to Public tab
+      this.loadPublicSubmissions();
+    }
+  }
+
+  // Public submission methods
+  loadPublicSubmissions(): void {
+    if (!this.currentUser) {
+      this.publicError = 'Authentication required to view public submissions';
+      return;
+    }
+
+    this.publicLoading = true;
+    this.publicError = '';
+    
+    // Load aggregated forms data (one record per form)
+    this.publicFormService.getUserPublicFormsAggregated(this.currentUser.id, 1, 100, this.publicSearchTerm)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response: any) => {
+          console.log('User aggregated forms response:', response);
+          this.userPublicSubmissions = response.forms || [];
+          this.publicLoading = false;
+        },
+        error: (error) => {
+          console.error('Error loading user aggregated forms:', error);
+          this.publicError = 'Failed to load public submissions. Please try again.';
+          this.publicLoading = false;
+        }
+      });
+  }
+
+  onPublicSearch(): void {
+    // Copy the global search term to public search term
+    this.publicSearchTerm = this.searchTerm;
+    // Reload submissions with search filter
+    this.loadPublicSubmissions();
+  }
+
+  clearPublicSearch(): void {
+    this.publicSearchTerm = '';
+    this.searchTerm = '';
+    this.loadPublicSubmissions();
+  }
+
+  // Export public submissions by form - retained for public tab action column
+  exportPublicSubmissionsByForm(formId: string): void {
+    if (!formId) {
+      console.error('Form ID is required for export');
+      return;
+    }
+
+    console.log('Exporting public submissions for form:', formId);
+
+    // Create a temporary link element to trigger download
+    const link = document.createElement('a');
+    link.href = `/api/public/export-submissions?formId=${formId}`;
+    link.download = `form_${formId}_submissions_${new Date().toISOString().split('T')[0]}.xlsx`;
+    
+    // Append to body, click, and remove
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 }

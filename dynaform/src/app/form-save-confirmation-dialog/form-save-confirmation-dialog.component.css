@@ -1,0 +1,92 @@
+.confirmation-dialog {
+  min-width: 400px;
+  max-width: 500px;
+  text-align: center;
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.success-icon {
+  color: #4caf50;
+  font-size: 36px;
+  height: 36px;
+  width: 36px;
+  margin-right: 12px;
+}
+
+h2[mat-dialog-title] {
+  margin: 0;
+  color: #2e7d32;
+  font-weight: 500;
+  text-align: center;
+}
+
+.form-details {
+  padding: 8px 0;
+  text-align: center;
+}
+
+.form-details h3 {
+  margin: 0 0 12px 0;
+  color: #333;
+  font-size: 18px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.form-id, .saved-time {
+  margin: 8px 0;
+  color: #666;
+  font-size: 14px;
+  text-align: center;
+}
+
+.form-id-value {
+  font-family: 'Courier New', monospace;
+  background-color: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.actions-info {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
+  text-align: center;
+}
+
+.actions-info p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+  text-align: center;
+}
+
+mat-dialog-actions {
+  margin-top: 24px;
+  gap: 8px;
+  justify-content: center;
+}
+
+mat-dialog-actions button {
+  margin: 0 4px;
+}
+
+mat-dialog-actions mat-icon {
+  margin-right: 8px;
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+}
+
+mat-dialog-content {
+  margin: 16px 0;
+  max-height: none;
+  text-align: center;
+}

@@ -65,7 +65,8 @@ class AuthMiddleware {
                 userId: decoded.userId,
                 username: decoded.username,
                 email: decoded.email,
-                role: decoded.role
+                role: decoded.role,
+                fullName: user.fullName || 'Unknown User'
             };
             next();
         }
@@ -141,7 +142,8 @@ class AuthMiddleware {
                     userId: decoded.userId,
                     username: decoded.username,
                     email: decoded.email,
-                    role: decoded.role
+                    role: decoded.role,
+                    fullName: user.fullName || 'Unknown User'
                 };
             }
             next();

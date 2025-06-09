@@ -54,4 +54,67 @@ export class PublicFormService {
   getFormByPdfFingerprint(pdfFingerprint: string): Observable<GeneratedForm> {
     return this.http.get<GeneratedForm>(`${this.apiUrl}/forms/fingerprint/${pdfFingerprint}`);
   }
+
+  /**
+   * Get all public form submissions with pagination and search
+   */
+  getPublicSubmissions(page: number = 1, pageSize: number = 10, search?: string): Observable<any> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('pageSize', pageSize.toString());
+      
+    if (search) {
+      params = params.set('search', search);
+    }
+
+    return this.http.get<any>(`${this.apiUrl}/submissions`, { params });
+  }
+
+  /**
+   * Get public submissions for a specific form
+   */
+  getPublicSubmissionsByForm(formId: string, page: number = 1, pageSize: number = 10): Observable<any> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('pageSize', pageSize.toString());
+
+    return this.http.get<any>(`${this.apiUrl}/submissions/${formId}`, { params });
+  }
+
+  /**
+   * Get aggregated public submissions data by form
+   */
+  getAggregatedPublicSubmissions(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/submissions/aggregated`);
+  }
+
+  /**
+   * Get public submissions for a specific user
+   */
+  getUserPublicSubmissions(userId: string, page: number = 1, pageSize: number = 10, search?: string): Observable<any> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('pageSize', pageSize.toString());
+      
+    if (search) {
+      params = params.set('search', search);
+    }
+
+    return this.http.get<any>(`${this.apiUrl}/submissions/user/${userId}`, { params });
+  }
+
+  /**
+   * Get aggregated public forms for a specific user (one record per form)
+   */
+  getUserPublicFormsAggregated(userId: string, page: number = 1, pageSize: number = 10, search?: string): Observable<any> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('pageSize', pageSize.toString());
+      
+    if (search) {
+      params = params.set('search', search);
+    }
+
+    return this.http.get<any>(`${this.apiUrl}/submissions/user/${userId}/forms`, { params });
+  }
 }
