@@ -2,6 +2,25 @@
 
 **Transform PDF documents into interactive web forms using AI, with blockchain verification for form integrity.**
 
+## Quick Start
+
+**🚀 Super Fast Start:**
+```bash
+# Mac/Linux
+./quick-start.sh dev
+
+# Windows PowerShell  
+.\quick-start.ps1 dev
+```
+
+**📖 All Scripts Organized:**
+All startup, setup, and test scripts are now organized in the `scripts/` directory:
+- `scripts/docker/` - Docker Compose startup scripts
+- `scripts/setup/` - Setup and configuration scripts  
+- `scripts/test/` - Testing and debugging scripts
+
+See `scripts/README.md` for complete documentation.
+
 ## Overview
 
 DynaForm is a complete Web3-enabled document digitization platform that converts static PDFs into verified, interactive forms through AI analysis and blockchain verification.
@@ -40,6 +59,53 @@ PDF → AI Analysis → Form Fields → Web Form → Data Collection → Blockch
 - **Smart Contracts**: Hardhat-based blockchain deployment
 - **Testing Suite**: Unit, integration, and stress testing
 
+## 📚 Documentation & Diagrams
+
+This project includes comprehensive documentation with diagrams, implementation guides, and technical specifications:
+
+| Category | Document | Description |
+|----------|----------|-------------|
+| **🏗️ Architecture** | [Architecture Diagram](architecture-diagram.md) | Complete system architecture with Mermaid diagrams |
+| **🏗️ Architecture** | [Server Class Diagram](server-class-diagram.md) | Backend class structure and relationships |
+| **🏗️ Architecture** | [MongoDB Data Flow](mongodb-data-flow-diagrams.md) | Database architecture and data flow diagrams |
+| **🤖 AI Agent** | [AI Agent Code](AI_AGENT_CODE.md) | Complete AI agent implementation details |
+| **🤖 AI Agent** | [AI Agent Blockchain Publishing](AI_AGENT_BLOCKCHAIN_PUBLISHING.md) | Blockchain integration for AI agent |
+| **🤖 AI Agent** | [AI Agent Completion Summary](AI_AGENT_COMPLETION_SUMMARY.md) | AI agent development summary |
+| **🤖 AI Agent** | [Form Extraction Prompt](FORM_EXTRACTION_PROMPT.md) | AI prompts for form field extraction |
+| **🤖 AI Agent** | [Ollama Timeout Configuration](OLLAMA_TIMEOUT_CONFIGURATION.md) | Ollama service configuration |
+| **🗄️ Database** | [MongoDB Security Guide](MONGODB_SECURITY_GUIDE.md) | Database security implementation |
+| **🗄️ Database** | [MongoDB Setup](MONGODB_SETUP_COMPLETE.md) | Database setup and configuration |
+| **🗄️ Database** | [MongoDB Users Schema](MONGODB_USERS_SCHEMA.md) | User management database schema |
+| **⚡ Caching** | [Redis Cache Implementation](REDIS_CACHE_IMPLEMENTATION_COMPLETE.md) | Redis caching system |
+| **⚡ Caching** | [Redis Implementation Final](REDIS_CACHE_IMPLEMENTATION_FINAL.md) | Final Redis implementation |
+| **⚡ Caching** | [Redis Iteration Complete](REDIS_ITERATION_COMPLETE.md) | Redis development iterations |
+| **🌐 Frontend** | [Angular Routing Fix](ANGULAR_ROUTING_FIX_COMPLETE.md) | Frontend routing implementation |
+| **🌐 Frontend** | [Public Form Implementation](PUBLIC_FORM_IMPLEMENTATION_COMPLETE.md) | Public form features |
+| **🌐 Frontend** | [Carousel Implementation](CAROUSEL_IMPLEMENTATION_COMPLETE.md) | Image carousel component |
+| **🌐 Frontend** | [Forms List Create Button](FORMS_LIST_CREATE_BUTTON_COMPLETE.md) | Forms management interface |
+| **🔧 Backend** | [Form Data API](FORM_DATA_API.md) | Backend API documentation |
+| **🔧 Backend** | [Recipient Groups API](RECIPIENT_GROUPS_API.md) | Recipient management API |
+| **🔧 Backend** | [PDF Fingerprint Update](BACKEND_PDF_FINGERPRINT_UPDATE.md) | PDF processing implementation |
+| **🔧 Backend** | [PDF Fingerprint Fix](PDF_FINGERPRINT_FIX_COMPLETE.md) | PDF fingerprint fixes |
+| **✨ Features** | [Form Title Autosave](FORM_TITLE_AUTOSAVE_COMPLETE.md) | Auto-save functionality |
+| **✨ Features** | [Field Configuration Fix](FIELD_CONFIGURATION_ERROR_FIX_COMPLETE.md) | Form field configuration |
+| **✨ Features** | [User Info Implementation](USERINFO_IMPLEMENTATION_COMPLETE.md) | User profile features |
+| **✨ Features** | [User Public Submissions](USER_PUBLIC_SUBMISSIONS_TESTING_COMPLETE.md) | Public submission system |
+| **🔐 Security** | [Secure Implementation](SECURE_IMPLEMENTATION_SUMMARY.md) | Security implementation guide |
+| **🔐 Security** | [Testing Secure Config](TESTING_SECURE_CONFIG.md) | Security testing procedures |
+| **🧪 Testing** | [Autosave Testing Guide](AUTOSAVE_TESTING_GUIDE.md) | Testing autosave features |
+| **🧪 Testing** | [Autosave Fix Verification](AUTOSAVE_FIX_VERIFICATION.md) | Autosave bug fixes |
+| **🛠️ DevOps** | [Scripts Organization](SCRIPTS_REORGANIZATION_COMPLETE.md) | Script structure reorganization |
+| **🛠️ DevOps** | [Scripts Documentation](scripts/README.md) | Complete scripts usage guide |
+| **⚙️ Hardware** | [NVIDIA Configuration](NVIDIA.md) | GPU acceleration setup |
+
+### Quick Access to Key Diagrams
+
+- **🏗️ [System Architecture](architecture-diagram.md)** - Complete physical architecture
+- **🗄️ [Database Design](mongodb-data-flow-diagrams.md)** - MongoDB data flow and schemas  
+- **🔧 [Backend Structure](server-class-diagram.md)** - Server-side class diagrams
+- **🤖 [AI Integration](AI_AGENT_CODE.md)** - AI agent implementation details
+
 ## Docker Setup and Build Options
 
 This project uses Docker Compose to orchestrate multiple services including MongoDB for data persistence. The configuration ensures that containers are always rebuilt with the latest changes.
@@ -50,13 +116,13 @@ This project uses Docker Compose to orchestrate multiple services including Mong
 
 ```bash
 # Complete setup with MongoDB - Interactive mode
-./start-complete-with-mongodb.sh
+./scripts/docker/start-complete-with-mongodb.sh
 
 # MongoDB management
-./mongodb-manager.sh start     # Start MongoDB only
-./mongodb-manager.sh connect   # Connect to MongoDB shell
-./mongodb-manager.sh stats     # Show database statistics
-./mongodb-manager.sh help      # Show all commands
+./scripts/setup/mongodb-manager.sh start     # Start MongoDB only
+./scripts/setup/mongodb-manager.sh connect   # Connect to MongoDB shell
+./scripts/setup/mongodb-manager.sh stats     # Show database statistics
+./scripts/setup/mongodb-manager.sh help      # Show all commands
 ```
 
 **Services Included:**
@@ -73,25 +139,25 @@ This project uses Docker Compose to orchestrate multiple services including Mong
 *Windows (PowerShell):*
 ```powershell
 # Interactive mode with forced rebuild
-.\start-dev.ps1
+.\scripts\docker\start-dev.ps1
 
 # Detached mode with forced rebuild  
-.\start-dev-detached.ps1
+.\scripts\docker\start-dev-detached.ps1
 ```
 
 *Mac/Linux (Bash):*
 ```bash
 # Make scripts executable (first time only)
-chmod +x *.sh
+chmod +x scripts/docker/*.sh scripts/setup/*.sh scripts/test/*.sh
 
 # Complete stack with MongoDB (recommended)
-./start-complete-with-mongodb.sh
+./scripts/docker/start-complete-with-mongodb.sh
 
 # Interactive mode with forced rebuild
-./start-dev.sh
+./scripts/docker/start-dev.sh
 
 # Detached mode with forced rebuild  
-./start-dev-detached.sh
+./scripts/docker/start-dev-detached.sh
 ```
 
 **Standard Options:**
@@ -99,27 +165,27 @@ chmod +x *.sh
 *Windows (PowerShell):*
 ```powershell
 # Interactive mode with build
-.\start-with-build.ps1
+.\scripts\docker\start-with-build.ps1
 
 # Detached mode with build
-.\start-detached-with-build.ps1
+.\scripts\docker\start-detached-with-build.ps1
 
 # Original scripts (may not always rebuild)
-.\start.ps1
-.\start-detached.ps1
+.\scripts\docker\start.ps1
+.\scripts\docker\start-detached.ps1
 ```
 
 *Mac/Linux (Bash):*
 ```bash
 # Interactive mode with build
-./start-with-build.sh
+./scripts/docker/start-with-build.sh
 
 # Detached mode with build
-./start-detached-with-build.sh
+./scripts/docker/start-detached-with-build.sh
 
 # Original scripts (may not always rebuild)
-./start.sh
-./start-detached.sh
+./scripts/docker/start.sh
+./scripts/docker/start-detached.sh
 ```
 
 ### Manual Docker Commands
