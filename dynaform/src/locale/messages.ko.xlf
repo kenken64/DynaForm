@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" target-language="ko" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="landing.hero.title" datatype="html">
+        <source> Transform Documents into <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;highlight&quot;&gt;"/>Smart Forms<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> 문서를 <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;highlight&quot;&gt;"/>스마트 폼<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/>으로 변환</target>
+      </trans-unit>
+      <trans-unit id="landing.hero.subtitle" datatype="html">
+        <source> Convert any document or image into structured form data with AI-powered extraction. Secure, fast, and blockchain-verified. </source>
+        <target> AI 기반 추출로 모든 문서나 이미지를 구조화된 폼 데이터로 변환합니다. 안전하고 빠르며 블록체인으로 검증됩니다. </target>
+      </trans-unit>
+      <trans-unit id="landing.search.title" datatype="html">
+        <source>kenneth</source>
+        <target>kenneth</target>
+      </trans-unit>
+      <trans-unit id="landing.search.placeholder" datatype="html">
+        <source>Enter DynaForm form URL or ID</source>
+        <target>DynaForm 폼 URL 또는 ID 입력</target>
+      </trans-unit>
+      <trans-unit id="landing.verify.button" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ isVerifying ? &apos;Verifying...&apos; : &apos;Verify&apos; }}"/></source>
+        <target><x id="INTERPOLATION" equiv-text="{{ isVerifying ? &apos;검증 중...&apos; : &apos;검증&apos; }}"/></target>
+      </trans-unit>
+      <trans-unit id="landing.verified.button" datatype="html">
+        <source>Verified</source>
+        <target>검증됨</target>
+      </trans-unit>
+      <trans-unit id="landing.reset.button" datatype="html">
+        <source>Reset</source>
+        <target>재설정</target>
+      </trans-unit>
+      <trans-unit id="language.select" datatype="html">
+        <source>Select Language</source>
+        <target>언어 선택</target>
+      </trans-unit>
+      <trans-unit id="nav.dashboard" datatype="html">
+        <source>Dashboard</source>
+        <target>대시보드</target>
+      </trans-unit>
+      <trans-unit id="nav.forms" datatype="html">
+        <source>Forms</source>
+        <target>폼</target>
+      </trans-unit>
+      <trans-unit id="nav.form-data" datatype="html">
+        <source>Form Data</source>
+        <target>폼 데이터</target>
+      </trans-unit>
+      <trans-unit id="nav.recipients" datatype="html">
+        <source>Recipients</source>
+        <target>수신자</target>
+      </trans-unit>
+      <trans-unit id="nav.ask-ai" datatype="html">
+        <source>Ask DynaForm AI</source>
+        <target>DynaForm AI에게 질문</target>
+      </trans-unit>
+      <trans-unit id="sidebar.recent-forms" datatype="html">
+        <source>Recent Forms</source>
+        <target>최근 폼</target>
+      </trans-unit>
+      <trans-unit id="sidebar.search-placeholder" datatype="html">
+        <source>Search forms...</source>
+        <target>폼 검색...</target>
+      </trans-unit>
+      <trans-unit id="sidebar.clear-search" datatype="html">
+        <source>Clear search</source>
+        <target>검색 지우기</target>
+      </trans-unit>
+      <trans-unit id="sidebar.loading" datatype="html">
+        <source>Loading...</source>
+        <target>로딩 중...</target>
+      </trans-unit>
+      <trans-unit id="sidebar.retry" datatype="html">
+        <source> Retry </source>
+        <target> 재시도 </target>
+      </trans-unit>
+      <trans-unit id="sidebar.language" datatype="html">
+        <source>Language</source>
+        <target>언어</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

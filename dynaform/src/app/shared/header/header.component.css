@@ -57,22 +57,6 @@
   opacity: 0.9;
 }
 
-.theme-toggle-button {
-  color: white !important;
-  border: none !important;
-  background: none !important;
-  padding: 8px !important;
-  min-width: auto !important;
-  width: auto !important;
-  line-height: 1 !important;
-  margin-right: 8px;
-}
-
-.theme-toggle-button:hover {
-  background-color: rgba(255, 255, 255, 0.1) !important;
-  border-radius: 50%;
-}
-
 .debug-button {
   color: white !important;
   border: none !important;
@@ -99,9 +83,9 @@
 }
 
 /* Responsive Design */
-@media (max-width: 480px) {
+@media (max-width: 768px) {
   .header-content {
-    padding: 12px 16px; /* Match side menu responsive padding */
+    padding: 12px 16px;
   }
 
   .header-left h1 {
@@ -109,11 +93,15 @@
   }
 
   .app-subtitle {
-    font-size: 12px; /* Reduce font size instead of hiding */
+    font-size: 12px;
   }
 
   .user-info {
     display: none;
+  }
+
+  .header-right {
+    gap: 8px;
   }
 }
 

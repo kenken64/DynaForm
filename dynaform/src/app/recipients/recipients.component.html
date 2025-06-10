@@ -9,11 +9,11 @@
         <mat-button-toggle-group [value]="viewMode" (change)="onViewModeChange($event)">
           <mat-button-toggle value="recipients">
             <mat-icon>people</mat-icon>
-            Recipients
+            <span>{{ 'recipients.toggle.recipients' | translate }}</span>
           </mat-button-toggle>
           <mat-button-toggle value="groups">
             <mat-icon>group_work</mat-icon>
-            Groups
+            <span>{{ 'recipients.toggle.groups' | translate }}</span>
           </mat-button-toggle>
         </mat-button-toggle-group>
       </div>
@@ -22,15 +22,16 @@
       <div class="controls-section">
         <div class="search-container">
           <mat-form-field appearance="outline" class="search-field">
-            <mat-label>{{ viewMode === 'recipients' ? 'Search recipients' : 'Search groups by alias or description' }}</mat-label>
+            <mat-label i18n="@@recipients.search.label">{{ viewMode === 'recipients' ? 'Search recipients' : 'Search groups by alias or description' }}</mat-label>
             <input matInput 
                    [formControl]="searchControl"
-                   [placeholder]="viewMode === 'recipients' ? 'Search by name, email, job title, or company...' : 'Search by alias name or description...'">
+                   [placeholder]="viewMode === 'recipients' ? 'Search by name, email, job title, or company...' : 'Search by alias name or description...'"
+                   i18n-placeholder="@@recipients.search.placeholder">
             <mat-icon matSuffix>search</mat-icon>
           </mat-form-field>
           <button mat-button *ngIf="searchTerm" (click)="clearSearch()">
             <mat-icon>clear</mat-icon>
-            Clear
+            <span i18n="@@recipients.search.clear">Clear</span>
           </button>
         </div>
         
@@ -39,11 +40,11 @@
           <ng-container *ngIf="viewMode === 'recipients'">
             <button mat-raised-button color="primary" (click)="openCreateDialog()">
               <mat-icon>add</mat-icon>
-              Add Recipient
+              <span>{{ 'recipients.add.button' | translate }}</span>
             </button>
             <button mat-raised-button color="accent" (click)="exportRecipients()">
               <mat-icon>download</mat-icon>
-              Export
+              <span>{{ 'recipients.export.button' | translate }}</span>
             </button>
           </ng-container>
           

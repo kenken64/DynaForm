@@ -5,6 +5,9 @@ from typing import Optional, Dict, Any, List
 import logging
 import hashlib
 import json
+import re
+from datetime import datetime
+from bson import ObjectId
 from config import config
 
 logger = logging.getLogger(__name__)
@@ -14,6 +17,9 @@ class MongoDBService:
         self.client: Optional[AsyncIOMotorClient] = None
         self.db = None
         self.forms_collection = None
+        self.recipient_groups_collection = None
+        self.recipients_collection = None
+        self.notifications_collection = None
         
     async def connect(self):
         """Connect to MongoDB"""
@@ -21,6 +27,9 @@ class MongoDBService:
             self.client = AsyncIOMotorClient(config.MONGODB_URI)
             self.db = self.client[config.MONGODB_DATABASE]
             self.forms_collection = self.db[config.FORMS_COLLECTION]
+            self.recipient_groups_collection = self.db['recipientGroups']
+            self.recipients_collection = self.db['recipients']
+            self.notifications_collection = self.db['notifications']
             
             # Test connection
             await self.client.admin.command('ping')
@@ -173,6 +182,165 @@ class MongoDBService:
         except Exception as e:
             logger.error(f"Error searching forms by name {name_pattern}: {e}")
             return []
+
+    async def detect_group_mentions(self, prompt: str) -> List[str]:
+        """Detect @<group_name> patterns in the prompt"""
+        try:
+            # Pattern to match @GroupName (alphanumeric, underscores, spaces)
+            pattern = r'@([A-Za-z0-9_\s]+?)(?=\s|$|[^\w\s])'
+            matches = re.findall(pattern, prompt)
+            
+            # Clean up the matches (strip whitespace, filter out empty)
+            group_names = [match.strip() for match in matches if match.strip()]
+            
+            if group_names:
+                logger.info(f"Detected group mentions in prompt: {group_names}")
+            
+            return group_names
+        except Exception as e:
+            logger.error(f"Error detecting group mentions: {e}")
+            return []
+
+    async def get_group_member_emails(self, group_name: str, user_id: str) -> List[str]:
+        """Get emails of all members in a recipient group by alias name"""
+        try:
+            if self.recipient_groups_collection is None or self.recipients_collection is None:
+                await self.connect()
+            
+            # Find the group by alias name (case-insensitive)
+            group = await self.recipient_groups_collection.find_one({
+                "aliasName": {"$regex": f"^{re.escape(group_name)}$", "$options": "i"},
+                "createdBy": user_id
+            })
+            
+            if not group:
+                logger.warning(f"No group found with name '{group_name}' for user {user_id}")
+                return []
+            
+            # Get recipient IDs from the group
+            recipient_ids = group.get('recipientIds', [])
+            if not recipient_ids:
+                logger.warning(f"Group '{group_name}' has no recipients")
+                return []
+            
+            # Convert string IDs to ObjectIds for MongoDB query
+            try:
+                object_ids = [ObjectId(rid) for rid in recipient_ids]
+            except Exception as e:
+                logger.error(f"Error converting recipient IDs to ObjectIds: {e}")
+                return []
+            
+            # Get recipient details
+            cursor = self.recipients_collection.find({
+                "_id": {"$in": object_ids},
+                "createdBy": user_id
+            })
+            recipients = await cursor.to_list(length=None)
+            
+            # Extract emails
+            emails = [recipient.get('email') for recipient in recipients if recipient.get('email')]
+            
+            logger.info(f"Found {len(emails)} member emails for group '{group_name}': {emails}")
+            return emails
+            
+        except Exception as e:
+            logger.error(f"Error getting group member emails for '{group_name}': {e}")
+            return []
+
+    async def create_notification_records(self, form_id: str, group_mentions: List[str], 
+                                        user_id: str, prompt: str) -> List[str]:
+        """Create notification records for group members mentioned in the prompt"""
+        try:
+            if self.notifications_collection is None:
+                await self.connect()
+            
+            notification_ids = []
+            
+            for group_name in group_mentions:
+                # Get member emails for this group
+                member_emails = await self.get_group_member_emails(group_name, user_id)
+                
+                if not member_emails:
+                    logger.warning(f"No members found for group '{group_name}', skipping notifications")
+                    continue
+                
+                # Create notification records for each member
+                notifications = []
+                for email in member_emails:
+                    notification = {
+                        "formId": form_id,
+                        "groupName": group_name,
+                        "recipientEmail": email,
+                        "status": "pending",
+                        "prompt": prompt[:500],  # Truncate to prevent excessive storage
+                        "createdBy": user_id,
+                        "createdAt": datetime.utcnow().isoformat(),
+                        "updatedAt": datetime.utcnow().isoformat(),
+                        "notificationType": "group_mention",
+                        "metadata": {
+                            "mentionedInPrompt": f"@{group_name}",
+                            "originalPrompt": prompt
+                        }
+                    }
+                    notifications.append(notification)
+                
+                if notifications:
+                    # Insert all notifications for this group
+                    result = await self.notifications_collection.insert_many(notifications)
+                    inserted_ids = [str(oid) for oid in result.inserted_ids]
+                    notification_ids.extend(inserted_ids)
+                    
+                    logger.info(f"Created {len(notifications)} notification records for group '{group_name}' (form: {form_id})")
+            
+            if notification_ids:
+                logger.info(f"Successfully created {len(notification_ids)} total notification records for form {form_id}")
+            
+            return notification_ids
+            
+        except Exception as e:
+            logger.error(f"Error creating notification records: {e}")
+            return []
+
+    async def get_notification_summary(self, form_id: str) -> Dict[str, Any]:
+        """Get a summary of notifications created for a form"""
+        try:
+            if self.notifications_collection is None:
+                await self.connect()
+            
+            # Count notifications by group
+            pipeline = [
+                {"$match": {"formId": form_id}},
+                {"$group": {
+                    "_id": "$groupName",
+                    "count": {"$sum": 1},
+                    "emails": {"$push": "$recipientEmail"}
+                }}
+            ]
+            
+            cursor = self.notifications_collection.aggregate(pipeline)
+            groups = await cursor.to_list(length=None)
+            
+            total_notifications = sum(group['count'] for group in groups)
+            
+            summary = {
+                "formId": form_id,
+                "totalNotifications": total_notifications,
+                "groupsNotified": len(groups),
+                "groups": [
+                    {
+                        "groupName": group["_id"],
+                        "memberCount": group["count"],
+                        "emails": group["emails"]
+                    }
+                    for group in groups
+                ]
+            }
+            
+            return summary
+            
+        except Exception as e:
+            logger.error(f"Error getting notification summary for form {form_id}: {e}")
+            return {"formId": form_id, "totalNotifications": 0, "groupsNotified": 0, "groups": []}
 
 # Global instance
 mongodb_service = MongoDBService()

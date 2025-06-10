@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { FormsService } from '../services/forms.service';
 import { GeneratedForm, PaginatedFormsResponse } from '../interfaces/form.interface';
+import { TranslationService } from '../services/translation.service';
 
 @Component({
   selector: 'app-side-menu',
@@ -32,7 +33,8 @@ export class SideMenuComponent implements OnInit, OnDestroy {
 
   constructor(
     private formsService: FormsService,
-    private router: Router
+    private router: Router,
+    private translationService: TranslationService
   ) {}
 
   ngOnInit(): void {
@@ -270,5 +272,9 @@ export class SideMenuComponent implements OnInit, OnDestroy {
 
   isActiveRoute(route: string): boolean {
     return this.router.url === route || this.router.url.startsWith(route + '/');
+  }
+
+  getTooltip(key: string): string {
+    return this.translationService.instant(`tooltip.${key}`);
   }
 }

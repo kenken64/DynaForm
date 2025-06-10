@@ -1,0 +1,546 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="ai.title" datatype="html">
+        <source>Ask DynaForm AI</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/ask-dynaform/ask-dynaform.component.html</context>
+          <context context-type="linenumber">7,9</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="ai.clear.tooltip" datatype="html">
+        <source>Clear chat</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/ask-dynaform/ask-dynaform.component.html</context>
+          <context context-type="linenumber">13,14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="ai.clear.label" datatype="html">
+        <source>Clear chat</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/ask-dynaform/ask-dynaform.component.html</context>
+          <context context-type="linenumber">15,16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="ai.subtitle" datatype="html">
+        <source> Get instant help with forms, data extraction, and DynaForm features </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/ask-dynaform/ask-dynaform.component.html</context>
+          <context context-type="linenumber">22,26</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="dashboard.file.select" datatype="html">
+        <source> Select PDF File </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">13,16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="dashboard.drag.drop" datatype="html">
+        <source>Or drag and drop a PDF file here</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">48,50</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="dashboard.file.hint" datatype="html">
+        <source> Please select a PDF file to continue (max 10MB) </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">53,55</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="dashboard.file.selected" datatype="html">
+        <source>Selected File:</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">61,62</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="form-data.search.label" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ selectedTab === 0 ? &apos;Search submissions&apos; : &apos;Search public submissions&apos; }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/form-data-list/form-data-list.component.html</context>
+          <context context-type="linenumber">10,11</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="form-data.search.button" datatype="html">
+        <source>Search</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/form-data-list/form-data-list.component.html</context>
+          <context context-type="linenumber">20,22</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="form-data.search.clear" datatype="html">
+        <source>Clear</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/form-data-list/form-data-list.component.html</context>
+          <context context-type="linenumber">23,25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="form-data.tab.internal" datatype="html">
+        <source>Internal</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/form-data-list/form-data-list.component.html</context>
+          <context context-type="linenumber">35</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="form-data.export.all" datatype="html">
+        <source>Export All</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/form-data-list/form-data-list.component.html</context>
+          <context context-type="linenumber">44,46</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="form-editor.title.label" datatype="html">
+        <source>Form title</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/form-editor/form-editor.component.html</context>
+          <context context-type="linenumber">15,16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="form-editor.title.placeholder" datatype="html">
+        <source>Enter form title</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/form-editor/form-editor.component.html</context>
+          <context context-type="linenumber">17,18</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="form-editor.auto-saving" datatype="html">
+        <source>Auto-saving...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/form-editor/form-editor.component.html</context>
+          <context context-type="linenumber">24,26</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="form-editor.description.label" datatype="html">
+        <source>Form description</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/form-editor/form-editor.component.html</context>
+          <context context-type="linenumber">28,30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="form-editor.description.placeholder" datatype="html">
+        <source>Enter form description (optional)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/form-editor/form-editor.component.html</context>
+          <context context-type="linenumber">30,31</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="form-editor.preview.button" datatype="html">
+        <source>Preview</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/form-editor/form-editor.component.html</context>
+          <context context-type="linenumber">42,44</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="form-editor.save.button" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ saving ? &apos;Saving...&apos; : &apos;Save&apos; }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/form-editor/form-editor.component.html</context>
+          <context context-type="linenumber">46,47</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="forms.title" datatype="html">
+        <source>Forms</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/forms-list/forms-list.component.html</context>
+          <context context-type="linenumber">10,11</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="forms.description" datatype="html">
+        <source>View and manage all your forms</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/forms-list/forms-list.component.html</context>
+          <context context-type="linenumber">11,14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="forms.search.placeholder" datatype="html">
+        <source>Search forms...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/forms-list/forms-list.component.html</context>
+          <context context-type="linenumber">21,22</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="forms.search.clear" datatype="html">
+        <source>Clear search</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/forms-list/forms-list.component.html</context>
+          <context context-type="linenumber">31,32</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="forms.create.button" datatype="html">
+        <source>Create New Form</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/forms-list/forms-list.component.html</context>
+          <context context-type="linenumber">45,47</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="forms.loading" datatype="html">
+        <source>Loading forms...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/forms-list/forms-list.component.html</context>
+          <context context-type="linenumber">53,56</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="landing.hero.title" datatype="html">
+        <source> Transform Documents into <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;highlight&quot;&gt;"/>Smart Forms<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/landing/landing.component.html</context>
+          <context context-type="linenumber">13,15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="landing.hero.subtitle" datatype="html">
+        <source> Convert any document or image into structured form data with AI-powered extraction. Secure, fast, and blockchain-verified. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/landing/landing.component.html</context>
+          <context context-type="linenumber">17,21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="landing.search.title" datatype="html">
+        <source>Verify DynaForm on Blockchain</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/landing/landing.component.html</context>
+          <context context-type="linenumber">23,24</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="landing.search.placeholder" datatype="html">
+        <source>Enter DynaForm form URL or ID</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/landing/landing.component.html</context>
+          <context context-type="linenumber">26,28</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="landing.verify.button" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ isVerifying ? &apos;Verifying...&apos; : &apos;Verify&apos; }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/landing/landing.component.html</context>
+          <context context-type="linenumber">47,48</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="landing.verified.button" datatype="html">
+        <source>Verified</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/landing/landing.component.html</context>
+          <context context-type="linenumber">57,59</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="landing.reset.button" datatype="html">
+        <source>Reset</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/landing/landing.component.html</context>
+          <context context-type="linenumber">68,70</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="language.select" datatype="html">
+        <source>Select Language</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/language-selector/language-selector.component.html</context>
+          <context context-type="linenumber">3,5</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="recipients.toggle.recipients" datatype="html">
+        <source>Recipients</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/recipients/recipients.component.html</context>
+          <context context-type="linenumber">12,14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="recipients.toggle.groups" datatype="html">
+        <source>Groups</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/recipients/recipients.component.html</context>
+          <context context-type="linenumber">16,18</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="recipients.search.label" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ viewMode === &apos;recipients&apos; ? &apos;Search recipients&apos; : &apos;Search groups by alias or description&apos; }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/recipients/recipients.component.html</context>
+          <context context-type="linenumber">25,26</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="recipients.search.clear" datatype="html">
+        <source>Clear</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/recipients/recipients.component.html</context>
+          <context context-type="linenumber">34,36</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="recipients.add.button" datatype="html">
+        <source>Add Recipient</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/recipients/recipients.component.html</context>
+          <context context-type="linenumber">43,45</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="recipients.export.button" datatype="html">
+        <source>Export</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/recipients/recipients.component.html</context>
+          <context context-type="linenumber">47,49</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.title" datatype="html">
+        <source>Settings</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">8,9</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.description" datatype="html">
+        <source>Manage your application preferences and configuration</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">9,12</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.language.title" datatype="html">
+        <source>Language &amp; Region</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">19,20</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.language.subtitle" datatype="html">
+        <source>Choose your preferred language for the application</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">20,21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.language.label" datatype="html">
+        <source>Application Language</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">25,26</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.language.hint" datatype="html">
+        <source>Select the language for the user interface</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">26,28</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.theme.title" datatype="html">
+        <source>Appearance</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">39,40</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.theme.subtitle" datatype="html">
+        <source>Customize the look and feel of the application</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">40,41</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.theme.label" datatype="html">
+        <source>Theme Mode</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">45,46</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.theme.hint" datatype="html">
+        <source>Choose between light and dark mode</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">46,48</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.theme.light" datatype="html">
+        <source>Light</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">52,53</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.theme.dark" datatype="html">
+        <source>Dark</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">56,57</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.notifications.title" datatype="html">
+        <source>Notifications</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">68,69</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.notifications.subtitle" datatype="html">
+        <source>Configure how you receive notifications</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">69,70</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.notifications.email.label" datatype="html">
+        <source>Email Notifications</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">74,75</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.notifications.email.hint" datatype="html">
+        <source>Receive notifications about form submissions and updates</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">75,77</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.notifications.browser.label" datatype="html">
+        <source>Browser Notifications</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">87,88</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.notifications.browser.hint" datatype="html">
+        <source>Show desktop notifications for important updates</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">88,90</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.privacy.title" datatype="html">
+        <source>Data &amp; Privacy</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">104,105</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.privacy.subtitle" datatype="html">
+        <source>Manage your data preferences and privacy settings</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">105,106</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.privacy.analytics.label" datatype="html">
+        <source>Usage Analytics</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">110,111</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.privacy.analytics.hint" datatype="html">
+        <source>Help improve DynaForm by sharing anonymous usage data</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">111,113</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.privacy.autosave.label" datatype="html">
+        <source>Auto-save Forms</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">123,124</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.privacy.autosave.hint" datatype="html">
+        <source>Automatically save form changes as you work</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">124,126</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="header.welcome" datatype="html">
+        <source>Welcome, <x id="INTERPOLATION" equiv-text="{{ authService.getCurrentUser()?.username }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/header/header.component.html</context>
+          <context context-type="linenumber">9,10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="header.logout" datatype="html">
+        <source>Logout</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/header/header.component.html</context>
+          <context context-type="linenumber">15,17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="nav.dashboard" datatype="html">
+        <source>Dashboard</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/side-menu/side-menu.component.html</context>
+          <context context-type="linenumber">24,27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="nav.forms" datatype="html">
+        <source>Forms</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/side-menu/side-menu.component.html</context>
+          <context context-type="linenumber">33,36</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="nav.form-data" datatype="html">
+        <source>Form Data</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/side-menu/side-menu.component.html</context>
+          <context context-type="linenumber">42,45</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="nav.recipients" datatype="html">
+        <source>Recipients</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/side-menu/side-menu.component.html</context>
+          <context context-type="linenumber">51,54</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="nav.ask-ai" datatype="html">
+        <source>Ask DynaForm AI</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/side-menu/side-menu.component.html</context>
+          <context context-type="linenumber">60,63</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="nav.settings" datatype="html">
+        <source>Settings</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/side-menu/side-menu.component.html</context>
+          <context context-type="linenumber">69,71</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="sidebar.recent-forms" datatype="html">
+        <source>Recent Forms</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/side-menu/side-menu.component.html</context>
+          <context context-type="linenumber">79,82</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="sidebar.search-placeholder" datatype="html">
+        <source>Search forms...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/side-menu/side-menu.component.html</context>
+          <context context-type="linenumber">88,89</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="sidebar.clear-search" datatype="html">
+        <source>Clear search</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/side-menu/side-menu.component.html</context>
+          <context context-type="linenumber">98,99</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="sidebar.loading" datatype="html">
+        <source>Loading...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/side-menu/side-menu.component.html</context>
+          <context context-type="linenumber">108,111</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="sidebar.retry" datatype="html">
+        <source> Retry </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/side-menu/side-menu.component.html</context>
+          <context context-type="linenumber">116,118</context>
+        </context-group>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

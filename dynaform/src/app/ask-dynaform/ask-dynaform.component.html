@@ -4,20 +4,20 @@
     <div class="header-content">
       <div class="header-title">
         <mat-icon class="header-icon">psychology</mat-icon>
-        <h2>Ask DynaForm AI</h2>
+        <h2>{{ 'ai.title' | translate }}</h2>
       </div>
       <div class="header-actions">
         <button 
           mat-icon-button 
           (click)="clearChat()"
-          matTooltip="Clear chat"
-          aria-label="Clear chat">
+          [matTooltip]="'ai.clear.tooltip' | translate"
+          [attr.aria-label]="'ai.clear.label' | translate">
           <mat-icon>refresh</mat-icon>
         </button>
       </div>
     </div>
     <p class="header-subtitle">
-      Get instant help with forms, data extraction, and DynaForm features
+      {{ 'ai.subtitle' | translate }}
     </p>
   </div>
 

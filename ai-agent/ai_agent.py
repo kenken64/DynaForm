@@ -166,6 +166,20 @@ class FormPublishingAgent:
         try:
             state["current_state"] = AgentState.PUBLISHING.value
             
+            # Check for group mentions in the user prompt
+            user_prompt = state.get("user_input", "")
+            group_mentions = await mongodb_service.detect_group_mentions(user_prompt)
+            
+            # Get user ID from form data for notifications
+            form_data = state.get("form_data", {})
+            user_id = None
+            if form_data and form_data.get("metadata", {}).get("createdBy"):
+                created_by = form_data["metadata"]["createdBy"]
+                if isinstance(created_by, str):
+                    user_id = created_by
+                elif isinstance(created_by, dict):
+                    user_id = created_by.get("userId")
+            
             # Register URL with the verifiable contract
             result = await verifiable_contract_service.register_url(
                 state["form_id"],
@@ -176,6 +190,36 @@ class FormPublishingAgent:
             
             if result.get("success"):
                 logger.info(f"Successfully published form to blockchain. TX: {result.get('transaction_hash')}")
+                
+                # Create notifications for group mentions if any
+                if group_mentions and user_id:
+                    logger.info(f"Processing group mentions for form {state['form_id']}: {group_mentions}")
+                    notification_ids = await mongodb_service.create_notification_records(
+                        state["form_id"],
+                        group_mentions,
+                        user_id,
+                        user_prompt
+                    )
+                    
+                    if notification_ids:
+                        # Add notification info to publish result
+                        result["notifications"] = {
+                            "created": len(notification_ids),
+                            "groups_mentioned": group_mentions,
+                            "notification_ids": notification_ids
+                        }
+                        
+                        # Get notification summary
+                        notification_summary = await mongodb_service.get_notification_summary(state["form_id"])
+                        result["notification_summary"] = notification_summary
+                        
+                        logger.info(f"Created {len(notification_ids)} notification records for groups: {group_mentions}")
+                    else:
+                        logger.warning(f"No notifications were created for mentioned groups: {group_mentions}")
+                elif group_mentions and not user_id:
+                    logger.warning(f"Group mentions detected but no user ID found in form data: {group_mentions}")
+                
+                state["publish_result"] = result
             else:
                 logger.error(f"Failed to publish form: {result.get('error')}")
                 state["error"] = result.get("error")

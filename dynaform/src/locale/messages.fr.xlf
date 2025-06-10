@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" target-language="fr" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="landing.hero.title" datatype="html">
+        <source> Transform Documents into <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;highlight&quot;&gt;"/>Smart Forms<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> Transformez les Documents en <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;highlight&quot;&gt;"/>Formulaires Intelligents<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="landing.hero.subtitle" datatype="html">
+        <source> Convert any document or image into structured form data with AI-powered extraction. Secure, fast, and blockchain-verified. </source>
+        <target> Convertissez tout document ou image en données de formulaire structurées avec l'extraction alimentée par l'IA. Sécurisé, rapide et vérifié par blockchain. </target>
+      </trans-unit>
+      <trans-unit id="landing.search.title" datatype="html">
+        <source>kenneth</source>
+        <target>kenneth</target>
+      </trans-unit>
+      <trans-unit id="landing.search.placeholder" datatype="html">
+        <source>Enter DynaForm form URL or ID</source>
+        <target>Entrez l'URL ou l'ID du formulaire DynaForm</target>
+      </trans-unit>
+      <trans-unit id="landing.verify.button" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ isVerifying ? &apos;Verifying...&apos; : &apos;Verify&apos; }}"/></source>
+        <target><x id="INTERPOLATION" equiv-text="{{ isVerifying ? &apos;Vérification...&apos; : &apos;Vérifier&apos; }}"/></target>
+      </trans-unit>
+      <trans-unit id="landing.verified.button" datatype="html">
+        <source>Verified</source>
+        <target>Vérifié</target>
+      </trans-unit>
+      <trans-unit id="landing.reset.button" datatype="html">
+        <source>Reset</source>
+        <target>Réinitialiser</target>
+      </trans-unit>
+      <trans-unit id="language.select" datatype="html">
+        <source>Select Language</source>
+        <target>Sélectionner la Langue</target>
+      </trans-unit>
+      <trans-unit id="nav.dashboard" datatype="html">
+        <source>Dashboard</source>
+        <target>Tableau de Bord</target>
+      </trans-unit>
+      <trans-unit id="nav.forms" datatype="html">
+        <source>Forms</source>
+        <target>Formulaires</target>
+      </trans-unit>
+      <trans-unit id="nav.form-data" datatype="html">
+        <source>Form Data</source>
+        <target>Données de Formulaire</target>
+      </trans-unit>
+      <trans-unit id="nav.recipients" datatype="html">
+        <source>Recipients</source>
+        <target>Destinataires</target>
+      </trans-unit>
+      <trans-unit id="nav.ask-ai" datatype="html">
+        <source>Ask DynaForm AI</source>
+        <target>Demander à DynaForm AI</target>
+      </trans-unit>
+      <trans-unit id="sidebar.recent-forms" datatype="html">
+        <source>Recent Forms</source>
+        <target>Formulaires Récents</target>
+      </trans-unit>
+      <trans-unit id="sidebar.search-placeholder" datatype="html">
+        <source>Search forms...</source>
+        <target>Rechercher des formulaires...</target>
+      </trans-unit>
+      <trans-unit id="sidebar.clear-search" datatype="html">
+        <source>Clear search</source>
+        <target>Effacer la recherche</target>
+      </trans-unit>
+      <trans-unit id="sidebar.loading" datatype="html">
+        <source>Loading...</source>
+        <target>Chargement...</target>
+      </trans-unit>
+      <trans-unit id="sidebar.retry" datatype="html">
+        <source> Retry </source>
+        <target> Réessayer </target>
+      </trans-unit>
+      <trans-unit id="sidebar.language" datatype="html">
+        <source>Language</source>
+        <target>Langue</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

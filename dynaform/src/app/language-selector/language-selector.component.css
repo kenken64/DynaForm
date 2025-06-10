@@ -1,0 +1,44 @@
+.language-selector {
+  margin: 8px 0;
+}
+
+.language-field {
+  min-width: 180px;
+  font-size: 14px;
+}
+
+.language-select {
+  font-size: 14px;
+}
+
+.language-option {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+}
+
+.language-flag {
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.language-name {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .language-field {
+    min-width: 140px;
+    font-size: 12px;
+  }
+  
+  .language-name {
+    font-size: 12px;
+  }
+  
+  .language-flag {
+    font-size: 14px;
+  }
+}

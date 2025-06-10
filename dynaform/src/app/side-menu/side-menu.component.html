@@ -21,7 +21,7 @@
       (click)="navigateTo('/dashboard')"
       matRipple>
       <mat-icon>dashboard</mat-icon>
-      <span *ngIf="!isCollapsed">Dashboard</span>
+      <span *ngIf="!isCollapsed">{{ 'nav.dashboard' | translate }}</span>
     </div>
     
     <div 
@@ -30,7 +30,7 @@
       (click)="navigateTo('/forms')"
       matRipple>
       <mat-icon>description</mat-icon>
-      <span *ngIf="!isCollapsed">Forms</span>
+      <span *ngIf="!isCollapsed">{{ 'nav.forms' | translate }}</span>
     </div>
     
     <div 
@@ -39,7 +39,7 @@
       (click)="navigateTo('/form-data')"
       matRipple>
       <mat-icon>table_view</mat-icon>
-      <span *ngIf="!isCollapsed">Form Data</span>
+      <span *ngIf="!isCollapsed">{{ 'nav.form-data' | translate }}</span>
     </div>
     
     <div 
@@ -48,7 +48,7 @@
       (click)="navigateTo('/recipients')"
       matRipple>
       <mat-icon>people</mat-icon>
-      <span *ngIf="!isCollapsed">Recipients</span>
+      <span *ngIf="!isCollapsed">{{ 'nav.recipients' | translate }}</span>
     </div>
     
     <div 
@@ -57,7 +57,16 @@
       (click)="navigateTo('/ask-dynaform')"
       matRipple>
       <mat-icon>chat</mat-icon>
-      <span *ngIf="!isCollapsed">Ask DynaForm AI</span>
+      <span *ngIf="!isCollapsed">{{ 'nav.ask-ai' | translate }}</span>
+    </div>
+    
+    <div 
+      class="nav-item"
+      [class.active]="isActiveRoute('/settings')"
+      (click)="navigateTo('/settings')"
+      matRipple>
+      <mat-icon>settings</mat-icon>
+      <span *ngIf="!isCollapsed">{{ 'nav.settings' | translate }}</span>
     </div>
   </div>
 
@@ -67,7 +76,7 @@
   <!-- Recent Forms Section -->
   <div *ngIf="!isCollapsed" class="forms-section">
     <div class="section-header">
-      <h3>Recent Forms</h3>
+      <h3>{{ 'sidebar.recent-forms' | translate }}</h3>
     </div>
 
     <!-- Search Bar -->
@@ -76,7 +85,7 @@
         <mat-icon matPrefix>search</mat-icon>
         <input 
           matInput 
-          placeholder="Search forms..." 
+          [placeholder]="'sidebar.search-placeholder' | translate"
           [(ngModel)]="searchQuery"
           (input)="onSearch(searchQuery)"
           [disabled]="loading">
@@ -85,7 +94,7 @@
           matSuffix 
           mat-icon-button 
           (click)="clearSearch()"
-          aria-label="Clear search">
+          [attr.aria-label]="'sidebar.clear-search' | translate">
           <mat-icon>clear</mat-icon>
         </button>
       </mat-form-field>
@@ -94,7 +103,7 @@
     <!-- Loading State -->
     <div *ngIf="loading" class="loading-section">
       <mat-spinner diameter="30"></mat-spinner>
-      <p *ngIf="!isCollapsed">Loading...</p>
+      <p *ngIf="!isCollapsed">{{ 'sidebar.loading' | translate }}</p>
     </div>
 
     <!-- Error State -->
@@ -102,7 +111,7 @@
       <mat-icon color="warn">error</mat-icon>
       <p *ngIf="!isCollapsed">{{ error }}</p>
       <button *ngIf="!isCollapsed" mat-stroked-button color="primary" (click)="loadForms()">
-        Retry
+        {{ 'sidebar.retry' | translate }}
       </button>
     </div>
 
@@ -110,13 +119,13 @@
     <div *ngIf="!loading && !error" class="forms-list">
       <!-- Results Summary -->
       <div *ngIf="!isCollapsed && totalCount > 0" class="results-summary">
-        <span class="count-badge">{{ totalCount }} form{{ totalCount !== 1 ? 's' : '' }}</span>
+        <span class="count-badge">{{ totalCount }} {{ totalCount === 1 ? ('sidebar.forms.count.single' | translate) : ('sidebar.forms.count.plural' | translate) }}</span>
       </div>
 
       <!-- Empty State -->
       <div *ngIf="(forms || []).length === 0" class="empty-state">
         <mat-icon>description</mat-icon>
-        <p *ngIf="!isCollapsed">{{ searchQuery ? 'No forms found.' : 'No forms yet.' }}</p>
+        <p *ngIf="!isCollapsed">{{ searchQuery ? ('sidebar.no-forms-found' | translate) : ('sidebar.no-forms-yet' | translate) }}</p>
       </div>
 
       <!-- Form Items -->
@@ -135,7 +144,7 @@
 
             <!-- Form Details -->
             <div class="form-details">
-              <h4 class="form-title">{{ form.metadata.formName || 'Untitled Form' }}</h4>
+              <h4 class="form-title">{{ form.metadata.formName || ('sidebar.untitled-form' | translate) }}</h4>
               <div class="form-meta">
                 <span class="created-date">
                   <mat-icon>schedule</mat-icon>
@@ -143,7 +152,7 @@
                 </span>
                 <span class="fields-count">
                   <mat-icon>input</mat-icon>
-                  {{ getFormFieldsCount(form) }} fields
+                  {{ getFormFieldsCount(form) }} {{ getFormFieldsCount(form) === 1 ? ('sidebar.fields.single' | translate) : ('sidebar.fields.plural' | translate) }}
                 </span>
               </div>
             </div>
@@ -166,7 +175,7 @@
       <!-- View All Link -->
       <div *ngIf="(forms || []).length > 0" class="view-all-section">
         <button mat-stroked-button color="primary" (click)="navigateTo('/forms')">
-          View All Forms
+          {{ 'sidebar.view-all' | translate }}
         </button>
       </div>
     </div>
@@ -179,7 +188,7 @@
       [class.active]="isActiveRoute('/dashboard')"
       (click)="navigateTo('/dashboard')"
       matRipple
-      title="Dashboard">
+      [title]="getTooltip('dashboard')">
       <mat-icon>dashboard</mat-icon>
     </div>
     
@@ -188,7 +197,7 @@
       [class.active]="isActiveRoute('/forms')"
       (click)="navigateTo('/forms')"
       matRipple
-      title="Forms">
+      [title]="getTooltip('forms')">
       <mat-icon>description</mat-icon>
     </div>
     
@@ -197,7 +206,7 @@
       [class.active]="isActiveRoute('/form-data')"
       (click)="navigateTo('/form-data')"
       matRipple
-      title="Form Data">
+      [title]="getTooltip('form-data')">
       <mat-icon>table_view</mat-icon>
     </div>
     
@@ -206,7 +215,7 @@
       [class.active]="isActiveRoute('/recipients')"
       (click)="navigateTo('/recipients')"
       matRipple
-      title="Recipients">
+      [title]="getTooltip('recipients')">
       <mat-icon>people</mat-icon>
     </div>
     
@@ -215,7 +224,7 @@
       [class.active]="isActiveRoute('/ask-dynaform')"
       (click)="navigateTo('/ask-dynaform')"
       matRipple
-      title="Ask for DynaForm">
+      [title]="getTooltip('ask-ai')">
       <mat-icon>chat</mat-icon>
     </div>
   </div>

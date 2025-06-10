@@ -33,6 +33,7 @@ export class AppComponent {
         '/form-data',
         '/recipients',
         '/ask-dynaform',
+        '/settings',
         '/debug-forms'
       ];
       

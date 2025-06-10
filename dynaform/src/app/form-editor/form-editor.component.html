@@ -12,21 +12,23 @@
       </button>
       <div class="form-info">
         <mat-form-field appearance="outline" class="form-title-field">
-          <mat-label>Form title</mat-label>
+          <mat-label i18n="@@form-editor.title.label">Form title</mat-label>
           <input matInput 
                  placeholder="Enter form title" 
+                 i18n-placeholder="@@form-editor.title.placeholder"
                  [(ngModel)]="formTitle"
                  (input)="onTitleChange(formTitle)"
                  (blur)="updateFormInfo()">
           <mat-hint *ngIf="autoSaving" class="auto-save-hint">
             <mat-icon class="auto-save-icon">sync</mat-icon>
-            Auto-saving...
+            <span i18n="@@form-editor.auto-saving">Auto-saving...</span>
           </mat-hint>
         </mat-form-field>
         <mat-form-field appearance="outline" class="form-description-field">
-          <mat-label>Form description</mat-label>
+          <mat-label i18n="@@form-editor.description.label">Form description</mat-label>
           <input matInput 
                  placeholder="Enter form description (optional)" 
+                 i18n-placeholder="@@form-editor.description.placeholder"
                  [(ngModel)]="formDescription"
                  (input)="onDescriptionChange(formDescription)"
                  (blur)="updateFormInfo()">
@@ -37,11 +39,11 @@
     <div class="header-actions">
       <button mat-raised-button color="primary" (click)="previewForm()" [disabled]="!formId">
         <mat-icon>preview</mat-icon>
-        Preview
+        <span i18n="@@form-editor.preview.button">Preview</span>
       </button>
       <button mat-raised-button color="primary" (click)="saveForm()" [disabled]="saving">
         <mat-icon>save</mat-icon>
-        {{ saving ? 'Saving...' : 'Save' }}
+        <span i18n="@@form-editor.save.button">{{ saving ? 'Saving...' : 'Save' }}</span>
       </button>
     </div>
   </div>

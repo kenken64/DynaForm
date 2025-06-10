@@ -10,7 +10,7 @@
       <!-- Custom File Input Container with Drag & Drop -->
       <div class="file-input-container">
         <label for="pdf-file-input" class="file-input-label">
-          Select PDF File
+          {{ 'dashboard.file.select' | translate }}
         </label>
         
         <!-- Drag & Drop Zone -->
@@ -45,12 +45,12 @@
           <!-- Drag & Drop Instructions -->
           <p *ngIf="!selectedFile" class="drag-drop-instructions">
             <mat-icon>cloud_upload</mat-icon>
-            Or drag and drop a PDF file here
+            <span>{{ 'dashboard.drag.drop' | translate }}</span>
           </p>
         </div>
         
         <mat-hint class="file-hint">
-          Please select a PDF file to continue (max 10MB)
+          {{ 'dashboard.file.hint' | translate }}
         </mat-hint>
       </div>
       
@@ -58,7 +58,7 @@
       <div *ngIf="selectedFile" class="file-status">
         <mat-icon style="color: #4caf50; margin-right: 8px;">check_circle</mat-icon>
         <span>
-          <strong>Selected File:</strong> {{ selectedFile!.name }} 
+          <strong>{{ 'dashboard.file.selected' | translate }}</strong> {{ selectedFile!.name }}
           <span style="color: #666;">({{ (selectedFile!.size / 1024 / 1024).toFixed(2) }} MB)</span>
         </span>
       </div>

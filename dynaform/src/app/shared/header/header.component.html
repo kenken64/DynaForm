@@ -3,19 +3,16 @@
     <div class="header-left">
       <mat-icon class="app-icon">assignment</mat-icon>
       <h1>DynaForm</h1>
-      <span class="app-subtitle">{{ subtitle || 'Form Viewer' }}</span>
+      <span class="app-subtitle">{{ subtitle === 'Settings' ? ('header.settings.subtitle' | translate) : (subtitle || ('header.default.subtitle' | translate)) }}</span>
     </div>
     <div class="header-right">
-      <span class="user-info">Welcome, {{ authService.getCurrentUser()?.username }}</span>
-      <button mat-icon-button (click)="toggleDarkMode()" class="theme-toggle-button" [attr.aria-label]="isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'">
-        <mat-icon>{{ isDarkMode ? 'light_mode' : 'dark_mode' }}</mat-icon>
-      </button>
+      <span class="user-info">{{ 'header.welcome' | translate }} {{ authService.getCurrentUser()?.username }}</span>
       <button mat-button (click)="navigateToDebugForms()" class="debug-button">
         <mat-icon>bug_report</mat-icon>
       </button>
       <button mat-button (click)="logout()" class="logout-button">
         <mat-icon>logout</mat-icon>
-        Logout
+        <span>{{ 'header.logout' | translate }}</span>
       </button>
     </div>
   </div>

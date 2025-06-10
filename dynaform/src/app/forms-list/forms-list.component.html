@@ -7,8 +7,8 @@
     <div class="forms-list-container">
   <!-- Header -->
   <div class="page-header">
-    <h1>Forms</h1>
-    <p class="page-description">View and manage all your forms</p>
+    <h1>{{ 'forms.title' | translate }}</h1>
+    <p class="page-description">{{ 'forms.description' | translate }}</p>
   </div>
 
   <!-- Search Bar and Actions -->
@@ -18,7 +18,7 @@
         <mat-icon matPrefix>search</mat-icon>
         <input 
           matInput 
-          placeholder="Search forms..." 
+          [placeholder]="'forms.search.placeholder' | translate"
           [(ngModel)]="searchQuery"
           (input)="onSearch(searchQuery)"
           [disabled]="loading">
@@ -27,7 +27,7 @@
           matSuffix 
           mat-icon-button 
           (click)="clearSearch()"
-          aria-label="Clear search">
+          [attr.aria-label]="'forms.search.clear' | translate">
           <mat-icon>clear</mat-icon>
         </button>
       </mat-form-field>
@@ -40,7 +40,7 @@
         (click)="createNewForm()"
         class="create-form-btn">
         <mat-icon>add</mat-icon>
-        Create New Form
+        <span>{{ 'forms.create.button' | translate }}</span>
       </button>
     </div>
   </div>
@@ -48,7 +48,7 @@
   <!-- Loading State -->
   <div *ngIf="loading" class="loading-section">
     <mat-spinner diameter="60"></mat-spinner>
-    <p>Loading forms...</p>
+    <p>{{ 'forms.loading' | translate }}</p>
   </div>
 
   <!-- Error State -->

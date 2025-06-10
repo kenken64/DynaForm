@@ -1,38 +1,33 @@
-import { Component, Input, inject, OnInit } from '@angular/core';
+import { Component, Input, inject, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
+import { TranslationService } from '../../services/translation.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
   @Input() subtitle: string = 'Form Viewer';
   
   authService = inject(AuthService);
   private router = inject(Router);
-  
-  isDarkMode = true;
+  private translationService = inject(TranslationService);
+  private cdr = inject(ChangeDetectorRef);
+  private translationSubscription?: Subscription;
 
   ngOnInit() {
-    // Check for saved theme preference or default to dark mode
-    const savedTheme = localStorage.getItem('theme');
-    this.isDarkMode = savedTheme !== null ? savedTheme === 'dark' : true;
-    this.updateTheme();
+    // Subscribe to translation changes to trigger re-rendering
+    this.translationSubscription = this.translationService.currentTranslations$.subscribe(() => {
+      this.cdr.detectChanges();
+    });
   }
 
-  toggleDarkMode() {
-    this.isDarkMode = !this.isDarkMode;
-    this.updateTheme();
-    localStorage.setItem('theme', this.isDarkMode ? 'dark' : 'light');
-  }
-
-  private updateTheme() {
-    if (this.isDarkMode) {
-      document.documentElement.setAttribute('data-theme', 'dark');
-    } else {
-      document.documentElement.removeAttribute('data-theme');
+  ngOnDestroy() {
+    if (this.translationSubscription) {
+      this.translationSubscription.unsubscribe();
     }
   }
 

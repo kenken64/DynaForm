@@ -10,20 +10,19 @@
       </div>
       
       <h1 class="hero-title">
-        Transform Documents into <span class="highlight">Smart Forms</span>
+        {{ 'landing.hero.title' | translate }}
       </h1>
       
       <p class="hero-subtitle">
-        Convert any document or image into structured form data with AI-powered extraction. 
-        Secure, fast, and blockchain-verified.
+        {{ 'landing.hero.subtitle' | translate }}
       </p>
 
       <!-- Search and Verify Section -->
       <div class="search-section">
-        <h3 class="search-title">Verify DynaForm on Blockchain</h3>
+        <h3 class="search-title">{{ 'landing.search.title' | translate }}</h3>
         <div class="search-container">
           <mat-form-field class="search-field" appearance="outline">
-            <mat-label>Enter DynaForm form URL or ID</mat-label>
+            <mat-label>{{ 'landing.search.placeholder' | translate }}</mat-label>
             <input 
               matInput 
               [(ngModel)]="searchQuery" 
@@ -44,7 +43,7 @@
             *ngIf="!isVerified">
             <mat-icon *ngIf="isVerifying" class="spinning">refresh</mat-icon>
             <mat-icon *ngIf="!isVerifying">verified</mat-icon>
-            {{ isVerifying ? 'Verifying...' : 'Verify' }}
+            <span>{{ isVerifying ? ('landing.verifying.button' | translate) : ('landing.verify.button' | translate) }}</span>
           </button>
           
           <!-- Verified Button (success state) -->
@@ -54,7 +53,7 @@
             *ngIf="isVerified"
             disabled>
             <mat-icon>check_circle</mat-icon>
-            Verified
+            <span>{{ 'landing.verified.button' | translate }}</span>
           </button>
           
           <!-- Reset Button -->
@@ -65,7 +64,7 @@
             (click)="resetVerification()"
             *ngIf="isVerified">
             <mat-icon>refresh</mat-icon>
-            Reset
+            <span>{{ 'landing.reset.button' | translate }}</span>
           </button>
         </div>
         

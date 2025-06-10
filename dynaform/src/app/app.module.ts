@@ -26,6 +26,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -62,6 +63,9 @@ import { AskDynaformComponent } from './ask-dynaform/ask-dynaform.component';
 import { FireworksComponent } from './shared/fireworks/fireworks.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { FormSaveConfirmationDialogComponent } from './form-save-confirmation-dialog/form-save-confirmation-dialog.component';
+import { LanguageSelectorComponent } from './language-selector/language-selector.component';
+import { SettingsComponent } from './settings/settings.component';
+import { TranslatePipe } from './shared/translate.pipe';
 
 @NgModule({
   declarations: [
@@ -88,7 +92,10 @@ import { FormSaveConfirmationDialogComponent } from './form-save-confirmation-di
     AskDynaformComponent,
     FireworksComponent,
     NotFoundComponent,
-    FormSaveConfirmationDialogComponent
+    FormSaveConfirmationDialogComponent,
+    LanguageSelectorComponent,
+    SettingsComponent,
+    TranslatePipe
   ],
   imports: [
     BrowserModule,
@@ -115,6 +122,7 @@ import { FormSaveConfirmationDialogComponent } from './form-save-confirmation-di
     MatSnackBarModule,
     MatTooltipModule,
     MatButtonToggleModule,
+    MatSlideToggleModule,
     MatAutocompleteModule,
     MatChipsModule,
     MatDatepickerModule,

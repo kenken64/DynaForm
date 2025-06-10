@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" target-language="it" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="landing.hero.title" datatype="html">
+        <source> Transform Documents into <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;highlight&quot;&gt;"/>Smart Forms<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> Trasforma Documenti in <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;highlight&quot;&gt;"/>Moduli Intelligenti<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="landing.hero.subtitle" datatype="html">
+        <source> Convert any document or image into structured form data with AI-powered extraction. Secure, fast, and blockchain-verified. </source>
+        <target> Converti qualsiasi documento o immagine in dati di modulo strutturati con estrazione potenziata dall'IA. Sicuro, veloce e verificato blockchain. </target>
+      </trans-unit>
+      <trans-unit id="landing.search.title" datatype="html">
+        <source>kenneth</source>
+        <target>kenneth</target>
+      </trans-unit>
+      <trans-unit id="landing.search.placeholder" datatype="html">
+        <source>Enter DynaForm form URL or ID</source>
+        <target>Inserisci URL o ID del modulo DynaForm</target>
+      </trans-unit>
+      <trans-unit id="landing.verify.button" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ isVerifying ? &apos;Verifying...&apos; : &apos;Verify&apos; }}"/></source>
+        <target><x id="INTERPOLATION" equiv-text="{{ isVerifying ? &apos;Verificando...&apos; : &apos;Verifica&apos; }}"/></target>
+      </trans-unit>
+      <trans-unit id="landing.verified.button" datatype="html">
+        <source>Verified</source>
+        <target>Verificato</target>
+      </trans-unit>
+      <trans-unit id="landing.reset.button" datatype="html">
+        <source>Reset</source>
+        <target>Reimposta</target>
+      </trans-unit>
+      <trans-unit id="language.select" datatype="html">
+        <source>Select Language</source>
+        <target>Seleziona Lingua</target>
+      </trans-unit>
+      <trans-unit id="nav.dashboard" datatype="html">
+        <source>Dashboard</source>
+        <target>Cruscotto</target>
+      </trans-unit>
+      <trans-unit id="nav.forms" datatype="html">
+        <source>Forms</source>
+        <target>Moduli</target>
+      </trans-unit>
+      <trans-unit id="nav.form-data" datatype="html">
+        <source>Form Data</source>
+        <target>Dati Modulo</target>
+      </trans-unit>
+      <trans-unit id="nav.recipients" datatype="html">
+        <source>Recipients</source>
+        <target>Destinatari</target>
+      </trans-unit>
+      <trans-unit id="nav.ask-ai" datatype="html">
+        <source>Ask DynaForm AI</source>
+        <target>Chiedi a DynaForm AI</target>
+      </trans-unit>
+      <trans-unit id="sidebar.recent-forms" datatype="html">
+        <source>Recent Forms</source>
+        <target>Moduli Recenti</target>
+      </trans-unit>
+      <trans-unit id="sidebar.search-placeholder" datatype="html">
+        <source>Search forms...</source>
+        <target>Cerca moduli...</target>
+      </trans-unit>
+      <trans-unit id="sidebar.clear-search" datatype="html">
+        <source>Clear search</source>
+        <target>Cancella ricerca</target>
+      </trans-unit>
+      <trans-unit id="sidebar.loading" datatype="html">
+        <source>Loading...</source>
+        <target>Caricamento...</target>
+      </trans-unit>
+      <trans-unit id="sidebar.retry" datatype="html">
+        <source> Retry </source>
+        <target> Riprova </target>
+      </trans-unit>
+      <trans-unit id="sidebar.language" datatype="html">
+        <source>Language</source>
+        <target>Lingua</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

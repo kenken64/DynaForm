@@ -349,7 +349,7 @@ export class FormDataService {
    * Export public form submissions as Excel file
    */
   exportPublicSubmissions(formId?: string): Observable<Blob> {
-    let url = `${this.baseUrl}/public/submissions/export`;
+    let url = `${this.baseUrl}/public/export-submissions`;
     if (formId) {
       url += `?formId=${formId}`;
     }

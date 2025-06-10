@@ -1,0 +1,138 @@
+<!-- Header -->
+<app-header subtitle="Settings"></app-header>
+
+<div class="main-content">
+  <div class="settings-container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1>{{ 'settings.title' | translate }}</h1>
+      <p class="page-description">{{ 'settings.description' | translate }}</p>
+    </div>
+
+      <!-- Settings Sections -->
+      <div class="settings-sections">
+        
+        <!-- Language Settings Section -->
+        <mat-card class="settings-section">
+          <mat-card-header>
+            <mat-icon mat-card-avatar>language</mat-icon>
+            <mat-card-title>{{ 'settings.language.title' | translate }}</mat-card-title>
+            <mat-card-subtitle>{{ 'settings.language.subtitle' | translate }}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="setting-item">
+              <div class="setting-info">
+                <label class="setting-label">{{ 'settings.language.label' | translate }}</label>
+                <p class="setting-hint">{{ 'settings.language.hint' | translate }}</p>
+              </div>
+              <div class="setting-control">
+                <app-language-selector class="settings-language-selector"></app-language-selector>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Theme Settings Section -->
+        <mat-card class="settings-section">
+          <mat-card-header>
+            <mat-icon mat-card-avatar>palette</mat-icon>
+            <mat-card-title>{{ 'settings.theme.title' | translate }}</mat-card-title>
+            <mat-card-subtitle>{{ 'settings.theme.subtitle' | translate }}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="setting-item">
+              <div class="setting-info">
+                <label class="setting-label">{{ 'settings.theme.label' | translate }}</label>
+                <p class="setting-hint">{{ 'settings.theme.hint' | translate }}</p>
+              </div>
+              <div class="setting-control">
+                <mat-button-toggle-group [value]="currentTheme" (change)="onThemeChange($event)">
+                  <mat-button-toggle value="light">
+                    <mat-icon>light_mode</mat-icon>
+                    <span>{{ 'settings.theme.light' | translate }}</span>
+                  </mat-button-toggle>
+                  <mat-button-toggle value="dark">
+                    <mat-icon>dark_mode</mat-icon>
+                    <span>{{ 'settings.theme.dark' | translate }}</span>
+                  </mat-button-toggle>
+                </mat-button-toggle-group>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Notifications Settings Section -->
+        <mat-card class="settings-section">
+          <mat-card-header>
+            <mat-icon mat-card-avatar>notifications</mat-icon>
+            <mat-card-title>{{ 'settings.notifications.title' | translate }}</mat-card-title>
+            <mat-card-subtitle>{{ 'settings.notifications.subtitle' | translate }}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="setting-item">
+              <div class="setting-info">
+                <label class="setting-label">{{ 'settings.notifications.email.label' | translate }}</label>
+                <p class="setting-hint">{{ 'settings.notifications.email.hint' | translate }}</p>
+              </div>
+              <div class="setting-control">
+                <mat-slide-toggle 
+                  [checked]="emailNotifications" 
+                  (change)="onEmailNotificationChange($event)">
+                </mat-slide-toggle>
+              </div>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-info">
+                <label class="setting-label">{{ 'settings.notifications.browser.label' | translate }}</label>
+                <p class="setting-hint">{{ 'settings.notifications.browser.hint' | translate }}</p>
+              </div>
+              <div class="setting-control">
+                <mat-slide-toggle 
+                  [checked]="browserNotifications" 
+                  (change)="onBrowserNotificationChange($event)">
+                </mat-slide-toggle>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Data & Privacy Settings Section -->
+        <mat-card class="settings-section">
+          <mat-card-header>
+            <mat-icon mat-card-avatar>security</mat-icon>
+            <mat-card-title>{{ 'settings.privacy.title' | translate }}</mat-card-title>
+            <mat-card-subtitle>{{ 'settings.privacy.subtitle' | translate }}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="setting-item">
+              <div class="setting-info">
+                <label class="setting-label">{{ 'settings.privacy.analytics.label' | translate }}</label>
+                <p class="setting-hint">{{ 'settings.privacy.analytics.hint' | translate }}</p>
+              </div>
+              <div class="setting-control">
+                <mat-slide-toggle 
+                  [checked]="analyticsEnabled" 
+                  (change)="onAnalyticsChange($event)">
+                </mat-slide-toggle>
+              </div>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-info">
+                <label class="setting-label">{{ 'settings.privacy.autosave.label' | translate }}</label>
+                <p class="setting-hint">{{ 'settings.privacy.autosave.hint' | translate }}</p>
+              </div>
+              <div class="setting-control">
+                <mat-slide-toggle 
+                  [checked]="autoSaveEnabled" 
+                  (change)="onAutoSaveChange($event)">
+                </mat-slide-toggle>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+      </div>
+    </div>
+  </div>

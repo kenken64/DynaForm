@@ -7,19 +7,20 @@
     <div class="global-search-section">
       <div class="search-container-centered">
         <mat-form-field appearance="outline" class="search-field">
-          <mat-label>{{ selectedTab === 0 ? 'Search submissions' : 'Search public submissions' }}</mat-label>
+          <mat-label i18n="@@form-data.search.label">{{ selectedTab === 0 ? 'Search submissions' : 'Search public submissions' }}</mat-label>
           <input matInput 
                  [(ngModel)]="searchTerm" 
                  (keyup.enter)="onSearch()"
-                 [placeholder]="selectedTab === 0 ? 'Search by form title or user...' : 'Search by form title or creator...'">
+                 [placeholder]="selectedTab === 0 ? 'Search by form title or user...' : 'Search by form title or creator...'"
+                 i18n-placeholder="@@form-data.search.placeholder">
           <mat-icon matSuffix>search</mat-icon>
         </mat-form-field>
         <div class="search-buttons">
           <button mat-raised-button color="primary" (click)="onSearch()">
-            Search
+            <span i18n="@@form-data.search.button">Search</span>
           </button>
           <button mat-button *ngIf="searchTerm" (click)="clearSearch()">
-            Clear
+            <span i18n="@@form-data.search.clear">Clear</span>
           </button>
         </div>
       </div>
@@ -31,7 +32,7 @@
     <!-- Tab Navigation -->
     <mat-tab-group [(selectedIndex)]="selectedTab" (selectedTabChange)="onTabChange($event)">
       <!-- Internal Submissions Tab -->
-      <mat-tab label="Internal">
+      <mat-tab label="Internal" i18n-label="@@form-data.tab.internal">
         <ng-template matTabContent>
           <div class="tab-content">
             <br>
@@ -40,7 +41,7 @@
               <div class="action-buttons">
                 <button mat-raised-button color="accent" (click)="exportData()">
                   <mat-icon>download</mat-icon>
-                  Export All
+                  <span i18n="@@form-data.export.all">Export All</span>
                 </button>
               </div>
             </div>

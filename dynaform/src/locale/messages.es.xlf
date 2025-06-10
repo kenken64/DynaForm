@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" target-language="es" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="ai.title" datatype="html">
+        <source>Ask DynaForm AI</source>
+        <target>Preguntar a DynaForm AI</target>
+      </trans-unit>
+      <trans-unit id="ai.clear.tooltip" datatype="html">
+        <source>Clear chat</source>
+        <target>Limpiar chat</target>
+      </trans-unit>
+      <trans-unit id="ai.clear.label" datatype="html">
+        <source>Clear chat</source>
+        <target>Limpiar chat</target>
+      </trans-unit>
+      <trans-unit id="ai.subtitle" datatype="html">
+        <source> Get instant help with forms, data extraction, and DynaForm features </source>
+        <target> Obtenga ayuda instantánea con formularios, extracción de datos y características de DynaForm </target>
+      </trans-unit>
+      <trans-unit id="dashboard.file.select" datatype="html">
+        <source> Select PDF File </source>
+        <target> Seleccionar Archivo PDF </target>
+      </trans-unit>
+      <trans-unit id="forms.title" datatype="html">
+        <source>Forms</source>
+        <target>Formularios</target>
+      </trans-unit>
+      <trans-unit id="forms.description" datatype="html">
+        <source>View and manage all your forms</source>
+        <target>Ver y gestionar todos sus formularios</target>
+      </trans-unit>
+      <trans-unit id="recipients.toggle.recipients" datatype="html">
+        <source>Recipients</source>
+        <target>Destinatarios</target>
+      </trans-unit>
+      <trans-unit id="recipients.toggle.groups" datatype="html">
+        <source>Groups</source>
+        <target>Grupos</target>
+      </trans-unit>
+      <trans-unit id="landing.hero.title" datatype="html">
+        <source> Transform Documents into <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;highlight&quot;&gt;"/>Smart Forms<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> Transforma Documentos en <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;highlight&quot;&gt;"/>Formularios Inteligentes<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="landing.hero.subtitle" datatype="html">
+        <source> Convert any document or image into structured form data with AI-powered extraction. Secure, fast, and blockchain-verified. </source>
+        <target> Convierte cualquier documento o imagen en datos de formulario estructurados con extracción potenciada por IA. Seguro, rápido y verificado por blockchain. </target>
+      </trans-unit>
+      <trans-unit id="landing.search.title" datatype="html">
+        <source>kenneth</source>
+        <target>kenneth</target>
+      </trans-unit>
+      <trans-unit id="landing.search.placeholder" datatype="html">
+        <source>Enter DynaForm form URL or ID</source>
+        <target>Ingresa la URL o ID del formulario DynaForm</target>
+      </trans-unit>
+      <trans-unit id="landing.verify.button" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ isVerifying ? &apos;Verifying...&apos; : &apos;Verify&apos; }}"/></source>
+        <target><x id="INTERPOLATION" equiv-text="{{ isVerifying ? &apos;Verificando...&apos; : &apos;Verificar&apos; }}"/></target>
+      </trans-unit>
+      <trans-unit id="landing.verified.button" datatype="html">
+        <source>Verified</source>
+        <target>Verificado</target>
+      </trans-unit>
+      <trans-unit id="landing.reset.button" datatype="html">
+        <source>Reset</source>
+        <target>Restablecer</target>
+      </trans-unit>
+      <trans-unit id="language.select" datatype="html">
+        <source>Select Language</source>
+        <target>Seleccionar Idioma</target>
+      </trans-unit>
+      <trans-unit id="nav.dashboard" datatype="html">
+        <source>Dashboard</source>
+        <target>Panel de Control</target>
+      </trans-unit>
+      <trans-unit id="nav.forms" datatype="html">
+        <source>Forms</source>
+        <target>Formularios</target>
+      </trans-unit>
+      <trans-unit id="nav.form-data" datatype="html">
+        <source>Form Data</source>
+        <target>Datos de Formulario</target>
+      </trans-unit>
+      <trans-unit id="nav.recipients" datatype="html">
+        <source>Recipients</source>
+        <target>Destinatarios</target>
+      </trans-unit>
+      <trans-unit id="nav.ask-ai" datatype="html">
+        <source>Ask DynaForm AI</source>
+        <target>Preguntar a DynaForm AI</target>
+      </trans-unit>
+      <trans-unit id="sidebar.recent-forms" datatype="html">
+        <source>Recent Forms</source>
+        <target>Formularios Recientes</target>
+      </trans-unit>
+      <trans-unit id="sidebar.search-placeholder" datatype="html">
+        <source>Search forms...</source>
+        <target>Buscar formularios...</target>
+      </trans-unit>
+      <trans-unit id="sidebar.clear-search" datatype="html">
+        <source>Clear search</source>
+        <target>Limpiar búsqueda</target>
+      </trans-unit>
+      <trans-unit id="sidebar.loading" datatype="html">
+        <source>Loading...</source>
+        <target>Cargando...</target>
+      </trans-unit>
+      <trans-unit id="sidebar.retry" datatype="html">
+        <source> Retry </source>
+        <target> Reintentar </target>
+      </trans-unit>
+      <trans-unit id="sidebar.language" datatype="html">
+        <source>Language</source>
+        <target>Idioma</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

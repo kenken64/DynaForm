@@ -14,6 +14,7 @@ import { PublicFormComponent } from './public-form/public-form.component';
 import { AuthGuard } from './auth/auth.guard';
 import { DebugFormsComponent } from './debug-forms.component';
 import { AskDynaformComponent } from './ask-dynaform/ask-dynaform.component';
+import { SettingsComponent } from './settings/settings.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 
 const routes: Routes = [
@@ -29,6 +30,7 @@ const routes: Routes = [
   { path: 'form-data/:id', component: FormDataViewerComponent, canActivate: [AuthGuard] },
   { path: 'recipients', component: RecipientsComponent, canActivate: [AuthGuard] },
   { path: 'ask-dynaform', component: AskDynaformComponent, canActivate: [AuthGuard] },
+  { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
   { path: 'debug-forms', component: DebugFormsComponent, canActivate: [AuthGuard] },
   { path: 'public/form/:formId/:fingerprint', component: PublicFormComponent },
   { path: '**', component: NotFoundComponent }
