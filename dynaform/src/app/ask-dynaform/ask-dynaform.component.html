@@ -81,9 +81,9 @@
   <div *ngIf="error" class="error-container">
     <mat-icon class="error-icon">error_outline</mat-icon>
     <span>{{ error }}</span>
-    <button mat-button color="primary" (click)="error = ''">
+    <radix-button variant="primary" (onClick)="error = ''">
       Dismiss
-    </button>
+    </radix-button>
   </div>
 
   <!-- Input Area -->

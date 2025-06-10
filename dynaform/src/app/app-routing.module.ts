@@ -16,7 +16,7 @@ import { DebugFormsComponent } from './debug-forms.component';
 import { AskDynaformComponent } from './ask-dynaform/ask-dynaform.component';
 import { SettingsComponent } from './settings/settings.component';
 import { NotFoundComponent } from './not-found/not-found.component';
-import { RadixDemoComponent } from './radix-demo/radix-demo.component';
+import { RadixMigrationDemoComponent } from './radix-migration-demo/radix-migration-demo.component';
 
 const routes: Routes = [
   { path: '', component: LandingComponent },
@@ -33,7 +33,7 @@ const routes: Routes = [
   { path: 'ask-dynaform', component: AskDynaformComponent, canActivate: [AuthGuard] },
   { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
   { path: 'debug-forms', component: DebugFormsComponent, canActivate: [AuthGuard] },
-  { path: 'radix-demo', component: RadixDemoComponent },
+  { path: 'radix-migration-demo', component: RadixMigrationDemoComponent },
   { path: 'public/form/:formId/:fingerprint', component: PublicFormComponent },
   { path: '**', component: NotFoundComponent }
 ];

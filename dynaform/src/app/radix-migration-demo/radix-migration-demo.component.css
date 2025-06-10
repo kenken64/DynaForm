@@ -1,0 +1,114 @@
+.demo-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.demo-container h1 {
+  color: #1f2937;
+  margin-bottom: 8px;
+}
+
+.demo-container p {
+  color: #6b7280;
+  margin-bottom: 32px;
+}
+
+.demo-section {
+  margin-bottom: 32px;
+}
+
+.demo-section h2 {
+  margin: 0;
+  color: #1f2937;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.demo-section h3 {
+  color: #1f2937;
+  font-size: 16px;
+  font-weight: 500;
+  margin: 20px 0 12px 0;
+}
+
+.button-grid {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.form-example {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.form-state {
+  background-color: #f3f4f6;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.form-state h3 {
+  color: #374151;
+  margin: 0 0 12px 0;
+}
+
+.form-state pre {
+  background-color: #1f2937;
+  color: #f9fafb;
+  padding: 12px;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 12px;
+  margin: 0;
+}
+
+.success-banner {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  margin-bottom: 32px;
+}
+
+.success-content h2 {
+  color: white;
+  margin: 0 0 8px 0;
+  font-size: 24px;
+}
+
+.success-content p {
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 20px 0;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 20px;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat-number {
+  display: block;
+  font-size: 32px;
+  font-weight: bold;
+  color: white;
+}
+
+.stat-label {
+  display: block;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 4px;
+}

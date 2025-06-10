@@ -21,51 +21,43 @@
       <div class="search-section">
         <h3 class="search-title">{{ 'landing.search.title' | translate }}</h3>
         <div class="search-container">
-          <mat-form-field class="search-field" appearance="outline">
-            <mat-label>{{ 'landing.search.placeholder' | translate }}</mat-label>
-            <input 
-              matInput 
-              [(ngModel)]="searchQuery" 
-              (keyup)="onSearchKeyup($event)"
-              placeholder="http://localhost:4200/public/form/6845ca285a88a8c1282af178/9fda53adc47ad259e739faff83b0d69c... or 6845ca285a88a8c1282af178"
-              class="search-input"
-              [disabled]="isVerified">
-            <mat-icon matSuffix>search</mat-icon>
-          </mat-form-field>
+          <radix-input 
+            class="search-field"
+            [label]="'landing.search.placeholder' | translate"
+            [(ngModel)]="searchQuery" 
+            (keyup)="onSearchKeyup($event)"
+            placeholder="http://localhost:4200/public/form/6845ca285a88a8c1282af178/9fda53adc47ad259e739faff83b0d69c... or 6845ca285a88a8c1282af178"
+            [disabled]="isVerified">
+          </radix-input>
           
           <!-- Verify Button (normal state) -->
-          <button 
-            mat-raised-button 
-            color="primary" 
-            class="verify-button"
-            (click)="verifyBlockchain()"
-            [disabled]="!searchQuery.trim() || isVerifying || isVerified"
-            *ngIf="!isVerified">
+          <radix-button variant="primary" 
+                        class="verify-button"
+                        (onClick)="verifyBlockchain()"
+                        [disabled]="!searchQuery.trim() || isVerifying || isVerified"
+                        *ngIf="!isVerified">
             <mat-icon *ngIf="isVerifying" class="spinning">refresh</mat-icon>
             <mat-icon *ngIf="!isVerifying">verified</mat-icon>
             <span>{{ isVerifying ? ('landing.verifying.button' | translate) : ('landing.verify.button' | translate) }}</span>
-          </button>
+          </radix-button>
           
           <!-- Verified Button (success state) -->
-          <button 
-            mat-raised-button 
-            class="verify-button verified-button"
-            *ngIf="isVerified"
-            disabled>
+          <radix-button variant="primary" 
+                        class="verify-button verified-button"
+                        *ngIf="isVerified"
+                        [disabled]="true">
             <mat-icon>check_circle</mat-icon>
             <span>{{ 'landing.verified.button' | translate }}</span>
-          </button>
+          </radix-button>
           
           <!-- Reset Button -->
-          <button 
-            mat-raised-button 
-            color="accent" 
-            class="reset-button"
-            (click)="resetVerification()"
-            *ngIf="isVerified">
+          <radix-button variant="secondary" 
+                        class="reset-button"
+                        (onClick)="resetVerification()"
+                        *ngIf="isVerified">
             <mat-icon>refresh</mat-icon>
             <span>{{ 'landing.reset.button' | translate }}</span>
-          </button>
+          </radix-button>
         </div>
         
         <!-- Error Message (displayed just below textbox) -->
@@ -111,29 +103,27 @@
 
         <!-- Sample Hash Button -->
         <div class="sample-section">
-          <button mat-button class="sample-button" (click)="generateSampleHash()" [disabled]="isVerified">
+          <radix-button variant="ghost" class="sample-button" (onClick)="generateSampleHash()" [disabled]="isVerified">
             <mat-icon>content_copy</mat-icon>
             Try Sample Form ID
-          </button>
+          </radix-button>
         </div>
       </div>
 
       <!-- Action Buttons -->
       <div class="action-buttons">
-        <button 
-          mat-raised-button 
-          class="login-button"
-          (click)="navigateToLogin()">
+        <radix-button variant="primary" 
+                      class="login-button"
+                      (onClick)="navigateToLogin()">
           <mat-icon>login</mat-icon>
           Get Started
-        </button>
-        <button 
-          mat-raised-button 
-          class="trial-button"
-          (click)="navigateToLogin()">
+        </radix-button>
+        <radix-button variant="secondary" 
+                      class="trial-button"
+                      (onClick)="navigateToLogin()">
           <mat-icon>star</mat-icon>
           Start Free Trial
-        </button>
+        </radix-button>
       </div>
     </div>
 
@@ -159,53 +149,53 @@
     <div class="container">
       <h2 class="section-title">Why Choose DynaForm?</h2>
       <div class="features-grid">
-        <div class="feature-card">
+        <radix-card class="feature-card">
           <mat-icon class="feature-icon">auto_fix_high</mat-icon>
           <h3>AI-Powered Extraction</h3>
           <p>Advanced computer vision automatically identifies and extracts form fields from any document or image.</p>
-        </div>
+        </radix-card>
         
-        <div class="feature-card">
+        <radix-card class="feature-card">
           <mat-icon class="feature-icon">security</mat-icon>
           <h3>Blockchain Verified</h3>
           <p>Every form is cryptographically signed and stored on blockchain for immutable verification.</p>
-        </div>
+        </radix-card>
         
-        <div class="feature-card">
+        <radix-card class="feature-card">
           <mat-icon class="feature-icon">flash_on</mat-icon>
           <h3>Lightning Fast</h3>
           <p>Process documents in seconds with our optimized AI models and cloud infrastructure.</p>
-        </div>
+        </radix-card>
         
-        <div class="feature-card">
+        <radix-card class="feature-card">
           <mat-icon class="feature-icon">api</mat-icon>
           <h3>Developer Friendly</h3>
           <p>RESTful APIs and SDKs for seamless integration into your existing applications.</p>
-        </div>
+        </radix-card>
         
-        <div class="feature-card">
+        <radix-card class="feature-card">
           <mat-icon class="feature-icon">code</mat-icon>
           <h3>Open Source</h3>
           <p>Built on open source technologies with full transparency and community-driven development.</p>
-        </div>
+        </radix-card>
         
-        <div class="feature-card">
+        <radix-card class="feature-card">
           <mat-icon class="feature-icon">publish</mat-icon>
           <h3>AI Agent Form Publisher</h3>
           <p>Intelligent publishing system that automatically optimizes and distributes your forms across platforms.</p>
-        </div>
+        </radix-card>
         
-        <div class="feature-card">
+        <radix-card class="feature-card">
           <mat-icon class="feature-icon">edit_note</mat-icon>
           <h3>AI Agent Form Editor</h3>
           <p>Smart form editing with AI-powered suggestions, field optimization, and automatic layout improvements.</p>
-        </div>
+        </radix-card>
         
-        <div class="feature-card">
+        <radix-card class="feature-card">
           <mat-icon class="feature-icon">build</mat-icon>
           <h3>Powerful Web Form Editor</h3>
           <p>Drag-and-drop form builder with advanced field types, validation rules, and real-time preview capabilities.</p>
-        </div>
+        </radix-card>
       </div>
     </div>
   </section>
@@ -214,22 +204,22 @@
   <section class="stats-section">
     <div class="container">
       <div class="stats-grid">
-        <div class="stat-item">
+        <radix-card class="stat-item">
           <div class="stat-number">1M+</div>
           <div class="stat-label">Documents Processed</div>
-        </div>
-        <div class="stat-item">
+        </radix-card>
+        <radix-card class="stat-item">
           <div class="stat-number">99.9%</div>
           <div class="stat-label">Accuracy Rate</div>
-        </div>
-        <div class="stat-item">
+        </radix-card>
+        <radix-card class="stat-item">
           <div class="stat-number">50+</div>
           <div class="stat-label">Form Types Supported</div>
-        </div>
-        <div class="stat-item">
+        </radix-card>
+        <radix-card class="stat-item">
           <div class="stat-number">24/7</div>
           <div class="stat-label">API Availability</div>
-        </div>
+        </radix-card>
       </div>
     </div>
   </section>
@@ -239,14 +229,12 @@
     <div class="container">
       <h2>Ready to Transform Your Documents?</h2>
       <p>Join thousands of developers and businesses using DynaForm</p>
-      <button 
-        mat-raised-button 
-        color="primary" 
-        class="cta-button"
-        (click)="navigateToLogin()">
+      <radix-button variant="primary" 
+                    class="cta-button"
+                    (onClick)="navigateToLogin()">
         Start Free Trial
         <mat-icon>arrow_forward</mat-icon>
-      </button>
+      </radix-button>
     </div>
   </section>
 

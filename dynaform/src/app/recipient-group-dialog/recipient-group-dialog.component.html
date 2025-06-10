@@ -79,15 +79,14 @@
   </mat-dialog-content>
 
   <mat-dialog-actions class="dialog-actions">
-    <button mat-button (click)="onCancel()" class="cancel-button">
+    <radix-button variant="ghost" (onClick)="onCancel()" class="cancel-button">
       Cancel
-    </button>
-    <button mat-raised-button 
-            color="primary" 
-            (click)="onSubmit()"
-            [disabled]="!groupForm.valid || selectedRecipients.length === 0"
-            class="save-button">
+    </radix-button>
+    <radix-button variant="primary" 
+                  (onClick)="onSubmit()"
+                  [disabled]="!groupForm.valid || selectedRecipients.length === 0"
+                  class="save-button">
       {{ data.isEdit ? 'Update' : 'Create' }} Group
-    </button>
+    </radix-button>
   </mat-dialog-actions>
 </div>

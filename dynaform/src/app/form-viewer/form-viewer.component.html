@@ -30,22 +30,22 @@
             <!-- Form Title with Edit Button -->
             <div class="title-section">
               <mat-card-title>&nbsp;&nbsp;{{ formTitle || formData.originalJson?.title || formData.metadata.formName || 'Form Details' }}</mat-card-title>
-              <button 
-                mat-icon-button 
-                class="edit-title-btn"
-                (click)="editFormTitle(); $event.stopPropagation()"
-                aria-label="Edit form title"
-                title="Edit form title">
+              <radix-button variant="ghost"
+                            size="icon" 
+                            class="edit-title-btn"
+                            (onClick)="editFormTitle(); $event.stopPropagation()"
+                            [attr.aria-label]="'Edit form title'"
+                            [attr.title]="'Edit form title'">
                 <mat-icon>edit</mat-icon>
-              </button>
+              </radix-button>
             </div>
            
           </mat-card-header>
           <mat-card-actions align="end">
-            <button mat-button (click)="goBackToForms()">
+            <radix-button variant="ghost" (onClick)="goBackToForms()">
               <mat-icon>arrow_back</mat-icon>
               Back
-            </button>
+            </radix-button>
           </mat-card-actions>
         </mat-card>
 
@@ -174,16 +174,15 @@
             </form>
           </mat-card-content>
           <mat-card-actions align="end">
-            <button mat-raised-button 
-                    color="accent" 
-                    type="button"
-                    [disabled]="isSavingFormData"
-                    (click)="saveFormData()"
-                    style="margin-right: 12px;">
+            <radix-button variant="secondary" 
+                          type="button"
+                          [disabled]="isSavingFormData"
+                          (onClick)="saveFormData()"
+                          style="margin-right: 12px;">
               <mat-spinner *ngIf="isSavingFormData" diameter="20" style="margin-right: 8px;"></mat-spinner>
               <mat-icon *ngIf="!isSavingFormData" style="margin-right: 8px;">send</mat-icon>
               {{ isSavingFormData ? 'Submitting...' : 'Submit Form Data' }}
-            </button>
+            </radix-button>
           </mat-card-actions>
         </mat-card>
 

@@ -40,9 +40,9 @@
   <div *ngIf="error" class="error-container">
     <mat-icon color="warn">error</mat-icon>
     <p>{{ error }}</p>
-    <button mat-button color="primary" (click)="loadSubmission(submissionId!)">
+    <radix-button variant="primary" (onClick)="loadSubmission(submissionId!)">
       Try Again
-    </button>
+    </radix-button>
   </div>
 
   <!-- Submission Content -->

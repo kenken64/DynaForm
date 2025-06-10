@@ -34,14 +34,13 @@
     </div>
     
     <div class="actions-section">
-      <button 
-        mat-raised-button 
-        color="primary" 
-        (click)="createNewForm()"
+      <radix-button 
+        variant="primary" 
+        (onClick)="createNewForm()"
         class="create-form-btn">
         <mat-icon>add</mat-icon>
         <span>{{ 'forms.create.button' | translate }}</span>
-      </button>
+      </radix-button>
     </div>
   </div>
 
@@ -55,9 +54,9 @@
   <div *ngIf="error && !loading" class="error-section">
     <mat-icon color="warn">error</mat-icon>
     <p>{{ error }}</p>
-    <button mat-raised-button color="primary" (click)="loadForms()">
+    <radix-button variant="primary" (onClick)="loadForms()">
       Retry
-    </button>
+    </radix-button>
   </div>
 
   <!-- Forms Grid -->
@@ -75,9 +74,9 @@
       <p>
         {{ searchQuery ? 'Try adjusting your search criteria.' : 'Start creating forms from the dashboard.' }}
       </p>
-      <button *ngIf="!searchQuery" mat-raised-button color="primary" routerLink="/dashboard">
+      <radix-button *ngIf="!searchQuery" variant="primary" routerLink="/dashboard">
         Go to Dashboard
-      </button>
+      </radix-button>
     </div>
 
     <!-- Forms Grid -->
@@ -107,13 +106,13 @@
                 </div>
               </div>
             </div>
-            <button 
-              mat-icon-button 
-              class="edit-title-btn"
-              (click)="editFormTitle(form); $event.stopPropagation()"
-              aria-label="Edit form title">
+            <radix-button variant="ghost"
+                          size="icon" 
+                          class="edit-title-btn"
+                          (onClick)="editFormTitle(form); $event.stopPropagation()"
+                          [attr.aria-label]="'Edit form title'">
               <mat-icon>edit</mat-icon>
-            </button>
+            </radix-button>
           </div>
           
           <mat-card-subtitle>
@@ -134,39 +133,39 @@
         </mat-card-content>
 
         <mat-card-actions align="end">
-          <button 
-            mat-icon-button 
-            color="primary"
-            (click)="onFormClick(form); $event.stopPropagation()"
-            aria-label="View form"
-            title="View form">
+          <radix-button 
+            variant="ghost"
+            size="icon"
+            (onClick)="onFormClick(form); $event.stopPropagation()"
+            [attr.aria-label]="'View form'"
+            [attr.title]="'View form'">
             <mat-icon>visibility</mat-icon>
-          </button>
-          <button 
-            mat-icon-button 
-            color="accent"
-            (click)="onFormEdit(form); $event.stopPropagation()"
-            aria-label="Edit form"
-            title="Edit form">
+          </radix-button>
+          <radix-button 
+            variant="ghost"
+            size="icon"
+            (onClick)="onFormEdit(form); $event.stopPropagation()"
+            [attr.aria-label]="'Edit form'"
+            [attr.title]="'Edit form'">
             <mat-icon>edit</mat-icon>
-          </button>
-          <button 
-            mat-icon-button 
-            color="warn"
-            (click)="onDeleteForm(form); $event.stopPropagation()"
-            aria-label="Delete form"
-            title="Delete form">
+          </radix-button>
+          <radix-button 
+            variant="destructive"
+            size="icon"
+            (onClick)="onDeleteForm(form); $event.stopPropagation()"
+            [attr.aria-label]="'Delete form'"
+            [attr.title]="'Delete form'">
             <mat-icon>delete</mat-icon>
-          </button>
+          </radix-button>
           <!-- Development button to demo blockchain verification -->
-          <button 
-            mat-icon-button 
-            [color]="isBlockchainVerified(form) ? 'warn' : 'accent'"
-            (click)="mockBlockchainVerification(form); $event.stopPropagation()"
-            [attr.aria-label]="isBlockchainVerified(form) ? 'Remove verification' : 'Mock verification'"
-            [title]="isBlockchainVerified(form) ? 'Remove blockchain verification (demo)' : 'Add blockchain verification (demo)'">
+          <radix-button variant="ghost"
+                        size="icon"
+                        [class]="isBlockchainVerified(form) ? 'warn' : 'accent'"
+                        (onClick)="mockBlockchainVerification(form); $event.stopPropagation()"
+                        [attr.aria-label]="isBlockchainVerified(form) ? 'Remove verification' : 'Mock verification'"
+                        [attr.title]="isBlockchainVerified(form) ? 'Remove blockchain verification (demo)' : 'Add blockchain verification (demo)'">
             <mat-icon>{{ isBlockchainVerified(form) ? 'link_off' : 'verified' }}</mat-icon>
-          </button>
+          </radix-button>
         </mat-card-actions>
       </mat-card>
     </div>
@@ -178,23 +177,22 @@
       </div>
       
       <div class="pagination-controls">
-        <button 
-          mat-icon-button 
-          [disabled]="currentPage === 1" 
-          (click)="previousPage()"
-          aria-label="Previous page">
+        <radix-button variant="ghost"
+                      size="icon" 
+                      [disabled]="currentPage === 1" 
+                      (onClick)="previousPage()"
+                      [attr.aria-label]="'Previous page'">
           <mat-icon>chevron_left</mat-icon>
-        </button>
+        </radix-button>
 
         <div class="page-numbers">
-          <button 
-            *ngFor="let page of getPageNumbers()" 
-            mat-button
-            [class.active]="page === currentPage"
-            (click)="goToPage(page)"
-            [attr.aria-label]="'Go to page ' + page">
+          <radix-button *ngFor="let page of getPageNumbers()" 
+                        variant="ghost"
+                        [class.active]="page === currentPage"
+                        (onClick)="goToPage(page)"
+                        [attr.aria-label]="'Go to page ' + page">
             {{ page }}
-          </button>
+          </radix-button>
         </div>
 
         <button 

@@ -1,0 +1,126 @@
+/* Toggle Component Styles */
+.toggle-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.toggle-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.toggle-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background-color: white;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  outline: none;
+}
+
+.toggle-button:hover {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.toggle-button:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.toggle-button.pressed {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+}
+
+.toggle-button.pressed:hover {
+  background-color: #2563eb;
+}
+
+.toggle-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.toggle-helper {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Switch Component Styles */
+.switch-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.switch-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+}
+
+.switch-root {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background-color: #d1d5db;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  outline: none;
+}
+
+.switch-root:hover {
+  background-color: #9ca3af;
+}
+
+.switch-root:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.switch-root.checked {
+  background-color: #3b82f6;
+}
+
+.switch-root.checked:hover {
+  background-color: #2563eb;
+}
+
+.switch-root:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.switch-thumb {
+  display: block;
+  width: 20px;
+  height: 20px;
+  background-color: white;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s;
+  transform: translateX(2px);
+}
+
+.switch-thumb.checked {
+  transform: translateX(22px);
+}
+
+.switch-helper {
+  font-size: 12px;
+  color: #6b7280;
+}

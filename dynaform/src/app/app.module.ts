@@ -36,10 +36,12 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { DatePipe, TitleCasePipe } from '@angular/common';
 import { FormConfirmationComponent } from './form-confirmation/form-confirmation.component';
+import { RadixButtonComponent } from './ui/button/radix-button.component';
+import { RadixInputComponent } from './ui/input/radix-input.component';
+import { RadixCardComponent } from './ui/card/radix-card.component';
 import { FormViewerComponent } from './form-viewer/form-viewer.component';
 import { FormsListComponent } from './forms-list/forms-list.component';
 import { FormEditorComponent } from './form-editor/form-editor.component';
-import { EditTitleDialogComponent } from './forms-list/edit-title-dialog.component';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
@@ -74,7 +76,6 @@ import { TranslatePipe } from './shared/translate.pipe';
     FormViewerComponent,
     FormsListComponent,
     FormEditorComponent,
-    EditTitleDialogComponent,
     LoginComponent,
     RegisterComponent,
     DashboardComponent,
@@ -129,7 +130,10 @@ import { TranslatePipe } from './shared/translate.pipe';
     MatNativeDateModule,
     MatRadioModule,
     DragDropModule,
-    TextFieldModule
+    TextFieldModule,
+    RadixButtonComponent,
+    RadixInputComponent,
+    RadixCardComponent
   ],
   providers: [
     provideHttpClient(withInterceptorsFromDi()),

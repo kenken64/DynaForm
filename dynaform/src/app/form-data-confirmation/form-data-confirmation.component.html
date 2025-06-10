@@ -38,28 +38,26 @@
     
     <!-- Action Buttons -->
     <div class="action-buttons">
-      <button mat-raised-button 
-              color="primary" 
-              (click)="onViewFormData()"
-              class="action-button">
+      <radix-button variant="primary" 
+                    (onClick)="onViewFormData()"
+                    class="action-button">
         <mat-icon>visibility</mat-icon>
         View Submission
-      </button>
+      </radix-button>
       
-      <button mat-stroked-button 
-              color="primary" 
-              (click)="onBackToForm()"
-              class="action-button">
+      <radix-button variant="outline" 
+                    (onClick)="onBackToForm()"
+                    class="action-button">
         <mat-icon>edit</mat-icon>
         Edit Form
-      </button>
+      </radix-button>
 
-      <button mat-button 
-              (click)="onGoToFormsList()"
-              class="action-button">
+      <radix-button variant="ghost" 
+                    (onClick)="onGoToFormsList()"
+                    class="action-button">
         <mat-icon>list</mat-icon>
         All Form Data
-      </button>
+      </radix-button>
     </div>
     
     <!-- Additional Info -->

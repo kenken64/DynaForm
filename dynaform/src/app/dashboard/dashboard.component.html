@@ -104,15 +104,14 @@
       
       <!-- Next Button with Validation -->
       <div class="upload-button">
-        <button mat-raised-button 
-                color="primary"
+        <radix-button variant="primary"
                 matStepperNext 
-                (click)="uploadPdf()"
+                (onClick)="uploadPdf()"
                 [disabled]="!selectedFile || isUploadingPdf">
           <mat-spinner *ngIf="isUploadingPdf" diameter="20"></mat-spinner>
           <mat-icon *ngIf="!isUploadingPdf">cloud_upload</mat-icon>
           {{ isUploadingPdf ? 'Uploading...' : 'Upload & Continue' }}
-        </button>
+        </radix-button>
       </div>
       
       <!-- Disabled State Helper Text -->
@@ -139,15 +138,16 @@
              [attr.aria-label]="'Form preview images'"
              [attr.aria-describedby]="'image-description'">
           <!-- Previous button (only show if carousel is enabled) -->
-          <button *ngIf="isCarouselEnabled()" 
-                  mat-icon-button 
-                  class="carousel-nav prev-btn"
-                  (click)="previousImage()"
-                  [attr.aria-label]="'Previous image ' + currentImageIndex + ' of ' + imageUrls.length"
-                  [attr.aria-controls]="'carousel-image'"
-                  type="button">
+          <radix-button *ngIf="isCarouselEnabled()" 
+                        variant="ghost"
+                        size="icon" 
+                        class="carousel-nav prev-btn"
+                        (onClick)="previousImage()"
+                        [attr.aria-label]="'Previous image ' + currentImageIndex + ' of ' + imageUrls.length"
+                        [attr.aria-controls]="'carousel-image'"
+                        type="button">
             <mat-icon>chevron_left</mat-icon>
-          </button>
+          </radix-button>
 
           <!-- Image display -->
           <div class="image-wrapper">
@@ -160,15 +160,16 @@
           </div>
 
           <!-- Next button (only show if carousel is enabled) -->
-          <button *ngIf="isCarouselEnabled()" 
-                  mat-icon-button 
-                  class="carousel-nav next-btn"
-                  (click)="nextImage()"
-                  [attr.aria-label]="'Next image ' + (currentImageIndex + 2) + ' of ' + imageUrls.length"
-                  [attr.aria-controls]="'carousel-image'"
-                  type="button">
+          <radix-button *ngIf="isCarouselEnabled()" 
+                        variant="ghost"
+                        size="icon" 
+                        class="carousel-nav next-btn"
+                        (onClick)="nextImage()"
+                        [attr.aria-label]="'Next image ' + (currentImageIndex + 2) + ' of ' + imageUrls.length"
+                        [attr.aria-controls]="'carousel-image'"
+                        type="button">
             <mat-icon>chevron_right</mat-icon>
-          </button>
+          </radix-button>
         </div>
 
         <!-- Image indicators (only show if carousel is enabled) -->
@@ -216,18 +217,17 @@
       
       <!-- Navigation Buttons -->
       <div class="navigation-buttons">
-        <button mat-button matStepperPrevious>
+        <radix-button variant="ghost" matStepperPrevious>
           <mat-icon>arrow_back</mat-icon>
           Back
-        </button>
-        <button mat-raised-button 
-                color="primary"
-                matStepperNext 
-                (click)="fetchImageAndDescribe()"
-                [disabled]="!generatedImageUrl">
+        </radix-button>
+        <radix-button variant="primary"
+                      matStepperNext 
+                      (onClick)="fetchImageAndDescribe()"
+                      [disabled]="!generatedImageUrl">
           <mat-icon>auto_awesome</mat-icon>
           Analyze Form
-        </button>
+        </radix-button>
       </div>
       
       <!-- Helper text for disabled next button -->
@@ -261,10 +261,10 @@
       <!-- Show error message if there's an error -->
       <div *ngIf="error && !isFetchingForm" class="error-container">
         <mat-error>{{ error }}</mat-error>
-        <button mat-button color="warn" (click)="fetchImageAndDescribe()">
+        <radix-button variant="destructive" (onClick)="fetchImageAndDescribe()">
           <mat-icon>refresh</mat-icon>
           Try Again
-        </button>
+        </radix-button>
       </div>
 
       <!-- Dynamic Form Rendering -->
@@ -374,14 +374,13 @@
         </div>
 
         <div class="upload-button">
-          <button mat-raised-button 
-                  color="primary" 
-                  type="submit"
-                  [disabled]="isSavingForm">
+          <radix-button variant="primary" 
+                        type="submit"
+                        [disabled]="isSavingForm">
             <mat-spinner *ngIf="isSavingForm" diameter="20"></mat-spinner>
             <mat-icon *ngIf="!isSavingForm">save</mat-icon>
             {{ isSavingForm ? 'Saving...' : 'Save Form' }}
-          </button>
+          </radix-button>
         </div>
         </form>
       </div>

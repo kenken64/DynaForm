@@ -159,14 +159,13 @@
 
             <!-- Actions -->
             <div class="form-actions">
-              <button 
-                mat-icon-button 
-                class="delete-btn"
-                (click)="onDeleteForm(form, $event)"
-                [attr.aria-label]="'Delete ' + (form.metadata.formName || 'form')"
-                color="warn">
+              <radix-button variant="destructive"
+                            size="icon" 
+                            class="delete-btn"
+                            (onClick)="onDeleteForm(form, $event)"
+                            [attr.aria-label]="'Delete ' + (form.metadata.formName || 'form')">
                 <mat-icon>delete</mat-icon>
-              </button>
+              </radix-button>
             </div>
           </div>
         </div>
@@ -174,9 +173,9 @@
 
       <!-- View All Link -->
       <div *ngIf="(forms || []).length > 0" class="view-all-section">
-        <button mat-stroked-button color="primary" (click)="navigateTo('/forms')">
+        <radix-button variant="outline" (onClick)="navigateTo('/forms')">
           {{ 'sidebar.view-all' | translate }}
-        </button>
+        </radix-button>
       </div>
     </div>
   </div>

@@ -49,23 +49,21 @@
             </mat-form-field>
 
             <!-- Continue Button -->
-            <button 
-              mat-raised-button 
-              color="primary" 
-              type="submit" 
-              class="register-button"
-              [disabled]="loading || !registerForm.valid">
+            <radix-button variant="primary" 
+                          type="submit" 
+                          class="register-button"
+                          [disabled]="loading || !registerForm.valid">
               <mat-spinner *ngIf="loading" diameter="20" class="button-spinner"></mat-spinner>
               <span *ngIf="!loading">Continue</span>
               <span *ngIf="loading">Creating Account...</span>
-            </button>
+            </radix-button>
 
             <!-- Login Link -->
             <div class="login-link">
               <span>Already have an account? </span>
-              <button type="button" mat-button color="primary" (click)="goToLogin()">
+              <radix-button type="button" variant="ghost" (onClick)="goToLogin()">
                 Sign In
-              </button>
+              </radix-button>
             </div>
           </form>
         </div>
@@ -115,12 +113,12 @@
               <div class="error-content">
                 <pre>{{ errorMessage }}</pre>
                 <div class="error-actions">
-                  <button mat-button color="primary" (click)="checkBrowserCompatibility()">
+                  <radix-button variant="primary" (onClick)="checkBrowserCompatibility()">
                     Check Browser
-                  </button>
-                  <button mat-button color="accent" (click)="clearError()">
+                  </radix-button>
+                  <radix-button variant="secondary" (onClick)="clearError()">
                     Try Again
-                  </button>
+                  </radix-button>
                 </div>
               </div>
             </div>
@@ -134,37 +132,32 @@
             </div>
 
             <!-- Setup Passkey Button -->
-            <button 
-              mat-raised-button 
-              color="primary" 
-              class="setup-passkey-button"
-              (click)="setupPasskey()"
-              [disabled]="loading">
+            <radix-button variant="primary" 
+                          class="setup-passkey-button"
+                          (onClick)="setupPasskey()"
+                          [disabled]="loading">
               <mat-spinner *ngIf="loading" diameter="20" class="button-spinner"></mat-spinner>
               <mat-icon *ngIf="!loading">fingerprint</mat-icon>
               <span *ngIf="!loading">Setup Passkey</span>
               <span *ngIf="loading">Setting up...</span>
-            </button>
+            </radix-button>
 
             <!-- Skip Button -->
-            <button 
-              mat-button 
-              color="accent" 
-              class="skip-button"
-              (click)="skipPasskey()"
-              [disabled]="loading">
+            <radix-button variant="secondary" 
+                          class="skip-button"
+                          (onClick)="skipPasskey()"
+                          [disabled]="loading">
               Skip for now
-            </button>
+            </radix-button>
 
             <!-- Back Button -->
-            <button 
-              mat-button 
-              class="back-button"
-              (click)="goBack()"
-              [disabled]="loading">
+            <radix-button variant="ghost" 
+                          class="back-button"
+                          (onClick)="goBack()"
+                          [disabled]="loading">
               <mat-icon>arrow_back</mat-icon>
               Back
-            </button>
+            </radix-button>
           </div>
         </div>
       </mat-card-content>

@@ -7,9 +7,9 @@
     <!-- Editor Header -->
     <div class="editor-header">
     <div class="header-left">
-      <button mat-icon-button (click)="goBack()" class="back-button">
+      <radix-button variant="ghost" size="icon" (onClick)="goBack()" class="back-button">
         <mat-icon>arrow_back</mat-icon>
-      </button>
+      </radix-button>
       <div class="form-info">
         <mat-form-field appearance="outline" class="form-title-field">
           <mat-label i18n="@@form-editor.title.label">Form title</mat-label>
@@ -37,14 +37,14 @@
     </div>
     
     <div class="header-actions">
-      <button mat-raised-button color="primary" (click)="previewForm()" [disabled]="!formId">
+      <radix-button variant="primary" (onClick)="previewForm()" [disabled]="!formId">
         <mat-icon>preview</mat-icon>
         <span i18n="@@form-editor.preview.button">Preview</span>
-      </button>
-      <button mat-raised-button color="primary" (click)="saveForm()" [disabled]="saving">
+      </radix-button>
+      <radix-button variant="primary" (onClick)="saveForm()" [disabled]="saving">
         <mat-icon>save</mat-icon>
         <span i18n="@@form-editor.save.button">{{ saving ? 'Saving...' : 'Save' }}</span>
-      </button>
+      </radix-button>
     </div>
   </div>
 
@@ -144,20 +144,20 @@
                 <span class="element-type-badge">{{ element.type }}</span>
               </div>
               <div class="element-actions">
-                <button mat-icon-button 
-                        class="duplicate-btn" 
-                        size="small"
-                        (click)="duplicateElement(element); $event.stopPropagation()"
-                        title="Duplicate">
+                <radix-button variant="ghost"
+                              size="icon" 
+                              class="duplicate-btn" 
+                              (onClick)="duplicateElement(element); $event.stopPropagation()"
+                              [attr.title]="'Duplicate'">
                   <mat-icon>content_copy</mat-icon>
-                </button>
-                <button mat-icon-button 
-                        class="delete-btn" 
-                        size="small"
-                        (click)="deleteElement(element); $event.stopPropagation()"
-                        title="Delete">
+                </radix-button>
+                <radix-button variant="destructive"
+                              size="icon" 
+                              class="delete-btn" 
+                              (onClick)="deleteElement(element); $event.stopPropagation()"
+                              [attr.title]="'Delete'">
                   <mat-icon>delete</mat-icon>
-                </button>
+                </radix-button>
                 <mat-icon class="drag-handle" cdkDragHandle title="Drag to reorder">drag_indicator</mat-icon>
               </div>
             </div>
@@ -264,9 +264,9 @@
     <div class="properties-panel" *ngIf="selectedElement">
       <div class="panel-header">
         <h3>Element Properties</h3>
-        <button mat-icon-button (click)="selectedElement = null">
+        <radix-button variant="ghost" size="icon" (onClick)="selectedElement = null">
           <mat-icon>close</mat-icon>
-        </button>
+        </radix-button>
       </div>
       
       <div class="properties-content">
@@ -317,17 +317,18 @@
                      [value]="option"
                      (blur)="updateOption(selectedElement, i, $any($event.target).value)">
             </mat-form-field>
-            <button mat-icon-button 
-                    (click)="removeOption(selectedElement, i)"
-                    [disabled]="selectedElement.options!.length <= 1">
+            <radix-button variant="destructive"
+                          size="icon" 
+                          (onClick)="removeOption(selectedElement, i)"
+                          [disabled]="selectedElement.options!.length <= 1">
               <mat-icon>delete</mat-icon>
-            </button>
+            </radix-button>
           </div>
           
-          <button mat-stroked-button (click)="addOption(selectedElement)" class="add-option-btn">
+          <radix-button variant="outline" (onClick)="addOption(selectedElement)" class="add-option-btn">
             <mat-icon>add</mat-icon>
             Add Option
-          </button>
+          </radix-button>
         </div>
       </div>
     </div>

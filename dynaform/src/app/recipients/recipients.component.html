@@ -29,35 +29,35 @@
                    i18n-placeholder="@@recipients.search.placeholder">
             <mat-icon matSuffix>search</mat-icon>
           </mat-form-field>
-          <button mat-button *ngIf="searchTerm" (click)="clearSearch()">
+          <radix-button variant="ghost" *ngIf="searchTerm" (onClick)="clearSearch()">
             <mat-icon>clear</mat-icon>
             <span i18n="@@recipients.search.clear">Clear</span>
-          </button>
+          </radix-button>
         </div>
         
         <div class="action-buttons">
           <!-- Recipients View Actions -->
           <ng-container *ngIf="viewMode === 'recipients'">
-            <button mat-raised-button color="primary" (click)="openCreateDialog()">
+            <radix-button variant="primary" (onClick)="openCreateDialog()">
               <mat-icon>add</mat-icon>
               <span>{{ 'recipients.add.button' | translate }}</span>
-            </button>
-            <button mat-raised-button color="accent" (click)="exportRecipients()">
+            </radix-button>
+            <radix-button variant="secondary" (onClick)="exportRecipients()">
               <mat-icon>download</mat-icon>
               <span>{{ 'recipients.export.button' | translate }}</span>
-            </button>
+            </radix-button>
           </ng-container>
           
           <!-- Groups View Actions -->
           <ng-container *ngIf="viewMode === 'groups'">
-            <button mat-raised-button color="primary" (click)="openCreateGroupDialog()">
+            <radix-button variant="primary" (onClick)="openCreateGroupDialog()">
               <mat-icon>add</mat-icon>
               Create Group
-            </button>
-            <button mat-raised-button color="accent" (click)="exportGroups()">
+            </radix-button>
+            <radix-button variant="secondary" (onClick)="exportGroups()">
               <mat-icon>download</mat-icon>
               Export Groups
-            </button>
+            </radix-button>
           </ng-container>
         </div>
       </div>
@@ -72,9 +72,9 @@
       <div *ngIf="error && !loading" class="error-container">
         <mat-icon color="warn">error</mat-icon>
         <p>{{ error }}</p>
-        <button mat-button color="primary" (click)="viewMode === 'recipients' ? loadRecipients() : loadRecipientGroups()">
+        <radix-button variant="primary" (onClick)="viewMode === 'recipients' ? loadRecipients() : loadRecipientGroups()">
           Try Again
-        </button>
+        </radix-button>
       </div>
 
       <!-- Recipients View -->
@@ -84,10 +84,10 @@
           <h3>No recipients found</h3>
           <p *ngIf="searchTerm">No recipients match your search criteria.</p>
           <p *ngIf="!searchTerm">You haven't added any recipients yet.</p>
-          <button mat-raised-button color="primary" (click)="openCreateDialog()">
+          <radix-button variant="primary" (onClick)="openCreateDialog()">
             <mat-icon>add</mat-icon>
             Add First Recipient
-          </button>
+          </radix-button>
         </div>
 
         <div *ngIf="recipients.length > 0" class="table-wrapper">
@@ -128,18 +128,16 @@
               <th mat-header-cell *matHeaderCellDef>Actions</th>
               <td mat-cell *matCellDef="let recipient">
                 <div class="action-buttons-cell">
-                  <button mat-icon-button 
-                          color="primary" 
-                          (click)="openEditDialog(recipient)"
-                          matTooltip="Edit recipient">
+                  <radix-button variant="ghost" size="icon"
+                          (onClick)="openEditDialog(recipient)"
+                          [attr.title]="'Edit recipient'">
                     <mat-icon>edit</mat-icon>
-                  </button>
-                  <button mat-icon-button 
-                          color="warn" 
-                          (click)="deleteRecipient(recipient)"
-                          matTooltip="Delete recipient">
+                  </radix-button>
+                  <radix-button variant="destructive" size="icon"
+                          (onClick)="deleteRecipient(recipient)"
+                          [attr.title]="'Delete recipient'">
                     <mat-icon>delete</mat-icon>
-                  </button>
+                  </radix-button>
                 </div>
               </td>
             </ng-container>
@@ -157,10 +155,10 @@
           <h3>No recipient groups found</h3>
           <p *ngIf="searchTerm">No groups match your search criteria.</p>
           <p *ngIf="!searchTerm">You haven't created any recipient groups yet.</p>
-          <button mat-raised-button color="primary" (click)="openCreateGroupDialog()">
+          <radix-button variant="primary" (onClick)="openCreateGroupDialog()">
             <mat-icon>add</mat-icon>
             Create First Group
-          </button>
+          </radix-button>
         </div>
 
         <div *ngIf="recipientGroups.length > 0" class="table-wrapper">
@@ -200,18 +198,16 @@
               <th mat-header-cell *matHeaderCellDef>Actions</th>
               <td mat-cell *matCellDef="let group">
                 <div class="action-buttons-cell">
-                  <button mat-icon-button 
-                          color="primary" 
-                          (click)="openEditGroupDialog(group)"
-                          matTooltip="Edit group">
+                  <radix-button variant="ghost" size="icon"
+                          (onClick)="openEditGroupDialog(group)"
+                          [attr.title]="'Edit group'">
                     <mat-icon>edit</mat-icon>
-                  </button>
-                  <button mat-icon-button 
-                          color="warn" 
-                          (click)="deleteRecipientGroup(group)"
-                          matTooltip="Delete group">
+                  </radix-button>
+                  <radix-button variant="destructive" size="icon"
+                          (onClick)="deleteRecipientGroup(group)"
+                          [attr.title]="'Delete group'">
                     <mat-icon>delete</mat-icon>
-                  </button>
+                  </radix-button>
                 </div>
               </td>
             </ng-container>
@@ -234,28 +230,28 @@
         </div>
         
         <div class="pagination-controls">
-          <button mat-button 
-                  [disabled]="currentPage === 1" 
-                  (click)="onPageChange(currentPage - 1)">
+          <radix-button variant="ghost" 
+                        [disabled]="currentPage === 1" 
+                        (onClick)="onPageChange(currentPage - 1)">
             <mat-icon>chevron_left</mat-icon>
             Previous
-          </button>
+          </radix-button>
           
           <div class="page-numbers">
-            <button *ngFor="let page of getPageNumbers()" 
-                    mat-button 
-                    [class.active]="page === currentPage"
-                    (click)="onPageChange(page)">
+            <radix-button *ngFor="let page of getPageNumbers()" 
+                          variant="ghost"
+                          [class.active]="page === currentPage"
+                          (onClick)="onPageChange(page)">
               {{ page }}
-            </button>
+            </radix-button>
           </div>
           
-          <button mat-button 
-                  [disabled]="currentPage === totalPages"
-                  (click)="onPageChange(currentPage + 1)">
+          <radix-button variant="ghost" 
+                        [disabled]="currentPage === totalPages"
+                        (onClick)="onPageChange(currentPage + 1)">
             Next
             <mat-icon>chevron_right</mat-icon>
-          </button>
+          </radix-button>
         </div>
       </div>
     </div>

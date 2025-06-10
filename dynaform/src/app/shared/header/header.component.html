@@ -7,13 +7,13 @@
     </div>
     <div class="header-right">
       <span class="user-info">{{ 'header.welcome' | translate }} {{ authService.getCurrentUser()?.username }}</span>
-      <button mat-button (click)="navigateToDebugForms()" class="debug-button">
+      <radix-button variant="ghost" (onClick)="navigateToDebugForms()" class="debug-button">
         <mat-icon>bug_report</mat-icon>
-      </button>
-      <button mat-button (click)="logout()" class="logout-button">
+      </radix-button>
+      <radix-button variant="ghost" (onClick)="logout()" class="logout-button">
         <mat-icon>logout</mat-icon>
         <span>{{ 'header.logout' | translate }}</span>
-      </button>
+      </radix-button>
     </div>
   </div>
 </header>

@@ -1,0 +1,127 @@
+.select-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.select-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.select-root {
+  position: relative;
+}
+
+.select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: white;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.select-trigger:hover {
+  border-color: #9ca3af;
+}
+
+.select-trigger:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.select-trigger.error {
+  border-color: #ef4444;
+}
+
+.select-trigger:disabled {
+  background-color: #f9fafb;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.select-icon {
+  display: flex;
+  align-items: center;
+  color: #6b7280;
+  transition: transform 0.2s;
+}
+
+.select-trigger[data-state="open"] .select-icon {
+  transform: rotate(180deg);
+}
+
+.select-content {
+  background-color: white;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 38px -10px rgba(22, 23, 24, 0.35), 0 10px 20px -15px rgba(22, 23, 24, 0.2);
+  z-index: 50;
+  max-height: 200px;
+  overflow: hidden;
+  padding: 4px;
+}
+
+.select-viewport {
+  padding: 0;
+}
+
+.select-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+  position: relative;
+}
+
+.select-item:hover {
+  background-color: #f3f4f6;
+}
+
+.select-item[data-highlighted] {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.select-item[data-disabled] {
+  color: #9ca3af;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.select-item-indicator {
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.select-item[data-state="checked"] .select-item-indicator {
+  opacity: 1;
+}
+
+.select-error {
+  font-size: 12px;
+  color: #ef4444;
+  margin-top: 4px;
+}
+
+.select-helper {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 4px;
+}

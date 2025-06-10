@@ -57,15 +57,14 @@
   </mat-dialog-content>
 
   <mat-dialog-actions align="end">
-    <button mat-button (click)="onCancel()" type="button">
+    <radix-button variant="ghost" (onClick)="onCancel()" type="button">
       Cancel
-    </button>
-    <button mat-raised-button 
-            color="primary" 
-            (click)="onSubmit()" 
-            type="button"
-            [disabled]="recipientForm.invalid">
+    </radix-button>
+    <radix-button variant="primary" 
+                  (onClick)="onSubmit()" 
+                  type="button"
+                  [disabled]="recipientForm.invalid">
       {{ isEditMode ? 'Update' : 'Create' }}
-    </button>
+    </radix-button>
   </mat-dialog-actions>
 </div>

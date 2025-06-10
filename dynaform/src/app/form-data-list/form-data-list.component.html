@@ -16,12 +16,12 @@
           <mat-icon matSuffix>search</mat-icon>
         </mat-form-field>
         <div class="search-buttons">
-          <button mat-raised-button color="primary" (click)="onSearch()">
+          <radix-button variant="primary" (onClick)="onSearch()">
             <span i18n="@@form-data.search.button">Search</span>
-          </button>
-          <button mat-button *ngIf="searchTerm" (click)="clearSearch()">
+          </radix-button>
+          <radix-button variant="ghost" *ngIf="searchTerm" (onClick)="clearSearch()">
             <span i18n="@@form-data.search.clear">Clear</span>
-          </button>
+          </radix-button>
         </div>
       </div>
     </div>
@@ -39,10 +39,10 @@
             <!-- Export Action for Internal -->
             <div class="controls-section">
               <div class="action-buttons">
-                <button mat-raised-button color="accent" (click)="exportData()">
+                <radix-button variant="secondary" (onClick)="exportData()">
                   <mat-icon>download</mat-icon>
                   <span i18n="@@form-data.export.all">Export All</span>
-                </button>
+                </radix-button>
               </div>
             </div>
 
@@ -58,9 +58,9 @@
               <div *ngIf="error" class="error-container">
                 <mat-icon color="warn">error</mat-icon>
                 <p>{{ error }}</p>
-                <button mat-button color="primary" (click)="loadFormData()">
+                <radix-button variant="primary" (onClick)="loadFormData()">
                   Try Again
-                </button>
+                </radix-button>
               </div>
 
               <!-- Form Submissions List -->
@@ -109,18 +109,18 @@
                     </mat-card-content>
 
                     <mat-card-actions>
-                      <button mat-button color="primary" (click)="viewSubmission(submission)">
+                      <radix-button variant="primary" (onClick)="viewSubmission(submission)">
                         <mat-icon>visibility</mat-icon>
                         View
-                      </button>
-                      <button mat-button (click)="exportSubmission(submission)">
+                      </radix-button>
+                      <radix-button variant="ghost" (onClick)="exportSubmission(submission)">
                         <mat-icon>download</mat-icon>
                         Export
-                      </button>
-                      <button mat-button color="warn" (click)="deleteSubmission(submission)">
+                      </radix-button>
+                      <radix-button variant="destructive" (onClick)="deleteSubmission(submission)">
                         <mat-icon>delete</mat-icon>
                         Delete
-                      </button>
+                      </radix-button>
                     </mat-card-actions>
                   </mat-card>
                 </div>
@@ -137,31 +137,31 @@
                   </div>
                   
                   <div class="pagination-controls" *ngIf="shouldShowPagination()">
-                    <button mat-button 
-                            class="pagination-btn"
-                            [disabled]="currentPage === 1" 
-                            (click)="previousPage()">
+                    <radix-button variant="ghost"
+                                  class="pagination-btn"
+                                  [disabled]="currentPage === 1" 
+                                  (onClick)="previousPage()">
                       <mat-icon>chevron_left</mat-icon>
                       Previous
-                    </button>
+                    </radix-button>
                     
                     <div class="page-numbers">
-                      <button *ngFor="let page of getPageNumbers()" 
-                              mat-button 
-                              class="page-number-btn"
-                              [class.active]="page === currentPage"
-                              (click)="onPageChange(page)">
+                      <radix-button *ngFor="let page of getPageNumbers()" 
+                                    variant="ghost"
+                                    class="page-number-btn"
+                                    [class.active]="page === currentPage"
+                                    (onClick)="onPageChange(page)">
                         {{ page }}
-                      </button>
+                      </radix-button>
                     </div>
                     
-                    <button mat-button 
-                            class="pagination-btn"
-                            [disabled]="currentPage >= totalPages"
-                            (click)="nextPage()">
+                    <radix-button variant="ghost"
+                                  class="pagination-btn"
+                                  [disabled]="currentPage >= totalPages"
+                                  (onClick)="nextPage()">
                       Next
                       <mat-icon>chevron_right</mat-icon>
-                    </button>
+                    </radix-button>
                   </div>
                 </div>
               </div>
@@ -196,9 +196,9 @@
               <div *ngIf="publicError" class="error-container">
                 <mat-icon color="warn">error</mat-icon>
                 <p>{{ publicError }}</p>
-                <button mat-button color="primary" (click)="loadPublicSubmissions()">
+                <radix-button variant="primary" (onClick)="loadPublicSubmissions()">
                   Try Again
-                </button>
+                </radix-button>
               </div>
 
               <!-- Individual Public Submissions Table -->
@@ -245,11 +245,12 @@
                     <ng-container matColumnDef="actions">
                       <mat-header-cell *matHeaderCellDef>Action</mat-header-cell>
                       <mat-cell *matCellDef="let element">
-                        <button mat-icon-button color="accent" 
-                                (click)="exportPublicSubmissionsByForm(element.formId)"
-                                matTooltip="Export Excel ({{ element.submissionCount }} submissions for this form)">
+                        <radix-button variant="secondary"
+                                      size="icon" 
+                                      (onClick)="exportPublicSubmissionsByForm(element.formId)"
+                                      matTooltip="Export Excel ({{ element.submissionCount }} submissions for this form)">
                           <mat-icon>download</mat-icon>
-                        </button>
+                        </radix-button>
                       </mat-cell>
                     </ng-container>
 

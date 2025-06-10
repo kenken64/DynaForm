@@ -16,30 +16,28 @@
       <!-- Primary Passkey Authentication -->
       <div class="passkey-section">
         <p class="passkey-description">Sign in securely with your passkey, biometric authentication, or security key</p>
-        <button mat-raised-button 
-                color="primary"
-                type="button"
-                class="passkey-button primary"
-                [disabled]="isLoading"
-                (click)="signInWithPasskey()">
+        <radix-button variant="primary"
+                      type="button"
+                      class="passkey-button primary"
+                      [disabled]="isLoading"
+                      (onClick)="signInWithPasskey()">
           <mat-spinner *ngIf="isLoading" diameter="20" class="login-spinner"></mat-spinner>
           <mat-icon *ngIf="!isLoading">fingerprint</mat-icon>
           {{ isLoading ? 'Authenticating...' : 'Sign In with Passkey' }}
-        </button>
+        </radix-button>
       </div>
 
       <!-- Register Link -->
       <div class="register-section">
         <mat-divider></mat-divider>
         <p class="register-title">Don't have an account?</p>
-        <button mat-raised-button 
-                type="button"
-                color="accent"
-                class="passkey-button secondary"
-                (click)="goToRegister()">
+        <radix-button variant="secondary"
+                      type="button"
+                      class="passkey-button secondary"
+                      (onClick)="goToRegister()">
           <mat-icon>person_add</mat-icon>
           Create Account
-        </button>
+        </radix-button>
       </div>
     </div>
   </div>

@@ -17,20 +17,17 @@
   </mat-dialog-content>
   
   <mat-dialog-actions align="end">
-    <button mat-button (click)="onViewForms()">
+    <radix-button variant="ghost" (onClick)="onViewForms()">
       <mat-icon>list</mat-icon>
       View All Forms
-    </button>
-    <button mat-button (click)="onPreviewForm()">
+    </radix-button>
+    <radix-button variant="ghost" (onClick)="onPreviewForm()">
       <mat-icon>visibility</mat-icon>
       Preview Form
-    </button>
-    <button 
-      mat-raised-button 
-      color="primary" 
-      (click)="onContinueEditing()">
+    </radix-button>
+    <radix-button variant="primary" (onClick)="onContinueEditing()">
       <mat-icon>edit</mat-icon>
       Continue Editing
-    </button>
+    </radix-button>
   </mat-dialog-actions>
 </div>
