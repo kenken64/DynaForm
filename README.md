@@ -1,10 +1,10 @@
-# Doc2FormJSON - AI-Powered Document-to-Form Conversion Platform
+# DynaForm - AI-Powered Document-to-Form Conversion Platform
 
 **Transform PDF documents into interactive web forms using AI, with blockchain verification for form integrity.**
 
 ## Overview
 
-Doc2FormJSON is a complete Web3-enabled document digitization platform that converts static PDFs into verified, interactive forms through AI analysis and blockchain verification.
+DynaForm is a complete Web3-enabled document digitization platform that converts static PDFs into verified, interactive forms through AI analysis and blockchain verification.
 
 ### Core Workflow
 ```
