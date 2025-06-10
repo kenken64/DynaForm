@@ -1,3 +1,45 @@
+# Doc2FormJSON - AI-Powered Document-to-Form Conversion Platform
+
+**Transform PDF documents into interactive web forms using AI, with blockchain verification for form integrity.**
+
+## Overview
+
+Doc2FormJSON is a complete Web3-enabled document digitization platform that converts static PDFs into verified, interactive forms through AI analysis and blockchain verification.
+
+### Core Workflow
+```
+PDF → AI Analysis → Form Fields → Web Form → Data Collection → Blockchain Verification → Export
+```
+
+### Full-Stack Architecture
+
+- **🌐 Frontend**: Angular application (port 4201)
+- **🔧 Backend**: Node.js/Express API (port 3000)
+- **🗄️ Database**: MongoDB with security features
+- **🤖 AI Engine**: Ollama with qwen2.5vl multimodal model
+- **📄 PDF Processing**: Python Flask service (port 5001)
+- **⚡ Caching**: Redis for performance optimization
+- **🔗 Blockchain**: Verifiable smart contracts for form authenticity
+
+### Key Features
+
+- **AI-Powered Extraction**: Automatically extracts form fields from PDF images
+- **User Management**: Authentication, authorization, and user profiles
+- **Form Builder**: Create and manage interactive forms
+- **Public Sharing**: Share forms publicly for data collection
+- **Data Export**: Export collected data to Excel formats
+- **Blockchain Verification**: Smart contract-based form integrity validation
+- **Recipient Management**: Organize and manage form recipients
+- **Performance Monitoring**: Comprehensive testing and stress monitoring
+
+### Development Features
+
+- **Cross-Platform**: Windows PowerShell + Mac/Linux Bash scripts
+- **Docker Orchestration**: Complete containerized deployment
+- **Secure Configuration**: MongoDB with Docker secrets
+- **Smart Contracts**: Hardhat-based blockchain deployment
+- **Testing Suite**: Unit, integration, and stress testing
+
 ## Docker Setup and Build Options
 
 This project uses Docker Compose to orchestrate multiple services including MongoDB for data persistence. The configuration ensures that containers are always rebuilt with the latest changes.
