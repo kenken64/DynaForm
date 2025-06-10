@@ -3,8 +3,8 @@ import { AuthService } from './auth/auth.service';
 import { FormsService } from './services/forms.service';
 
 @Component({
-  selector: 'app-debug-forms',
-  template: `
+    selector: 'app-debug-forms',
+    template: `
     <div style="padding: 20px; background: #f5f5f5; margin: 20px; border-radius: 8px;">
       <h2>Forms Loading Debug</h2>
       
@@ -35,7 +35,8 @@ import { FormsService } from './services/forms.service';
         <pre style="background: white; padding: 10px; border-radius: 4px; white-space: pre-wrap;">{{ debugOutput }}</pre>
       </div>
     </div>
-  `
+  `,
+    standalone: false
 })
 export class DebugFormsComponent implements OnInit {
   isAuthenticated = false;

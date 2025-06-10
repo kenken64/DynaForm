@@ -21,9 +21,10 @@ interface ChatResponse {
 }
 
 @Component({
-  selector: 'app-ask-dynaform',
-  templateUrl: './ask-dynaform.component.html',
-  styleUrls: ['./ask-dynaform.component.css']
+    selector: 'app-ask-dynaform',
+    templateUrl: './ask-dynaform.component.html',
+    styleUrls: ['./ask-dynaform.component.css'],
+    standalone: false
 })
 export class AskDynaformComponent implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild('messagesContainer') messagesContainer!: ElementRef;

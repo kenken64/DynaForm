@@ -5,9 +5,10 @@ import { takeUntil } from 'rxjs/operators';
 import { FormDataService, FormDataEntry } from '../services/form-data.service';
 
 @Component({
-  selector: 'app-form-data-viewer',
-  templateUrl: './form-data-viewer.component.html',
-  styleUrl: './form-data-viewer.component.css'
+    selector: 'app-form-data-viewer',
+    templateUrl: './form-data-viewer.component.html',
+    styleUrl: './form-data-viewer.component.css',
+    standalone: false
 })
 export class FormDataViewerComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();

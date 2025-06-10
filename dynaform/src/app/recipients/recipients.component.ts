@@ -13,9 +13,10 @@ import { RecipientDialogComponent } from '../recipient-dialog/recipient-dialog.c
 import { RecipientGroupDialogComponent, RecipientGroupDialogData } from '../recipient-group-dialog/recipient-group-dialog.component';
 
 @Component({
-  selector: 'app-recipients',
-  templateUrl: './recipients.component.html',
-  styleUrl: './recipients.component.css'
+    selector: 'app-recipients',
+    templateUrl: './recipients.component.html',
+    styleUrl: './recipients.component.css',
+    standalone: false
 })
 export class RecipientsComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();

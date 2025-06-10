@@ -9,9 +9,10 @@ export interface FormSaveConfirmationData {
 }
 
 @Component({
-  selector: 'app-form-save-confirmation-dialog',
-  templateUrl: './form-save-confirmation-dialog.component.html',
-  styleUrl: './form-save-confirmation-dialog.component.css'
+    selector: 'app-form-save-confirmation-dialog',
+    templateUrl: './form-save-confirmation-dialog.component.html',
+    styleUrl: './form-save-confirmation-dialog.component.css',
+    standalone: false
 })
 export class FormSaveConfirmationDialogComponent {
   constructor(

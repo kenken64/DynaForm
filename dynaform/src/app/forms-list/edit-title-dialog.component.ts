@@ -7,8 +7,8 @@ export interface EditTitleDialogData {
 }
 
 @Component({
-  selector: 'app-edit-title-dialog',
-  template: `
+    selector: 'app-edit-title-dialog',
+    template: `
     <h2 mat-dialog-title>Edit Form Title</h2>
     
     <mat-dialog-content>
@@ -34,7 +34,7 @@ export interface EditTitleDialogData {
       </button>
     </mat-dialog-actions>
   `,
-  styles: [`
+    styles: [`
     .full-width {
       width: 100%;
       min-width: 300px;
@@ -43,7 +43,8 @@ export interface EditTitleDialogData {
     mat-dialog-content {
       margin: 20px 0;
     }
-  `]
+  `],
+    standalone: false
 })
 export class EditTitleDialogComponent {
   title: string;

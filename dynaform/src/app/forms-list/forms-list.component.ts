@@ -6,9 +6,10 @@ import { GeneratedForm, PaginatedFormsResponse } from '../interfaces/form.interf
 import { EditTitleDialogComponent, EditTitleDialogData } from './edit-title-dialog.component';
 
 @Component({
-  selector: 'app-forms-list',
-  templateUrl: './forms-list.component.html',
-  styleUrls: ['./forms-list.component.css']
+    selector: 'app-forms-list',
+    templateUrl: './forms-list.component.html',
+    styleUrls: ['./forms-list.component.css'],
+    standalone: false
 })
 export class FormsListComponent implements OnInit {
   forms: GeneratedForm[] = [];

@@ -4,9 +4,10 @@ import { BlockchainService, BlockchainVerificationResult } from '../services/blo
 import { FormVerificationService, FormVerificationResult } from '../services/form-verification.service';
 
 @Component({
-  selector: 'app-landing',
-  templateUrl: './landing.component.html',
-  styleUrls: ['./landing.component.css']
+    selector: 'app-landing',
+    templateUrl: './landing.component.html',
+    styleUrls: ['./landing.component.css'],
+    standalone: false
 })
 export class LandingComponent {
   searchQuery: string = '';

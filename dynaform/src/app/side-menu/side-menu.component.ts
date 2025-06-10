@@ -6,9 +6,10 @@ import { GeneratedForm, PaginatedFormsResponse } from '../interfaces/form.interf
 import { TranslationService } from '../services/translation.service';
 
 @Component({
-  selector: 'app-side-menu',
-  templateUrl: './side-menu.component.html',
-  styleUrls: ['./side-menu.component.css']
+    selector: 'app-side-menu',
+    templateUrl: './side-menu.component.html',
+    styleUrls: ['./side-menu.component.css'],
+    standalone: false
 })
 export class SideMenuComponent implements OnInit, OnDestroy {
   @Input() isCollapsed = false;

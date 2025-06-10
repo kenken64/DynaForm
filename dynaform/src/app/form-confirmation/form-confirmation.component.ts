@@ -1,9 +1,10 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
-  selector: 'app-form-confirmation',
-  templateUrl: './form-confirmation.component.html',
-  styleUrl: './form-confirmation.component.css'
+    selector: 'app-form-confirmation',
+    templateUrl: './form-confirmation.component.html',
+    styleUrl: './form-confirmation.component.css',
+    standalone: false
 })
 export class FormConfirmationComponent {
   @Input() formId: string = '';

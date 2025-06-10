@@ -8,9 +8,10 @@ import { AuthService, User } from '../auth/auth.service';
 import { MatTabChangeEvent } from '@angular/material/tabs';
 
 @Component({
-  selector: 'app-form-data-list',
-  templateUrl: './form-data-list.component.html',
-  styleUrl: './form-data-list.component.css'
+    selector: 'app-form-data-list',
+    templateUrl: './form-data-list.component.html',
+    styleUrl: './form-data-list.component.css',
+    standalone: false
 })
 export class FormDataListComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();

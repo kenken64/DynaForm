@@ -1,8 +1,8 @@
 import { Component, Input, OnInit, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
 
 @Component({
-  selector: 'app-fireworks',
-  template: `
+    selector: 'app-fireworks',
+    template: `
     <div class="fireworks-container" *ngIf="show" [style.z-index]="zIndex">
       <div class="firework" 
            *ngFor="let firework of fireworks; trackBy: trackByIndex"
@@ -15,7 +15,7 @@ import { Component, Input, OnInit, OnDestroy, OnChanges, SimpleChanges } from '@
       </div>
     </div>
   `,
-  styles: [`
+    styles: [`
     .fireworks-container {
       position: fixed;
       top: 0;
@@ -108,7 +108,8 @@ import { Component, Input, OnInit, OnDestroy, OnChanges, SimpleChanges } from '@
         opacity: 0;
       }
     }
-  `]
+  `],
+    standalone: false
 })
 export class FireworksComponent implements OnInit, OnDestroy, OnChanges {
   @Input() show: boolean = false;

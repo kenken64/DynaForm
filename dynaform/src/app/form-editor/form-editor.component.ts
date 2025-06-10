@@ -30,9 +30,10 @@ export interface DragFormField extends FormField {
 }
 
 @Component({
-  selector: 'app-form-editor',
-  templateUrl: './form-editor.component.html',
-  styleUrls: ['./form-editor.component.css']
+    selector: 'app-form-editor',
+    templateUrl: './form-editor.component.html',
+    styleUrls: ['./form-editor.component.css'],
+    standalone: false
 })
 export class FormEditorComponent implements OnInit, OnDestroy {
   // Form data

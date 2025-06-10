@@ -10,9 +10,10 @@ import { FormDataSubmission, FormDataResponse, GeneratedForm, FieldConfiguration
 import { EditTitleDialogComponent, EditTitleDialogData } from '../forms-list/edit-title-dialog.component';
 
 @Component({
-  selector: 'app-form-viewer',
-  templateUrl: './form-viewer.component.html',
-  styleUrl: './form-viewer.component.css'
+    selector: 'app-form-viewer',
+    templateUrl: './form-viewer.component.html',
+    styleUrl: './form-viewer.component.css',
+    standalone: false
 })
 export class FormViewerComponent implements OnInit, AfterViewInit {
   @Input() formId: string = '';

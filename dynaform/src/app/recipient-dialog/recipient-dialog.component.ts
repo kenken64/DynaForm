@@ -9,9 +9,10 @@ export interface RecipientDialogData {
 }
 
 @Component({
-  selector: 'app-recipient-dialog',
-  templateUrl: './recipient-dialog.component.html',
-  styleUrl: './recipient-dialog.component.css'
+    selector: 'app-recipient-dialog',
+    templateUrl: './recipient-dialog.component.html',
+    styleUrl: './recipient-dialog.component.css',
+    standalone: false
 })
 export class RecipientDialogComponent implements OnInit {
   recipientForm: FormGroup;

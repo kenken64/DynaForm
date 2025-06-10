@@ -4,9 +4,10 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-language-selector',
-  templateUrl: './language-selector.component.html',
-  styleUrls: ['./language-selector.component.css']
+    selector: 'app-language-selector',
+    templateUrl: './language-selector.component.html',
+    styleUrls: ['./language-selector.component.css'],
+    standalone: false
 })
 export class LanguageSelectorComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();

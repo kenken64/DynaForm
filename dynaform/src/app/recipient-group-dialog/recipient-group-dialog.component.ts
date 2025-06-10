@@ -15,9 +15,10 @@ export interface RecipientGroupDialogData {
 }
 
 @Component({
-  selector: 'app-recipient-group-dialog',
-  templateUrl: './recipient-group-dialog.component.html',
-  styleUrl: './recipient-group-dialog.component.css'
+    selector: 'app-recipient-group-dialog',
+    templateUrl: './recipient-group-dialog.component.html',
+    styleUrl: './recipient-group-dialog.component.css',
+    standalone: false
 })
 export class RecipientGroupDialogComponent implements OnInit {
   groupForm: FormGroup;

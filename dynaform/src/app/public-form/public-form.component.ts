@@ -7,9 +7,10 @@ import { Observable } from 'rxjs';
 import { GeneratedForm, FieldConfiguration, FieldConfigurationValue } from '../interfaces/form.interface';
 
 @Component({
-  selector: 'app-public-form',
-  templateUrl: './public-form.component.html',
-  styleUrls: ['./public-form.component.css']
+    selector: 'app-public-form',
+    templateUrl: './public-form.component.html',
+    styleUrls: ['./public-form.component.css'],
+    standalone: false
 })
 export class PublicFormComponent implements OnInit {
   formData: GeneratedForm | null = null;

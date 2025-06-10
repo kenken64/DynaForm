@@ -11,9 +11,10 @@ import { PdfMetadata } from '../pdf-upload-response.model';
 import { environment } from '../../environments/environment';
 
 @Component({
-  selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.css'
+    selector: 'app-dashboard',
+    templateUrl: './dashboard.component.html',
+    styleUrl: './dashboard.component.css',
+    standalone: false
 })
 export class DashboardComponent implements AfterViewInit, OnInit {
   title = 'dynaform';
