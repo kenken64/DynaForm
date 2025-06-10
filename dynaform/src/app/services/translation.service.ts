@@ -73,6 +73,7 @@ export class TranslationService {
       'header.welcome': 'Welcome,',
       'header.logout': 'Logout',
       'header.default.subtitle': 'Form Viewer',
+      'header.dashboard.subtitle': 'Dynamic Form Generator',
       'header.settings.subtitle': 'Settings',
       'settings.title': 'Settings',
       'settings.description': 'Manage your application preferences and configuration',

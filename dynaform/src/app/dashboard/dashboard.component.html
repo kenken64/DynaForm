@@ -1,6 +1,6 @@
 <div class="app-container">
   <!-- Dashboard Header -->
-  <app-header subtitle="Dynamic Form Generator"></app-header>
+  <app-header [subtitle]="'header.dashboard.subtitle' | translate"></app-header>
 
   <!-- Main Form View -->
   <div *ngIf="currentView === 'form'" class="main-content">

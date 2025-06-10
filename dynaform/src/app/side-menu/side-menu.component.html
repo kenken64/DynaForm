@@ -91,7 +91,7 @@
           [disabled]="loading">
         <button 
           *ngIf="searchQuery" 
-          matSuffix 
+          matSuffix
           mat-icon-button 
           (click)="clearSearch()"
           [attr.aria-label]="'sidebar.clear-search' | translate">
@@ -110,7 +110,7 @@
     <div *ngIf="error && !loading" class="error-section">
       <mat-icon color="warn">error</mat-icon>
       <p *ngIf="!isCollapsed">{{ error }}</p>
-      <button *ngIf="!isCollapsed" mat-stroked-button color="primary" (click)="loadForms()">
+      <button *ngIf="!isCollapsed" mat-button color="primary" (click)="loadForms()">
         {{ 'sidebar.retry' | translate }}
       </button>
     </div>
@@ -159,12 +159,11 @@
 
             <!-- Actions -->
             <div class="form-actions">
-              <button 
-                mat-icon-button 
-                class="delete-btn"
-                (click)="onDeleteForm(form, $event)"
-                [attr.aria-label]="'Delete ' + (form.metadata.formName || 'form')"
-                color="warn">
+              <button mat-icon-button 
+                      color="warn"
+                      class="delete-btn"
+                      (click)="onDeleteForm(form, $event)"
+                      [attr.aria-label]="'Delete ' + (form.metadata.formName || 'form')">
                 <mat-icon>delete</mat-icon>
               </button>
             </div>
