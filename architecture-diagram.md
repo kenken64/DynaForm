@@ -46,7 +46,7 @@ graph TB
     subgraph "External Services"
         Blockchain[🔗 Ethereum Network<br/>- Contract Deployment<br/>- Transaction Verification]
         
-        IPFS[🗂️ IPFS (Optional)<br/>- Decentralized Storage<br/>- Document Hashing]
+        IPFS["🗂️ IPFS (Optional)<br/>- Decentralized Storage<br/>- Document Hashing"]
     end
 
     %% Docker Infrastructure
