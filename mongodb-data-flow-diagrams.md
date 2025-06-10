@@ -211,7 +211,7 @@ flowchart TD
 ```mermaid
 flowchart TD
     A[HTTP Request<br/>POST /api/describe-image] --> B[Image Controller<br/>Process Upload]
-    B --> C[Generate Cache Key<br/>SHA256(image + prompt + model)]
+    B --> C["Generate Cache Key<br/>SHA256(image + prompt + model)"]
     C --> D{Check Redis Cache}
     D -->|Hit| E[Return Cached Result]
     D -->|Miss| F[Ollama Service<br/>Process Image]
@@ -347,7 +347,7 @@ flowchart TD
     Q --> T[Search Operations<br/>Text/Regex patterns]
     Q --> U[Relationship Lookups<br/>Cross-collection joins]
     
-    V[Performance Optimizations] --> W[Pagination Implementation<br/>skip() + limit()]
+    V[Performance Optimizations] --> W["Pagination Implementation<br/>skip() + limit()"]
     V --> X[Compound Index Usage<br/>Multi-field queries]
     V --> Y[Redis Caching Layer<br/>7-day TTL for OCR]
     V --> Z[Aggregation Pipelines<br/>Complex data analysis]

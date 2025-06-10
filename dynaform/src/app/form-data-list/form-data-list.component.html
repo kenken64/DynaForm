@@ -14,12 +14,14 @@
                  [placeholder]="selectedTab === 0 ? 'Search by form title or user...' : 'Search by form title or creator...'">
           <mat-icon matSuffix>search</mat-icon>
         </mat-form-field>
-        <button mat-raised-button color="primary" (click)="onSearch()">
-          Search
-        </button>
-        <button mat-button *ngIf="searchTerm" (click)="clearSearch()">
-          Clear
-        </button>
+        <div class="search-buttons">
+          <button mat-raised-button color="primary" (click)="onSearch()">
+            Search
+          </button>
+          <button mat-button *ngIf="searchTerm" (click)="clearSearch()">
+            Clear
+          </button>
+        </div>
       </div>
     </div>
 
@@ -32,6 +34,7 @@
       <mat-tab label="Internal">
         <ng-template matTabContent>
           <div class="tab-content">
+            <br>
             <!-- Export Action for Internal -->
             <div class="controls-section">
               <div class="action-buttons">
@@ -172,12 +175,12 @@
           <div class="tab-content">
             <!-- Export Action for Public -->
             <div class="controls-section">
-              <div class="action-buttons">
+              <!-- <div class="action-buttons">
                 <button mat-raised-button color="accent" (click)="exportPublicData()">
                   <mat-icon>download</mat-icon>
                   Export Excel
                 </button>
-              </div>
+              </div> -->
             </div>
 
             <!-- Public Submissions Content -->

@@ -18,20 +18,34 @@
 .global-search-section {
   margin-bottom: 24px;
   padding: 16px 0;
+  width: 100%;
 }
 
 .search-container-centered {
   display: flex;
-  gap: 16px;
+  gap: 12px;
   align-items: center;
   justify-content: center;
-  max-width: 600px;
   margin: 0 auto;
+  width: 100%;
 }
 
 .search-container-centered .search-field {
-  flex: 1;
+  width: 400px;
+  max-width: 400px;
   min-width: 300px;
+}
+
+.search-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.search-container-centered button {
+  white-space: nowrap;
+  min-width: 80px;
+  height: 40px;
 }
 
 /* Section Divider */
@@ -406,16 +420,50 @@
   }
 }
 
-@media (max-width: 480px) {
-  .page-title {
-    font-size: 1.5rem;
-  }
-  
-  .submission-card mat-card-actions {
+/* Responsive Design for Search */
+@media (max-width: 768px) {
+  .search-container-centered {
     flex-direction: column;
+    gap: 12px;
+    align-items: center;
   }
   
-  .submission-card mat-card-actions button {
+  .search-container-centered .search-field {
     width: 100%;
+    max-width: 400px;
+    min-width: unset;
   }
+  
+  .search-buttons {
+    justify-content: center;
+  }
+  
+  .search-container-centered button {
+    width: auto;
+    min-width: 120px;
+  }
+}
+
+@media (min-width: 769px) {
+  .search-container-centered {
+    flex-direction: row;
+  }
+}
+
+/* Ensure consistent button styling */
+.search-container-centered .mat-raised-button,
+.search-container-centered .mat-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+}
+
+/* Make sure form field has consistent height */
+.search-container-centered .mat-form-field {
+  font-size: 14px;
+}
+
+.search-container-centered .mat-form-field .mat-form-field-wrapper {
+  padding-bottom: 0;
 }

@@ -68,6 +68,7 @@ This project includes comprehensive documentation with diagrams, implementation 
 | **🏗️ Architecture** | [Architecture Diagram](architecture-diagram.md) | Complete system architecture with Mermaid diagrams |
 | **🏗️ Architecture** | [Server Class Diagram](server-class-diagram.md) | Backend class structure and relationships |
 | **🏗️ Architecture** | [MongoDB Data Flow](mongodb-data-flow-diagrams.md) | Database architecture and data flow diagrams |
+| **🏗️ Architecture** | [Dashboard PDF Upload Sequence](dashboard-pdf-upload-sequence.md) | Complete PDF to web form generation flow |
 | **🤖 AI Agent** | [AI Agent Code](AI_AGENT_CODE.md) | Complete AI agent implementation details |
 | **🤖 AI Agent** | [AI Agent Blockchain Publishing](AI_AGENT_BLOCKCHAIN_PUBLISHING.md) | Blockchain integration for AI agent |
 | **🤖 AI Agent** | [AI Agent Completion Summary](AI_AGENT_COMPLETION_SUMMARY.md) | AI agent development summary |
@@ -104,6 +105,7 @@ This project includes comprehensive documentation with diagrams, implementation 
 - **🏗️ [System Architecture](architecture-diagram.md)** - Complete physical architecture
 - **🗄️ [Database Design](mongodb-data-flow-diagrams.md)** - MongoDB data flow and schemas  
 - **🔧 [Backend Structure](server-class-diagram.md)** - Server-side class diagrams
+- **📄 [PDF Upload Flow](dashboard-pdf-upload-sequence.md)** - Complete user journey from PDF to web form
 - **🤖 [AI Integration](AI_AGENT_CODE.md)** - AI agent implementation details
 
 ## Docker Setup and Build Options
