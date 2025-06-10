@@ -504,30 +504,93 @@ export class PublicFormService {
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('Public Submissions');
 
-      // Define columns for the worksheet
-      worksheet.columns = [
+      if (submissions.length === 0) {
+        // If no submissions, create a simple header
+        worksheet.columns = [
+          { header: 'No Data', key: 'noData', width: 30 }
+        ];
+        worksheet.addRow({ noData: 'No submissions found' });
+        const buffer = await workbook.xlsx.writeBuffer() as Buffer;
+        return buffer;
+      }
+
+      // Collect all unique field names from submission data
+      const allFieldNames = new Set<string>();
+      submissions.forEach(submission => {
+        if (submission.submissionData && typeof submission.submissionData === 'object') {
+          Object.keys(submission.submissionData).forEach(fieldName => {
+            allFieldNames.add(fieldName);
+          });
+        }
+      });
+
+      // Sort field names for consistency
+      const sortedFieldNames = Array.from(allFieldNames).sort();
+
+      // Define base columns
+      const baseColumns = [
         { header: 'Submission ID', key: 'submissionId', width: 30 },
         { header: 'Form ID', key: 'formId', width: 30 },
         { header: 'JSON Fingerprint', key: 'jsonFingerprint', width: 50 },
         { header: 'Submitted At', key: 'submittedAt', width: 30 },
         { header: 'User ID', key: 'userId', width: 30 },
         { header: 'Username', key: 'username', width: 30 },
-        { header: 'User Full Name', key: 'userFullName', width: 30 },
-        { header: 'Submission Data', key: 'submissionData', width: 50 }
+        { header: 'User Full Name', key: 'userFullName', width: 30 }
       ];
+
+      // Add dynamic columns for each form field
+      const fieldColumns = sortedFieldNames.map(fieldName => ({
+        header: `Field: ${fieldName}`,
+        key: `field_${fieldName.replace(/[^a-zA-Z0-9]/g, '_')}`, // Sanitize key for Excel
+        width: Math.min(fieldName.length + 10, 50) // Dynamic width based on field name
+      }));
+
+      // Combine all columns
+      worksheet.columns = [...baseColumns, ...fieldColumns];
 
       // Add rows to the worksheet
       submissions.forEach(submission => {
-        worksheet.addRow({
+        const baseRowData = {
           submissionId: submission._id?.toString(),
           formId: submission.formId,
           jsonFingerprint: submission.jsonFingerprint,
           submittedAt: submission.submittedAt,
           userId: submission.userInfo?.userId,
           username: submission.userInfo?.username,
-          userFullName: submission.userInfo?.userFullName,
-          submissionData: JSON.stringify(submission.submissionData)
+          userFullName: submission.userInfo?.userFullName
+        };
+
+        // Add field data
+        const fieldData: any = {};
+        sortedFieldNames.forEach(fieldName => {
+          const sanitizedKey = `field_${fieldName.replace(/[^a-zA-Z0-9]/g, '_')}`;
+          const fieldValue = submission.submissionData?.[fieldName];
+          
+          // Format the field value for Excel
+          if (fieldValue === null || fieldValue === undefined) {
+            fieldData[sanitizedKey] = '';
+          } else if (typeof fieldValue === 'object') {
+            // Handle complex objects (like checkbox groups)
+            if (Array.isArray(fieldValue)) {
+              fieldData[sanitizedKey] = fieldValue.join(', ');
+            } else {
+              // For objects, check if it's a checkbox group with true/false values
+              const trueKeys = Object.keys(fieldValue).filter(key => fieldValue[key] === true);
+              if (trueKeys.length > 0) {
+                fieldData[sanitizedKey] = trueKeys.join(', ');
+              } else {
+                fieldData[sanitizedKey] = JSON.stringify(fieldValue);
+              }
+            }
+          } else if (typeof fieldValue === 'boolean') {
+            fieldData[sanitizedKey] = fieldValue ? 'Yes' : 'No';
+          } else {
+            fieldData[sanitizedKey] = String(fieldValue);
+          }
         });
+
+        // Combine base data and field data
+        worksheet.addRow({ ...baseRowData, ...fieldData });
       });
 
       // Auto-fit columns based on content
@@ -541,6 +604,27 @@ export class PublicFormService {
           });
           column.width = Math.min(maxLength + 2, 50); // Cap at 50 characters
         }
+      });
+
+      // Style the header row
+      const headerRow = worksheet.getRow(1);
+      headerRow.font = { bold: true };
+      headerRow.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFE0E0E0' }
+      };
+
+      // Add borders to all cells
+      worksheet.eachRow((row, rowNumber) => {
+        row.eachCell((cell) => {
+          cell.border = {
+            top: { style: 'thin' },
+            left: { style: 'thin' },
+            bottom: { style: 'thin' },
+            right: { style: 'thin' }
+          };
+        });
       });
 
       // Write to buffer and return
