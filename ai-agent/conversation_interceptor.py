@@ -342,7 +342,7 @@ class ConversationInterceptor:
             logger.error(f"Error injecting response: {e}")
     
     async def _log_auto_publication(self, form_id: str, result: Dict[str, Any], original_prompt: str):
-        """Log the auto-publication event for audit trail"""
+        """Log the auto-publication event for audit trail and handle recipient notifications"""
         try:
             log_entry = {
                 "timestamp": datetime.now().isoformat(),
@@ -360,9 +360,112 @@ class ConversationInterceptor:
                 audit_collection = mongodb_service.db['publication_audit']
                 await audit_collection.insert_one(log_entry)
                 logger.info(f"📊 Logged auto-publication event for form {form_id}")
+                
+                # Check for recipient aliases in the original prompt (e.g., @Family)
+                await self._process_recipient_notifications(form_id, original_prompt, result)
             
         except Exception as e:
             logger.error(f"Error logging auto-publication: {e}")
+    
+    async def _process_recipient_notifications(self, form_id: str, original_prompt: str, result: Dict[str, Any]):
+        """Process recipient aliases in the prompt and create notification entries"""
+        try:
+            import re
+            
+            # Extract aliases from the prompt using regex pattern @<alias>
+            alias_pattern = r'@(\w+)'
+            aliases = re.findall(alias_pattern, original_prompt)
+            
+            if not aliases:
+                logger.debug(f"📧 No recipient aliases found in prompt: {original_prompt[:100]}...")
+                return
+            
+            logger.info(f"📧 Found recipient aliases in prompt: {aliases}")
+            
+            for alias in aliases:
+                logger.info(f"📧 Processing notifications for alias: @{alias}")
+                logger.debug(f"📧 Querying MongoDB for group aliasName: '{alias}' (without @ symbol)")
+                
+                # Query recipient groups collection for the alias (without @ symbol)
+                recipient_group = await mongodb_service.recipient_groups_collection.find_one(
+                    {"aliasName": {"$regex": f"^{alias}$", "$options": "i"}}  # Case-insensitive match
+                )
+                
+                if not recipient_group:
+                    logger.warning(f"📧 No recipient group found for alias: @{alias} (searched for aliasName: '{alias}')")
+                    continue
+                
+                logger.info(f"📧 Found recipient group: {recipient_group.get('aliasName')} (ID: {recipient_group.get('_id')})")
+                
+                # Get recipient IDs from the group (using recipientIds field)
+                recipient_ids = recipient_group.get('recipientIds', [])
+                if not recipient_ids:
+                    logger.warning(f"📧 No recipients found in group: @{alias}")
+                    continue
+                
+                logger.info(f"📧 Found {len(recipient_ids)} recipients in group @{alias}")
+                
+                # Convert string IDs to ObjectIds if needed and query recipients collection
+                from bson import ObjectId
+                object_ids = []
+                for rid in recipient_ids:
+                    try:
+                        # Try to convert to ObjectId if it's a string representation
+                        if isinstance(rid, str):
+                            object_ids.append(ObjectId(rid))
+                        else:
+                            object_ids.append(rid)  # Already an ObjectId
+                    except Exception as e:
+                        logger.warning(f"📧 Invalid recipient ID format: {rid}, error: {e}")
+                        
+                recipients_cursor = mongodb_service.recipients_collection.find(
+                    {"_id": {"$in": object_ids}}
+                )
+                recipients = await recipients_cursor.to_list(length=None)
+                
+                if not recipients:
+                    logger.warning(f"📧 No recipient details found for group: @{alias}")
+                    continue
+                
+                # Extract emails from recipients
+                emails = []
+                for recipient in recipients:
+                    email = recipient.get('email')
+                    if email:
+                        emails.append(email)
+                        logger.debug(f"📧 Added email for notification: {email}")
+                
+                if not emails:
+                    logger.warning(f"📧 No valid emails found for group: @{alias}")
+                    continue
+                
+                logger.info(f"📧 Creating notification entries for {len(emails)} recipients in group @{alias}")
+                
+                # Create notification entry for each recipient
+                for email in emails:
+                    notification_entry = {
+                        "timestamp": datetime.now().isoformat(),
+                        "formId": form_id,  # Fixed: was "form_id"
+                        "recipientGroupAlias": f"@{alias}",  # Fixed: was "recipient_group_alias" and missing @
+                        "recipientEmail": email,  # Fixed: was "recipient_email"
+                        "originalPrompt": original_prompt[:500],  # Fixed: was "original_prompt"
+                        "publicUrl": result.get('url'),  # Fixed: was "public_url"
+                        "transactionHash": result.get('transaction_hash'),  # Fixed: was "transaction_hash"
+                        "blockNumber": result.get('block_number'),  # Fixed: was "block_number"
+                        "status": "pending",  # Fixed: was "sent"
+                        "createdAt": datetime.now(),  # Fixed: was "created_at"
+                        "autoPublished": True  # Fixed: was "auto_published"
+                    }
+                    
+                    # Insert notification into notifications collection
+                    await mongodb_service.notifications_collection.insert_one(notification_entry)
+                    logger.info(f"📧 Created notification entry for {email} (group: @{alias})")
+                
+                logger.info(f"📧 ✅ Successfully created {len(emails)} notification entries for group @{alias}")
+            
+        except Exception as e:
+            logger.error(f"📧 Error processing recipient notifications: {e}")
+            logger.exception("📧 Full exception details:")
     
     async def start_monitoring(self):
         """Start the conversation monitoring service"""
