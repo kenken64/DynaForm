@@ -13,11 +13,8 @@ services:
     ports:
       - "27017:27017"
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=password123
+      # Remove authentication for simplified setup
       - MONGO_INITDB_DATABASE=doc2formjson
-      - MONGODB_APP_USERNAME=doc2formapp
-      - MONGODB_APP_PASSWORD=apppassword123
     volumes:
       - mongodb_data_ssl:/data/db
       - mongodb_logs_ssl:/data/logs
@@ -26,7 +23,7 @@ services:
     networks:
       - doc2formjson-ssl-network
     healthcheck:
-      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -91,7 +88,7 @@ services:
       - PORT=3000
       - OLLAMA_BASE_URL=http://ollama-gpu:11434
       - DEFAULT_QWEN_MODEL_NAME=qwen2.5vl:latest
-      - MONGODB_URI=mongodb://doc2formapp:apppassword123@mongodb:27017/doc2formjson
+      - MONGODB_URI=mongodb://mongodb:27017/doc2formjson
       # Redis Configuration (matching server/.env)
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -129,7 +126,7 @@ services:
       - PORT=8001
       - LOG_LEVEL=INFO
       # MongoDB Configuration
-      - MONGODB_URI=mongodb://doc2formapp:apppassword123@mongodb:27017/doc2formjson?authSource=admin
+      - MONGODB_URI=mongodb://mongodb:27017/doc2formjson
       - MONGODB_DATABASE=doc2formjson
       - FORMS_COLLECTION=generated_form
       # Ollama Configuration
@@ -175,7 +172,7 @@ services:
       - PORT=8001
       - LOG_LEVEL=INFO
       # MongoDB Configuration
-      - MONGODB_URI=mongodb://doc2formapp:apppassword123@mongodb:27017/doc2formjson?authSource=admin
+      - MONGODB_URI=mongodb://mongodb:27017/doc2formjson
       - MONGODB_DATABASE=doc2formjson
       - FORMS_COLLECTION=generated_form
       # Ollama Configuration

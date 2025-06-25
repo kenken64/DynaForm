@@ -41,7 +41,7 @@ nginx
 - `verifiable-url-contract/Dockerfile` - Contract service container
 - `ai-agent/docker-entrypoint.sh` - AI agent startup script
 
-### Environment Files (Docker Service Names)
+### Environment Files (Docker Service Names - No Authentication)
 - `.env` - Root environment file
 - `server/.env` - Backend API environment
 - `ai-agent/.env` - AI agent environment
@@ -52,8 +52,8 @@ nginx
 ### Service Names for Docker Networking
 All `.env` files have been updated to use Docker service names for inter-container communication:
 
-- **MongoDB**: `mongodb` (instead of localhost)
-- **Redis**: `redis` (instead of localhost)
+- **MongoDB**: `mongodb` (no authentication)
+- **Redis**: `redis` (no authentication)
 - **Ollama**: `ollama-gpu` (instead of localhost)
 - **Verifiable Contract**: `verifiable-contract` (instead of localhost)
 
@@ -61,14 +61,14 @@ All `.env` files have been updated to use Docker service names for inter-contain
 
 #### AI Agent (.env)
 ```bash
-MONGODB_URI=mongodb://doc2formapp:apppassword123@mongodb:27017/doc2formjson?authSource=admin
+MONGODB_URI=mongodb://mongodb:27017/doc2formjson
 OLLAMA_HOST=http://ollama-gpu:11434
 VERIFIABLE_CONTRACT_API=http://verifiable-contract:3002/api/urls
 ```
 
 #### Server (.env)
 ```bash
-MONGODB_URI=mongodb://doc2formapp:apppassword123@mongodb:27017/doc2formjson?authSource=admin
+MONGODB_URI=mongodb://mongodb:27017/doc2formjson
 REDIS_HOST=redis
 OLLAMA_BASE_URL=http://ollama-gpu:11434
 ```
