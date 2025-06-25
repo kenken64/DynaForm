@@ -52,6 +52,44 @@ check_domain() {
     return 0
 }
 
+# Check prerequisites
+check_prerequisites() {
+    local domain=$1
+    
+    # Check if Docker is running
+    if ! docker ps > /dev/null 2>&1; then
+        print_error "Docker is not running! Please start Docker first."
+        return 1
+    fi
+    
+    # Check if domain resolves to this server (for non-localhost)
+    if [ "$domain" != "localhost" ]; then
+        print_info "Checking DNS resolution for $domain..."
+        
+        # Get domain IP
+        DOMAIN_IP=$(dig +short "$domain" | tail -n1)
+        if [ -z "$DOMAIN_IP" ]; then
+            print_warning "Domain $domain does not resolve to any IP address"
+            print_info "Make sure your domain's A record is set correctly"
+            return 1
+        fi
+        
+        print_info "Domain $domain resolves to: $DOMAIN_IP"
+        
+        # Try to get public IP
+        PUBLIC_IP=$(curl -s --max-time 10 ifconfig.me 2>/dev/null || curl -s --max-time 10 ipinfo.io/ip 2>/dev/null || echo "unknown")
+        if [ "$PUBLIC_IP" != "unknown" ]; then
+            print_info "Server public IP: $PUBLIC_IP"
+            if [ "$DOMAIN_IP" != "$PUBLIC_IP" ]; then
+                print_warning "Domain IP ($DOMAIN_IP) doesn't match server IP ($PUBLIC_IP)"
+                print_info "This might cause certificate validation to fail"
+            fi
+        fi
+    fi
+    
+    return 0
+}
+
 # Validate email format
 validate_email() {
     local email=$1
@@ -106,6 +144,11 @@ setup_initial_certificates() {
     
     print_step "Setting up Let's Encrypt certificates for $domain..."
     
+    # Clean up any existing failed attempts
+    print_info "Cleaning up any previous certificate attempts..."
+    docker compose -f $COMPOSE_FILE --env-file .env.ssl run --rm certbot \
+        delete --cert-name $domain --non-interactive 2>/dev/null || true
+    
     # Create directory for ACME challenge
     mkdir -p ./certbot-www
     
@@ -118,9 +161,23 @@ setup_initial_certificates() {
     
     # Obtain certificates
     print_info "Requesting SSL certificate from Let's Encrypt..."
-    docker compose -f $COMPOSE_FILE --env-file .env.ssl run --rm certbot \
+    
+    # First, try to obtain the certificate
+    if docker compose -f $COMPOSE_FILE --env-file .env.ssl run --rm certbot \
         certonly --webroot --webroot-path=/var/www/certbot \
-        --email $email --agree-tos --no-eff-email -d $domain
+        --email $email --agree-tos --no-eff-email \
+        --force-renewal -d $domain; then
+        print_info "SSL certificate obtained successfully!"
+    else
+        print_error "Failed to obtain SSL certificate!"
+        print_info "This might be due to:"
+        print_info "1. Domain DNS not pointing to this server"
+        print_info "2. Port 80 not accessible from internet"
+        print_info "3. Domain not properly configured"
+        print_info ""
+        print_info "Please check your domain configuration and try again."
+        return 1
+    fi
     
     # Stop temporary nginx
     docker compose -f $COMPOSE_FILE --env-file .env.ssl stop dynaform-nginx
@@ -197,7 +254,7 @@ display_completion() {
     echo "🔧 Management Commands:"
     echo "   - View logs: docker compose -f $COMPOSE_FILE --env-file .env.ssl logs -f"
     echo "   - Stop services: docker compose -f $COMPOSE_FILE --env-file .env.ssl down"
-    echo "   - Restart services: docker-compose -f $COMPOSE_FILE --env-file .env.ssl restart"
+    echo "   - Restart services: docker compose -f $COMPOSE_FILE --env-file .env.ssl restart"
     echo "   - Renew certificates: ./renew-certificates.sh"
     echo
     echo "📁 Important files:"
@@ -226,6 +283,13 @@ main() {
     
     print_info "Domain: $DOMAIN"
     print_info "Email: $EMAIL"
+    echo
+    
+    # Check prerequisites
+    if ! check_prerequisites "$DOMAIN"; then
+        print_error "Prerequisites check failed!"
+        exit 1
+    fi
     echo
     
     # Create environment file
