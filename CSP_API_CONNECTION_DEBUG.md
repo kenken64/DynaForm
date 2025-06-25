@@ -1,19 +1,34 @@
 # CSP and API Connection Debug Guide
 
-## Issue Summary
-Angular frontend is trying to connect to `http://localhost:3000/api/auth/passkey/authenticate/begin` instead of using relative URLs through nginx proxy.
+## Issue Summary ✅ RESOLVED
+~~Angular frontend is trying to connect to `http://localhost:3000/api/auth/passkey/authenticate/begin` instead of using relative URLs through nginx proxy.~~
+
+**RESOLUTION**: The issue was caused by stale build cache from a previous version of the auth service that had hardcoded `localhost:3000`. After clearing the cache and rebuilding the Angular application, all services now correctly use relative URLs (`/api`).
 
 ## Root Cause Analysis
 
-### 1. Access Method Issue
-The problem occurs when users access the application directly on port 3000 (API port) instead of through nginx (ports 80/443).
+### 1. ✅ Stale Build Cache (PRIMARY CAUSE)
+The main issue was that the compiled JavaScript in the `dist` folder contained hardcoded `http://localhost:3000/api` from an older version of the auth service, even though the current TypeScript source files correctly use relative URLs (`/api`).
 
-### 2. CSP Configuration
+### 2. Access Method Issue
+The problem can occur when users access the application directly on port 3000 (API port) instead of through nginx (ports 80/443).
+
+### 3. CSP Configuration
 Content Security Policy needs to allow proper API connections and external resources.
 
-## Solution Applied
+## Solution Applied ✅ COMPLETE
 
-### 1. Port Configuration Fix
+### 1. ✅ Build Cache Resolution (CRITICAL FIX)
+```bash
+# Clear Angular build cache and dist folder
+cd dynaform
+rm -rf dist/ && rm -rf .angular/cache/
+npm run build -- --configuration=production
+```
+
+**Result**: After clearing cache and rebuilding, the new build no longer contains hardcoded `localhost:3000` URLs and correctly uses relative URLs.
+
+### 2. ✅ Port Configuration Fix
 ```yaml
 # In docker-compose.ssl.yml - API service
 # Commented out external port exposure to force traffic through nginx
@@ -39,23 +54,33 @@ private apiUrl = '/api'; // Relative URL that goes through nginx proxy
 COPY --from=builder /app/dist/dynaform/browser /usr/share/nginx/html
 ```
 
-## Deployment Instructions
+## Deployment Instructions ✅ UPDATED
 
-### 1. Rebuild and Deploy
+### 1. ✅ Clear Cache and Rebuild (REQUIRED STEP)
 ```bash
-# Rebuild the nginx service with fixes
-docker-compose -f docker-compose.ssl.yml build --no-cache dynaform-nginx
+# Clear Angular build cache
+cd dynaform
+rm -rf dist/ && rm -rf .angular/cache/
 
-# Stop and restart all services
-docker-compose -f docker-compose.ssl.yml down
-docker-compose -f docker-compose.ssl.yml up -d
+# Rebuild Angular application
+npm run build -- --configuration=production
+
+# Rebuild the nginx service with the new build
+docker compose -f docker-compose.ssl.yml build --no-cache dynaform-nginx
 ```
 
-### 2. Correct Access URLs
+### 2. Restart Services
+```bash
+# Stop and restart all services
+docker compose -f docker-compose.ssl.yml down
+docker compose -f docker-compose.ssl.yml up -d
+```
+
+### 3. Correct Access URLs
 - ✅ **CORRECT**: `https://localhost` or `http://localhost` (through nginx)
 - ❌ **WRONG**: `http://localhost:3000` (direct API access)
 
-### 3. Service Flow
+### 4. Service Flow
 ```
 Browser Request
     ↓
@@ -67,7 +92,13 @@ nginx:80/443 (SSL + Static Files)
 
 ## Verification Steps
 
-### 1. Check Container Status
+### 1. ✅ Check Build Status
+```bash
+# Verify the new build doesn't contain hardcoded localhost:3000
+grep -r "localhost:3000" dynaform/dist/ || echo "✅ No hardcoded URLs found"
+```
+
+### 2. Check Container Status
 ```bash
 docker-compose -f docker-compose.ssl.yml ps
 ```
