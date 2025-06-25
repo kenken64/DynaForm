@@ -78,7 +78,7 @@ services:
   # Node.js API service for image description using Ollama
   doc2formjson-api:
     build:
-      context: ./describeImge
+      context: ./server
       no_cache: true
       args:
         - BUILDKIT_INLINE_CACHE=0
