@@ -12,3 +12,5 @@ cache/
 artifacts/
 test/
 tests/
+.npm/
+*.log
