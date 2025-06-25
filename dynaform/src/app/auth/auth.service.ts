@@ -130,8 +130,22 @@ export class AuthService {
         throw new Error(optionsResponse.message || 'Failed to get registration options');
       }
 
-      // Create credential using SimpleWebAuthn
-      const attResp = await startRegistration(optionsResponse.options);
+      // Validate that options exist and have the required structure
+      if (!optionsResponse.options || !optionsResponse.options.challenge) {
+        console.error('Invalid registration options received:', optionsResponse);
+        throw new Error('Invalid registration options received from server');
+      }
+
+      console.log('Starting passkey registration with options:', optionsResponse.options);
+
+      // Create credential using SimpleWebAuthn - pass the options directly
+      let attResp;
+      try {
+        attResp = await startRegistration(optionsResponse.options);
+      } catch (error: any) {
+        console.error('SimpleWebAuthn registration error:', error);
+        throw new Error(`Passkey registration failed: ${error.message}`);
+      }
 
       // Send credential to server for verification
       const verificationResponse = await this.http.post<AuthResponse>(`${this.apiUrl}/auth/passkey/register/finish`, {
@@ -167,8 +181,22 @@ export class AuthService {
         throw new Error(optionsResponse.message || 'Failed to get authentication options');
       }
 
-      // Get credential using SimpleWebAuthn
-      const asseResp = await startAuthentication(optionsResponse.options);
+      // Validate that options exist and have the required structure
+      if (!optionsResponse.options || !optionsResponse.options.challenge) {
+        console.error('Invalid authentication options received:', optionsResponse);
+        throw new Error('Invalid authentication options received from server');
+      }
+
+      console.log('Starting passkey authentication with options:', optionsResponse.options);
+
+      // Get credential using SimpleWebAuthn - pass the options directly
+      let asseResp;
+      try {
+        asseResp = await startAuthentication(optionsResponse.options);
+      } catch (error: any) {
+        console.error('SimpleWebAuthn authentication error:', error);
+        throw new Error(`Passkey authentication failed: ${error.message}`);
+      }
 
       // Send credential to server for verification
       const verificationResponse = await this.http.post<AuthResponse>(`${this.apiUrl}/auth/passkey/authenticate/finish`, {
