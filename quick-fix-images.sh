@@ -10,12 +10,13 @@ if ! command -v docker &> /dev/null; then
 fi
 
 echo "🔧 Step 1: Ensuring host directory has correct permissions..."
-chmod -R 755 ./pdf-png/generated_pngs/
+chmod 777 ./pdf-png/generated_pngs/
+echo "✅ Set generated_pngs directory to 777 permissions"
 
-echo "🔧 Step 2: Recreating nginx service with updated config..."
-docker compose -f docker-compose.ssl.yml stop nginx
-docker compose -f docker-compose.ssl.yml rm -f nginx
-docker compose -f docker-compose.ssl.yml up -d nginx
+echo "🔧 Step 2: Recreating PDF converter and nginx services..."
+docker compose -f docker-compose.ssl.yml stop pdf-converter nginx
+docker compose -f docker-compose.ssl.yml rm -f pdf-converter nginx
+docker compose -f docker-compose.ssl.yml up -d pdf-converter nginx
 
 echo "⏳ Waiting for nginx to start..."
 sleep 5

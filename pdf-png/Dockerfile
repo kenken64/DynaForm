@@ -20,12 +20,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Create directory for generated images
-RUN mkdir -p generated_pngs
+RUN mkdir -p generated_pngs && chmod 777 generated_pngs
 
-# Create a non-root user
-RUN useradd --create-home --shell /bin/bash app \
-    && chown -R app:app /app
-USER app
+# Copy entrypoint script
+COPY docker-entrypoint.sh /app/docker-entrypoint.sh
+RUN chmod +x /app/docker-entrypoint.sh
 
 # Expose the port
 EXPOSE 5001
@@ -34,5 +33,5 @@ EXPOSE 5001
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:5001/ || exit 1
 
-# Start the application
-CMD ["python", "app.py"]
+# Use entrypoint script to handle permissions
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
