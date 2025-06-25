@@ -1,6 +1,15 @@
 const { ethers } = require('ethers');
 const config = require('./config');
-const VerifiableURL = require('../artifacts/contracts/VerifiableURL.sol/VerifiableURL.json');
+
+// Try to load the contract artifact
+let VerifiableURL;
+try {
+  VerifiableURL = require('../artifacts/contracts/VerifiableURL.sol/VerifiableURL.json');
+} catch (error) {
+  console.error('Failed to load contract artifact. Make sure contracts are compiled with "npm run compile"');
+  console.error('Error:', error.message);
+  process.exit(1);
+}
 
 // Check if environment variables are properly configured
 const isConfigured = () => {

@@ -13,8 +13,14 @@ COPY package*.json ./
 # Install dependencies (including dev for hardhat compilation if needed)
 RUN npm i
 
-# Copy application code
+# Copy application code (excluding existing artifacts)
 COPY . .
+
+# Clean any existing artifacts and compile contracts
+RUN rm -rf artifacts/ cache/ && npm run compile
+
+# Verify artifacts were created
+RUN ls -la artifacts/contracts/VerifiableURL.sol/
 
 # Expose port
 EXPOSE 3002
