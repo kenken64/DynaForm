@@ -1,0 +1,94 @@
+# Multi-stage build for Angular application with SSL support
+FROM node:18-alpine AS builder
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci --only=production
+
+# Copy source code
+COPY . .
+
+# Build the Angular application for production
+RUN npm run build --prod
+
+# Production stage with nginx and SSL support
+FROM nginx:alpine
+
+# Install OpenSSL for generating self-signed certificates
+RUN apk add --no-cache openssl
+
+# Remove default nginx configuration
+RUN rm /etc/nginx/conf.d/default.conf
+
+# Copy built Angular application
+COPY --from=builder /app/dist/dynaform /usr/share/nginx/html
+
+# Copy nginx configuration
+COPY nginx.ssl.conf /etc/nginx/nginx.conf
+
+# Create directories for SSL certificates and logs
+RUN mkdir -p /etc/ssl/certs /etc/ssl/private /var/log/nginx /var/cache/nginx /var/www/certbot
+
+# Generate self-signed certificate for development/fallback
+RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+    -keyout /etc/ssl/private/nginx-selfsigned.key \
+    -out /etc/ssl/certs/nginx-selfsigned.crt \
+    -subj "/C=US/ST=State/L=City/O=Organization/CN=localhost"
+
+# Create nginx user and set permissions
+RUN addgroup -g 101 -S nginx && \
+    adduser -S -D -H -u 101 -h /var/cache/nginx -s /sbin/nologin -G nginx nginx && \
+    chown -R nginx:nginx /var/cache/nginx /var/log/nginx /usr/share/nginx/html
+
+# Copy startup script
+COPY <<EOF /docker-entrypoint.sh
+#!/bin/sh
+set -e
+
+# Function to check if Let's Encrypt certificates exist
+check_certificates() {
+    if [ -n "\$DOMAIN_NAME" ] && [ "\$DOMAIN_NAME" != "localhost" ]; then
+        CERT_PATH="/etc/letsencrypt/live/\$DOMAIN_NAME"
+        if [ -f "\$CERT_PATH/fullchain.pem" ] && [ -f "\$CERT_PATH/privkey.pem" ]; then
+            echo "Let's Encrypt certificates found for \$DOMAIN_NAME"
+            # Update nginx configuration to use Let's Encrypt certificates
+            sed -i "s|ssl_certificate /etc/ssl/certs/nginx-selfsigned.crt;|ssl_certificate \$CERT_PATH/fullchain.pem;|g" /etc/nginx/nginx.conf
+            sed -i "s|ssl_certificate_key /etc/ssl/private/nginx-selfsigned.key;|ssl_certificate_key \$CERT_PATH/privkey.pem;|g" /etc/nginx/nginx.conf
+            return 0
+        else
+            echo "Let's Encrypt certificates not found for \$DOMAIN_NAME, using self-signed certificates"
+            return 1
+        fi
+    else
+        echo "Using self-signed certificates for localhost/development"
+        return 1
+    fi
+}
+
+# Check for certificates
+check_certificates || true
+
+# Test nginx configuration
+nginx -t
+
+# Start nginx
+exec nginx -g 'daemon off;'
+EOF
+
+# Make startup script executable
+RUN chmod +x /docker-entrypoint.sh
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost/health || exit 1
+
+# Expose ports
+EXPOSE 80 443
+
+# Set the entrypoint
+ENTRYPOINT ["/docker-entrypoint.sh"]
