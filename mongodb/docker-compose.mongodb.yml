@@ -1,8 +1,6 @@
 # MongoDB Service Configuration
 # Add this to your main docker-compose.yml file
 
-version: '3.8'
-
 services:
   # MongoDB database service
   mongodb:

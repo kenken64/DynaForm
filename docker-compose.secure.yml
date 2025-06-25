@@ -1,5 +1,3 @@
-version: '3.8'
-
 # Docker Secrets for secure password management
 secrets:
   mongodb_root_password:

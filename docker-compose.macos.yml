@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:  # Ollama CPU service for LLM inference (macOS compatible)
   ollama-gpu:
     build:

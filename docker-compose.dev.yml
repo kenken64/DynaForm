@@ -1,5 +1,3 @@
-version: '3.8'
-
 # Development override to ensure containers are always rebuilt
 # Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
 
