@@ -40,10 +40,8 @@ RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
     -out /etc/ssl/certs/nginx-selfsigned.crt \
     -subj "/C=US/ST=State/L=City/O=Organization/CN=localhost"
 
-# Create nginx user and set permissions
-RUN addgroup -g 101 -S nginx && \
-    adduser -S -D -H -u 101 -h /var/cache/nginx -s /sbin/nologin -G nginx nginx && \
-    chown -R nginx:nginx /var/cache/nginx /var/log/nginx /usr/share/nginx/html
+# Set proper permissions for nginx directories
+RUN chown -R nginx:nginx /var/cache/nginx /var/log/nginx /usr/share/nginx/html
 
 # Copy startup script
 COPY <<EOF /docker-entrypoint.sh
