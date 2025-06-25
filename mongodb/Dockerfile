@@ -3,11 +3,10 @@ FROM mongo:7.0
 
 # Set metadata
 LABEL maintainer="Doc2FormJSON Team"
-LABEL description="MongoDB container for form data storage"
+LABEL description="MongoDB container for form data storage - No Authentication"
 LABEL version="1.0"
 
-# Environment variables
-ENV MONGO_INITDB_ROOT_USERNAME=admin
+# Environment variables for no authentication setup
 ENV MONGO_INITDB_DATABASE=doc2formjson
 
 # Create necessary directories
@@ -15,19 +14,18 @@ RUN mkdir -p /docker-entrypoint-initdb.d
 RUN mkdir -p /data/db
 RUN mkdir -p /data/logs
 
-# Copy initialization scripts (secure version for Docker secrets)
-COPY init-scripts/01-init-database.js /docker-entrypoint-initdb.d/
-COPY init-scripts/02-create-users-secure.sh /docker-entrypoint-initdb.d/02-create-users.sh
+# Copy initialization scripts (no authentication version)
+COPY init-scripts/01-init-database-noauth.js /docker-entrypoint-initdb.d/01-init-database.js
 
-COPY mongod.conf /etc/mongod.conf.custom
+COPY mongod.noauth.conf /etc/mongod.conf.custom
 
 # Set proper permissions
 RUN chown -R mongodb:mongodb /data/db
 RUN chown -R mongodb:mongodb /data/logs
 
-# Health check
+# Health check (no authentication)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-    CMD mongo --eval "db.adminCommand('ping')" || exit 1
+    CMD mongosh --eval "db.adminCommand('ping')" || exit 1
 
 # Expose MongoDB port (container port)
 EXPOSE 27018

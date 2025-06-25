@@ -18,7 +18,7 @@ services:
     volumes:
       - mongodb_data_ssl:/data/db
       - mongodb_logs_ssl:/data/logs
-      - ./mongodb/mongod.conf:/etc/mongod.conf:ro
+      - ./mongodb/mongod.noauth.conf:/etc/mongod.conf:ro
       - ./mongodb/init-scripts:/docker-entrypoint-initdb.d
     networks:
       - doc2formjson-ssl-network
