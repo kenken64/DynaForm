@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# DynaForm SSL Setup Script
-# This script sets up DynaForm with Let's Encrypt SSL certificates
+# DynaForm Let's Encrypt SSL Setup Script
+# This script sets up DynaForm with Let's Encrypt SSL certificates (FREE & AUTOMATIC)
 
 set -e
 
