@@ -87,7 +87,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - OLLAMA_BASE_URL=http://ai-agent:11435
+      - OLLAMA_BASE_URL=http://ai-agent:11435 ## this is the Ollama proxy port for real-time interception
       - DEFAULT_QWEN_MODEL_NAME=qwen2.5vl:latest
       - MONGODB_URI=mongodb://mongodb:27017/doc2formjson
       # Redis Configuration (matching server/.env)
