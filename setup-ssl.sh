@@ -13,8 +13,8 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Default configuration
-DEFAULT_DOMAIN="localhost"
-DEFAULT_EMAIL="admin@localhost"
+DEFAULT_DOMAIN="dynaform.xyz"
+DEFAULT_EMAIL="bunnyppl@gmail.com"
 COMPOSE_FILE="docker-compose.ssl.yml"
 
 # Functions
@@ -111,19 +111,19 @@ setup_initial_certificates() {
     
     # Start nginx temporarily for ACME challenge
     print_info "Starting temporary nginx for certificate verification..."
-    docker-compose -f $COMPOSE_FILE --env-file .env.ssl up -d dynaform-nginx
+    docker compose -f $COMPOSE_FILE --env-file .env.ssl up -d dynaform-nginx
     
     # Wait for nginx to be ready
     sleep 10
     
     # Obtain certificates
     print_info "Requesting SSL certificate from Let's Encrypt..."
-    docker-compose -f $COMPOSE_FILE --env-file .env.ssl run --rm certbot \
+    docker compose -f $COMPOSE_FILE --env-file .env.ssl run --rm certbot \
         certonly --webroot --webroot-path=/var/www/certbot \
         --email $email --agree-tos --no-eff-email -d $domain
     
     # Stop temporary nginx
-    docker-compose -f $COMPOSE_FILE --env-file .env.ssl stop dynaform-nginx
+    docker compose -f $COMPOSE_FILE --env-file .env.ssl stop dynaform-nginx
 }
 
 # Setup automatic certificate renewal
@@ -136,11 +136,11 @@ setup_certificate_renewal() {
 # Certificate renewal script for DynaForm
 
 echo "Starting certificate renewal process..."
-docker-compose -f docker-compose.ssl.yml --env-file .env.ssl run --rm certbot renew
+docker compose -f docker-compose.ssl.yml --env-file .env.ssl run --rm certbot renew
 
 # Reload nginx to use new certificates
 echo "Reloading nginx..."
-docker-compose -f docker-compose.ssl.yml --env-file .env.ssl exec dynaform-nginx nginx -s reload
+docker compose -f docker-compose.ssl.yml --env-file .env.ssl exec dynaform-nginx nginx -s reload
 
 echo "Certificate renewal completed!"
 EOF
@@ -158,11 +158,11 @@ start_services() {
     
     # Build images
     print_info "Building Docker images..."
-    docker-compose -f $COMPOSE_FILE --env-file .env.ssl build --no-cache
+    docker compose -f $COMPOSE_FILE --env-file .env.ssl build --no-cache
     
     # Start services
     print_info "Starting services..."
-    docker-compose -f $COMPOSE_FILE --env-file .env.ssl up -d
+    docker compose -f $COMPOSE_FILE --env-file .env.ssl up -d
     
     # Wait for services to be ready
     print_info "Waiting for services to start..."
@@ -170,7 +170,7 @@ start_services() {
     
     # Check service health
     print_step "Checking service health..."
-    docker-compose -f $COMPOSE_FILE --env-file .env.ssl ps
+    docker compose -f $COMPOSE_FILE --env-file .env.ssl ps
 }
 
 # Display completion message
@@ -195,8 +195,8 @@ display_completion() {
     echo "   - Health Check: https://$domain/health"
     echo
     echo "🔧 Management Commands:"
-    echo "   - View logs: docker-compose -f $COMPOSE_FILE --env-file .env.ssl logs -f"
-    echo "   - Stop services: docker-compose -f $COMPOSE_FILE --env-file .env.ssl down"
+    echo "   - View logs: docker compose -f $COMPOSE_FILE --env-file .env.ssl logs -f"
+    echo "   - Stop services: docker compose -f $COMPOSE_FILE --env-file .env.ssl down"
     echo "   - Restart services: docker-compose -f $COMPOSE_FILE --env-file .env.ssl restart"
     echo "   - Renew certificates: ./renew-certificates.sh"
     echo
