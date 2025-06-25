@@ -20,7 +20,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Make scripts executable
-RUN chmod +x start-realtime-interceptor.sh docker-entrypoint.sh
+RUN chmod +x docker-entrypoint.sh
 
 # Create log directory
 RUN mkdir -p /app/logs
