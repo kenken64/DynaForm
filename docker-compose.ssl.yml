@@ -1,4 +1,80 @@
 services:
+  # MongoDB database service
+  mongodb:
+    build:
+      context: ./mongodb
+      dockerfile: Dockerfile
+      no_cache: true
+      args:
+        - BUILDKIT_INLINE_CACHE=0
+        - BUILD_TIMESTAMP=${BUILD_TIMESTAMP:-default}
+    container_name: doc2formjson-mongodb-ssl
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password123
+      - MONGO_INITDB_DATABASE=doc2formjson
+      - MONGODB_APP_USERNAME=doc2formapp
+      - MONGODB_APP_PASSWORD=apppassword123
+    volumes:
+      - mongodb_data_ssl:/data/db
+      - mongodb_logs_ssl:/data/logs
+      - ./mongodb/mongod.conf:/etc/mongod.conf:ro
+      - ./mongodb/init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - doc2formjson-ssl-network
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 512M
+
+  # Ollama GPU service for LLM inference (Resource-Limited)
+  ollama-gpu:
+    build:
+      context: ./ollama
+      dockerfile: Dockerfile.minimal
+      no_cache: true
+      args:
+        - BUILDKIT_INLINE_CACHE=0
+        - BUILD_TIMESTAMP=${BUILD_TIMESTAMP:-default}
+    pull_policy: build
+    ports:
+      - "11434:11434"
+    environment:
+      - OLLAMA_HOST=0.0.0.0:11434
+      - OLLAMA_ORIGINS=*
+      - OLLAMA_MODELS=qwen2.5vl:latest
+      - OLLAMA_NUM_PARALLEL=1
+      - OLLAMA_MAX_LOADED_MODELS=1
+      - OLLAMA_GPU_MEMORY_FRACTION=0.3
+      - OLLAMA_KEEP_ALIVE=2m
+      - OLLAMA_MAX_QUEUE=1
+    volumes:
+      - ollama_models_ssl:/root/.ollama
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+    healthcheck:
+      test: [ "CMD", "test", "-f", "/tmp/ollama_ready" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - doc2formjson-ssl-network
+
   # Node.js API service for image description using Ollama
   doc2formjson-api:
     build:
@@ -13,10 +89,19 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - OLLAMA_BASE_URL=http://localhost:11434
+      - OLLAMA_BASE_URL=http://ollama-gpu:11434
       - DEFAULT_QWEN_MODEL_NAME=qwen2.5vl:latest
       - MONGODB_URI=mongodb://doc2formapp:apppassword123@mongodb:27017/doc2formjson
+      # Redis Configuration (matching server/.env)
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=
+      - REDIS_DB=0
     restart: unless-stopped
+    depends_on:
+      - ollama-gpu
+      - mongodb
+      - redis
     healthcheck:
       test: [ "CMD", "node", "-e", "const http = require('http'); const options = { port: process.env.PORT || 3000, timeout: 2000 }; const request = http.request(options, (res) => { process.exit(res.statusCode === 200 ? 0 : 1); }); request.on('error', () => process.exit(1)); request.end();" ]
       interval: 30s
@@ -50,6 +135,31 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+    networks:
+      - doc2formjson-ssl-network
+
+  # Redis service for caching and session storage
+  redis:
+    image: redis:7-alpine
+    container_name: dynaform-redis-ssl
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --requirepass ""
+    volumes:
+      - redis_data_ssl:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 128M
     networks:
       - doc2formjson-ssl-network
 
@@ -94,6 +204,7 @@ services:
     depends_on:
       - doc2formjson-api
       - pdf-converter
+      - redis
       - certbot
     healthcheck:
       test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "https://dynaform.xyz/health", "||", "exit", "1" ]
@@ -113,6 +224,14 @@ networks:
 
 volumes:
   generated_images_ssl:
+    driver: local
+  redis_data_ssl:
+    driver: local
+  mongodb_data_ssl:
+    driver: local
+  mongodb_logs_ssl:
+    driver: local
+  ollama_models_ssl:
     driver: local
   certbot_certs:
     driver: local
