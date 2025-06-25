@@ -1,0 +1,14 @@
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.env
+.env.sample
+.git/
+.gitignore
+README.md
+*.md
+cache/
+artifacts/
+test/
+tests/

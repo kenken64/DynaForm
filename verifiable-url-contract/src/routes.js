@@ -2,6 +2,11 @@ const express = require('express');
 const router = express.Router();
 const { addURL, verifyURL, getContractStatus } = require('./contract');
 
+// Health check endpoint
+router.get('/health', (req, res) => {
+  res.json({ status: 'healthy', timestamp: new Date().toISOString() });
+});
+
 // Get contract configuration status
 router.get('/status', async (req, res) => {
   try {

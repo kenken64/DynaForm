@@ -111,6 +111,75 @@ services:
     networks:
       - doc2formjson-ssl-network
 
+  # AI Agent service for form processing and publishing
+  ai-agent:
+    build:
+      context: ./ai-agent
+      no_cache: true
+      args:
+        - BUILDKIT_INLINE_CACHE=0
+        - BUILD_TIMESTAMP=${BUILD_TIMESTAMP:-default}
+    container_name: dynaform-ai-agent-ssl
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8001
+      - LOG_LEVEL=INFO
+      # MongoDB Configuration
+      - MONGODB_URI=mongodb://doc2formapp:apppassword123@mongodb:27017/doc2formjson?authSource=admin
+      - MONGODB_DATABASE=doc2formjson
+      - FORMS_COLLECTION=generated_form
+      # Ollama Configuration
+      - OLLAMA_HOST=http://ollama-gpu:11434
+      - OLLAMA_MODEL=qwen2.5vl:latest
+      - OLLAMA_KEEP_ALIVE=20m
+      - OLLAMA_TIMEOUT=10000
+      # API Endpoints
+      - VERIFIABLE_CONTRACT_API=http://verifiable-contract:3002/api/urls
+      - FRONTEND_BASE_URL=https://${DOMAIN_NAME:-localhost}
+    depends_on:
+      - mongodb
+      - ollama-gpu
+      - verifiable-contract
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8001/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - doc2formjson-ssl-network
+
+  # Verifiable URL Contract service for blockchain integration
+  verifiable-contract:
+    build:
+      context: ./verifiable-url-contract
+      no_cache: true
+      args:
+        - BUILDKIT_INLINE_CACHE=0
+        - BUILD_TIMESTAMP=${BUILD_TIMESTAMP:-default}
+    container_name: dynaform-verifiable-contract-ssl
+    restart: unless-stopped
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002
+      - NODE_ENV=production
+      # Blockchain Configuration (from verifiable-url-contract/.env)
+      - PRIVATE_KEY=${BLOCKCHAIN_PRIVATE_KEY:-0x0386d60f46138cc1b2ec00b047dce71815fb28eb64b85f8ed7109fb5e17ebe84}
+      - CONTRACT_ADDRESS=${BLOCKCHAIN_CONTRACT_ADDRESS:-0xC9C3Ef2Dc05f4f142F0180ae95E1606698311576}
+      - PROVIDER_URL=${BLOCKCHAIN_PROVIDER_URL:-https://eth-sepolia.g.alchemy.com/v2/E4mBYdLyTQiGitVF-HhKH}
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3002/api/health", "||", "exit", "1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - doc2formjson-ssl-network
+
   # Python Flask service for PDF to PNG conversion
   pdf-converter:
     build:
@@ -204,6 +273,8 @@ services:
     depends_on:
       - doc2formjson-api
       - pdf-converter
+      - ai-agent
+      - verifiable-contract
       - redis
       - certbot
     healthcheck:
