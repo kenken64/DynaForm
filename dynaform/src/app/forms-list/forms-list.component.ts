@@ -227,7 +227,7 @@ export class FormsListComponent implements OnInit {
       // Add mock verification
       form.status = 'verified';
       form.blockchainInfo = {
-        publicUrl: `http://localhost:4200/public/form/${form._id}/mock123`,
+        publicUrl: `/public/form/${form._id}/mock123`,
         transactionHash: '0x331cf982723264066e0dfd34af9583a7f63588136ecf26e1802bb18dc740d400',
         blockNumber: 567890,
         gasUsed: 45000,

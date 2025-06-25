@@ -48,7 +48,7 @@ export class AuthService {
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   private currentRegistrationUserId: string | null = null;
-  private apiUrl = 'http://localhost:3000/api'; // Backend API URL
+  private apiUrl = '/api'; // Backend API URL (relative to nginx proxy)
 
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
   public currentUser$ = this.currentUserSubject.asObservable();

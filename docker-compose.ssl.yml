@@ -7,7 +7,12 @@ services:
       no_cache: true
       args:
         - BUILDKIT_INLINE_CACHE=0
-        - BUILD_TIMESTAMP=${BUILD_TIMESTAMP:-default}
+        - BUILD_TIMESTAMP=${BUILD_TIMESTA    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/", "||", "exit", "1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40sfault}
     container_name: doc2formjson-mongodb-ssl
     restart: unless-stopped
     ports:
@@ -249,7 +254,7 @@ services:
       - ./pdf-png/generated_pngs:/app/generated_pngs
       - generated_images_ssl:/app/generated_pngs
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://dynaform.xyz:5001/", "||", "exit", "1" ]
+      test: ["CMD", "curl", "-f", "http://localhost:5001/", "||", "exit", "1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -328,7 +333,7 @@ services:
       - redis
       - certbot
     healthcheck:
-      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "https://dynaform.xyz/health", "||", "exit", "1" ]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/", "||", "exit", "1"]
       interval: 30s
       timeout: 10s
       retries: 3
