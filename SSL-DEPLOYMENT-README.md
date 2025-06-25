@@ -14,7 +14,9 @@ The SSL deployment includes the following services:
 ### Application Services
 - **DynaForm API** (port 3000): Main Node.js API server
 - **PDF Converter** (port 5001): Python Flask service for PDF to PNG conversion
-- **AI Agent** (port 8001): Python FastAPI service for form processing and publishing
+- **AI Agent** (port 8001): Python service for real-time conversation interception and form publishing
+  - **Default mode**: Real-time interceptor (proxy on port 11435)
+  - **Alternative mode**: FastAPI server (port 8002 when using server profile)
 - **Verifiable Contract** (port 3002): Node.js service for blockchain integration
 
 ### Infrastructure Services
@@ -100,9 +102,24 @@ After deployment, services are available at:
 
 - **Frontend**: `https://your-domain.com`
 - **API**: `https://your-domain.com/api`
-- **AI Agent**: `http://localhost:8001` (internal)
+- **AI Agent (Interceptor)**: `http://localhost:11435` (Ollama proxy)
+- **AI Agent (Server mode)**: `http://localhost:8002` (when using server profile)
 - **Verifiable Contract**: `http://localhost:3002` (internal)
 - **PDF Converter**: `http://localhost:5001` (internal)
+
+### AI Agent Modes
+
+The AI Agent can run in different modes:
+
+1. **Interceptor Mode (Default)**: Real-time conversation interception
+   - Runs Ollama proxy on port 11435
+   - Automatically detects form publishing requests
+   - Intercepts all Ollama conversations
+
+2. **Server Mode**: FastAPI server
+   - Available on port 8002
+   - Provides REST API endpoints
+   - Use with: `docker compose --profile server up`
 
 ## Health Checks
 

@@ -6,7 +6,8 @@ set -e
 echo "🧪 Testing DynaForm SSL deployment..."
 
 # Define service endpoints
-AI_AGENT_URL="http://localhost:8001"
+AI_AGENT_INTERCEPTOR_URL="http://localhost:11435"
+AI_AGENT_SERVER_URL="http://localhost:8002"
 VERIFIABLE_CONTRACT_URL="http://localhost:3002"
 API_URL="http://localhost:3000"
 PDF_CONVERTER_URL="http://localhost:5001"
@@ -40,7 +41,8 @@ test_endpoint() {
 # Test all services
 echo "📊 Testing service health endpoints..."
 
-test_endpoint "$AI_AGENT_URL/health" "AI Agent"
+# Note: AI Agent in interceptor mode doesn't have HTTP endpoints, so we skip it
+echo "ℹ️  AI Agent running in interceptor mode (Ollama proxy on port 11435)"
 test_endpoint "$VERIFIABLE_CONTRACT_URL/api/health" "Verifiable Contract"
 test_endpoint "$API_URL/health" "Main API"
 test_endpoint "$PDF_CONVERTER_URL/" "PDF Converter"
@@ -51,7 +53,8 @@ docker compose -f docker-compose.ssl.yml ps
 
 echo ""
 echo "📋 Service URLs:"
-echo "  • AI Agent Health: $AI_AGENT_URL/health"
+echo "  • AI Agent (Interceptor): $AI_AGENT_INTERCEPTOR_URL (Ollama proxy)"
+echo "  • AI Agent (Server): $AI_AGENT_SERVER_URL (when using server profile)"
 echo "  • Verifiable Contract Health: $VERIFIABLE_CONTRACT_URL/api/health"
 echo "  • Main API Health: $API_URL/health"
 echo "  • PDF Converter: $PDF_CONVERTER_URL/"

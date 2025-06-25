@@ -46,14 +46,22 @@ docker compose -f docker-compose.ssl.yml up -d mongodb redis ollama-gpu
 
 # Wait for infrastructure to be ready
 echo "⏳ Waiting for infrastructure services to be ready..."
+sleep 45
+
+# Start core application services
+echo "🚀 Starting core application services..."
+docker compose -f docker-compose.ssl.yml up -d verifiable-contract doc2formjson-api pdf-converter
+
+# Wait for application services to be healthy
+echo "⏳ Waiting for application services to be healthy..."
 sleep 30
 
-# Start application services
-echo "🚀 Starting application services..."
-docker compose -f docker-compose.ssl.yml up -d verifiable-contract ai-agent doc2formjson-api pdf-converter
+# Start AI agent (will verify dependencies before starting)
+echo "🤖 Starting AI Agent..."
+docker compose -f docker-compose.ssl.yml up -d ai-agent
 
-# Wait for application services
-echo "⏳ Waiting for application services to be ready..."
+# Wait for AI agent
+echo "⏳ Waiting for AI agent to initialize..."
 sleep 20
 
 # Start nginx and certbot

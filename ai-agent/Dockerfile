@@ -19,19 +19,19 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY . .
 
+# Make scripts executable
+RUN chmod +x start-realtime-interceptor.sh docker-entrypoint.sh
+
 # Create log directory
 RUN mkdir -p /app/logs
 
 # Expose port
 EXPOSE 8001
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:8001/health')" || exit 1
-
 # Set environment variables
 ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1
 
-# Run the application
-CMD ["python", "main.py"]
+# Run the application using the Docker entrypoint script
+ENTRYPOINT ["./docker-entrypoint.sh"]
+CMD ["interceptor"]

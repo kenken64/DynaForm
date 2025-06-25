@@ -122,7 +122,8 @@ services:
     container_name: dynaform-ai-agent-ssl
     restart: unless-stopped
     ports:
-      - "8001:8001"
+      - "8001:8001"    # FastAPI server port
+      - "11435:11435"  # Ollama proxy port for real-time interception
     environment:
       - HOST=0.0.0.0
       - PORT=8001
@@ -138,11 +139,67 @@ services:
       - OLLAMA_TIMEOUT=10000
       # API Endpoints
       - VERIFIABLE_CONTRACT_API=http://verifiable-contract:3002/api/urls
-      - FRONTEND_BASE_URL=https://${DOMAIN_NAME:-localhost}
+      - FRONTEND_BASE_URL=https://localhost
+    # Default mode: interceptor (real-time conversation interception)
+    # Override with: docker-compose run ai-agent server
+    command: ["interceptor"]
     depends_on:
-      - mongodb
-      - ollama-gpu
-      - verifiable-contract
+      doc2formjson-api:
+        condition: service_healthy
+      verifiable-contract:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+      ollama-gpu:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]  # Simple Python availability check
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - doc2formjson-ssl-network
+
+  # AI Agent in API server mode (alternative to interceptor mode)
+  ai-agent-server:
+    build:
+      context: ./ai-agent
+      no_cache: true
+      args:
+        - BUILDKIT_INLINE_CACHE=0
+        - BUILD_TIMESTAMP=${BUILD_TIMESTAMP:-default}
+    container_name: dynaform-ai-agent-server-ssl
+    restart: unless-stopped
+    ports:
+      - "8002:8001"    # Use different external port to avoid conflicts
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8001
+      - LOG_LEVEL=INFO
+      # MongoDB Configuration
+      - MONGODB_URI=mongodb://doc2formapp:apppassword123@mongodb:27017/doc2formjson?authSource=admin
+      - MONGODB_DATABASE=doc2formjson
+      - FORMS_COLLECTION=generated_form
+      # Ollama Configuration
+      - OLLAMA_HOST=http://ollama-gpu:11434
+      - OLLAMA_MODEL=qwen2.5vl:latest
+      - OLLAMA_KEEP_ALIVE=20m
+      - OLLAMA_TIMEOUT=10000
+      # API Endpoints
+      - VERIFIABLE_CONTRACT_API=http://verifiable-contract:3002/api/urls
+      - FRONTEND_BASE_URL=https://localhost
+    # Run in server mode
+    command: ["server"]
+    depends_on:
+      doc2formjson-api:
+        condition: service_healthy
+      verifiable-contract:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+      ollama-gpu:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8001/health')"]
       interval: 30s
@@ -151,6 +208,8 @@ services:
       start_period: 40s
     networks:
       - doc2formjson-ssl-network
+    profiles:
+      - server  # Only start this service when explicitly requested
 
   # Verifiable URL Contract service for blockchain integration
   verifiable-contract:
