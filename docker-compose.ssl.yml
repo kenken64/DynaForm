@@ -296,7 +296,7 @@ services:
     # docker-compose run --rm certbot certonly --webroot --webroot-path=/var/www/certbot --email your-email@domain.com --agree-tos --no-eff-email -d your-domain.com
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
-  # Nginx reverse proxy with SSL support
+  # Nginx reverse proxy with SSL support (serves Angular frontend)
   dynaform-nginx:
     build:
       context: ./dynaform
