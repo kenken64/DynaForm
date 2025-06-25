@@ -138,10 +138,10 @@ export class AuthService {
 
       console.log('Starting passkey registration with options:', optionsResponse.options);
 
-      // Create credential using SimpleWebAuthn - pass the options directly
+      // Create credential using SimpleWebAuthn - pass the options using new v13 API format
       let attResp;
       try {
-        attResp = await startRegistration(optionsResponse.options);
+        attResp = await startRegistration({ optionsJSON: optionsResponse.options });
       } catch (error: any) {
         console.error('SimpleWebAuthn registration error:', error);
         throw new Error(`Passkey registration failed: ${error.message}`);
@@ -189,10 +189,10 @@ export class AuthService {
 
       console.log('Starting passkey authentication with options:', optionsResponse.options);
 
-      // Get credential using SimpleWebAuthn - pass the options directly
+      // Get credential using SimpleWebAuthn - pass the options using new v13 API format
       let asseResp;
       try {
-        asseResp = await startAuthentication(optionsResponse.options);
+        asseResp = await startAuthentication({ optionsJSON: optionsResponse.options });
       } catch (error: any) {
         console.error('SimpleWebAuthn authentication error:', error);
         throw new Error(`Passkey authentication failed: ${error.message}`);
