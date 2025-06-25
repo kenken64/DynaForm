@@ -54,12 +54,15 @@ check_certificates() {
         CERT_PATH="/etc/letsencrypt/live/\$DOMAIN_NAME"
         if [ -f "\$CERT_PATH/fullchain.pem" ] && [ -f "\$CERT_PATH/privkey.pem" ]; then
             echo "Let's Encrypt certificates found for \$DOMAIN_NAME"
-            # Update nginx configuration to use Let's Encrypt certificates
+            # Update nginx configuration to use Let's Encrypt certificates and domain name
+            sed -i "s|server_name localhost;|server_name \$DOMAIN_NAME;|g" /etc/nginx/nginx.conf
             sed -i "s|ssl_certificate /etc/ssl/certs/nginx-selfsigned.crt;|ssl_certificate \$CERT_PATH/fullchain.pem;|g" /etc/nginx/nginx.conf
             sed -i "s|ssl_certificate_key /etc/ssl/private/nginx-selfsigned.key;|ssl_certificate_key \$CERT_PATH/privkey.pem;|g" /etc/nginx/nginx.conf
             return 0
         else
             echo "Let's Encrypt certificates not found for \$DOMAIN_NAME, using self-signed certificates"
+            # Update server name even if using self-signed certificates
+            sed -i "s|server_name localhost;|server_name \$DOMAIN_NAME;|g" /etc/nginx/nginx.conf
             return 1
         fi
     else

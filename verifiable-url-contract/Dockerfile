@@ -11,7 +11,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies (including dev for hardhat compilation if needed)
-RUN npm ci
+RUN npm i
 
 # Copy application code
 COPY . .
