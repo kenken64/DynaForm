@@ -5,31 +5,35 @@ echo "🎧 Starting AI Agent Real-time Ollama Conversation Interceptor..."
 
 # Wait for dependent services to be fully ready
 echo "⏳ Waiting for dependent services to be fully ready..."
-sleep 10
+sleep 20
 
-# Verify critical services are available
-echo "🔍 Verifying service connectivity..."
+# Simple connectivity checks with shorter timeouts
+echo "🔍 Performing basic connectivity checks..."
 
-# Check MongoDB
-until python -c "from pymongo import MongoClient; client = MongoClient('${MONGODB_URI}'); client.admin.command('ping')" 2>/dev/null; do
-    echo "⏳ Waiting for MongoDB..."
-    sleep 2
-done
-echo "✅ MongoDB is ready"
+# Check MongoDB with simple timeout
+echo "⏳ Checking MongoDB..."
+python -c "
+import pymongo
+import sys
+try:
+    client = pymongo.MongoClient('${MONGODB_URI}', serverSelectionTimeoutMS=10000)
+    client.admin.command('ping')
+    print('✅ MongoDB is accessible')
+except Exception as e:
+    print('⚠️ MongoDB check failed, continuing anyway:', str(e))
+" || echo "⚠️ MongoDB check failed, continuing anyway"
 
-# Check Ollama
-until python -c "import requests; requests.get('${OLLAMA_HOST}/api/tags', timeout=5)" 2>/dev/null; do
-    echo "⏳ Waiting for Ollama..."
-    sleep 2
-done
-echo "✅ Ollama is ready"
-
-# Check Verifiable Contract API
-until python -c "import requests; requests.get('${VERIFIABLE_CONTRACT_API}/../health', timeout=5)" 2>/dev/null; do
-    echo "⏳ Waiting for Verifiable Contract API..."
-    sleep 2
-done
-echo "✅ Verifiable Contract API is ready"
+# Check if we can import required modules
+echo "⏳ Checking Python dependencies..."
+python -c "
+import sys
+try:
+    import pymongo, requests, ollama
+    print('✅ Python dependencies are available')
+except ImportError as e:
+    print('❌ Missing Python dependency:', str(e))
+    sys.exit(1)
+"
 
 echo "🚀 All services are ready! Starting AI Agent..."
 

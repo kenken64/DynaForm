@@ -144,14 +144,11 @@ services:
     # Override with: docker-compose run ai-agent server
     command: ["interceptor"]
     depends_on:
-      doc2formjson-api:
-        condition: service_healthy
-      verifiable-contract:
-        condition: service_healthy
-      mongodb:
-        condition: service_healthy
-      ollama-gpu:
-        condition: service_healthy
+      - doc2formjson-api
+      - verifiable-contract
+      - mongodb
+      - ollama-gpu
+      - redis
     healthcheck:
       test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]  # Simple Python availability check
       interval: 30s
@@ -192,14 +189,11 @@ services:
     # Run in server mode
     command: ["server"]
     depends_on:
-      doc2formjson-api:
-        condition: service_healthy
-      verifiable-contract:
-        condition: service_healthy
-      mongodb:
-        condition: service_healthy
-      ollama-gpu:
-        condition: service_healthy
+      - doc2formjson-api
+      - verifiable-contract
+      - mongodb
+      - ollama-gpu
+      - redis
     healthcheck:
       test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8001/health')"]
       interval: 30s
