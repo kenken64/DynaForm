@@ -162,12 +162,18 @@ setup_initial_certificates() {
     # Obtain certificates
     print_info "Requesting SSL certificate from Let's Encrypt..."
     
-    # First, try to obtain the certificate
+    # First, try to obtain the certificate with multiple retry options
     if docker compose -f $COMPOSE_FILE --env-file .env.ssl run --rm certbot \
         certonly --webroot --webroot-path=/var/www/certbot \
         --email $email --agree-tos --no-eff-email \
-        --force-renewal -d $domain; then
+        --force-renewal --verbose -d $domain; then
         print_info "SSL certificate obtained successfully!"
+    elif docker compose -f $COMPOSE_FILE --env-file .env.ssl run --rm certbot \
+        certonly --webroot --webroot-path=/var/www/certbot \
+        --email $email --agree-tos --no-eff-email \
+        --staging --force-renewal -d $domain; then
+        print_warning "Staging certificate created (for testing only)"
+        print_info "Run './force-renew-ssl.sh recreate' to get production certificate"
     else
         print_error "Failed to obtain SSL certificate!"
         print_info "This might be due to:"
@@ -175,7 +181,10 @@ setup_initial_certificates() {
         print_info "2. Port 80 not accessible from internet"
         print_info "3. Domain not properly configured"
         print_info ""
-        print_info "Please check your domain configuration and try again."
+        print_info "To troubleshoot:"
+        print_info "- Run: ./debug-ssl.sh $domain"
+        print_info "- Try: ./force-renew-ssl.sh staging"
+        print_info "- Or: ./force-renew-ssl.sh clean"
         return 1
     fi
     
