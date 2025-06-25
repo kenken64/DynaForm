@@ -15,10 +15,10 @@ import { ObjectId } from 'mongodb';
 import { config } from '../config';
 import { PasskeyCredential } from './authService';
 
-// WebAuthn configuration
-const RP_NAME = 'DynaForm';
+// WebAuthn configuration from environment variables
+const RP_NAME = process.env.RP_NAME || 'DynaForm';
 const RP_ID = process.env.RP_ID || 'localhost';
-const ORIGIN = process.env.ORIGIN || 'http://localhost:4200'; // Frontend origin
+const WEBAUTHN_ORIGIN = process.env.WEBAUTHN_ORIGIN || 'http://localhost:4200'; // Frontend origin
 
 export interface PasskeyChallenge {
   userId?: string;
@@ -113,7 +113,7 @@ export const webauthnService = {
       const opts: VerifyRegistrationResponseOpts = {
         response,
         expectedChallenge: challengeDoc.challenge,
-        expectedOrigin: ORIGIN,
+        expectedOrigin: WEBAUTHN_ORIGIN,
         expectedRPID: RP_ID,
         requireUserVerification: false,
       };
@@ -277,7 +277,7 @@ export const webauthnService = {
       const opts: VerifyAuthenticationResponseOpts = {
         response,
         expectedChallenge: challengeDoc.challenge,
-        expectedOrigin: ORIGIN,
+        expectedOrigin: WEBAUTHN_ORIGIN,
         expectedRPID: RP_ID,
         credential: {
           id: passkey.credentialId,

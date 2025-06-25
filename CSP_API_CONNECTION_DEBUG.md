@@ -100,32 +100,40 @@ grep -r "localhost:3000" dynaform/dist/ || echo "✅ No hardcoded URLs found"
 
 ### 2. Check Container Status
 ```bash
-docker-compose -f docker-compose.ssl.yml ps
+docker compose -f docker-compose.ssl.yml ps
 ```
 
-### 2. Check nginx Logs
+### 3. Check nginx Logs
 ```bash
-docker-compose -f docker-compose.ssl.yml logs dynaform-nginx
+docker compose -f docker-compose.ssl.yml logs dynaform-nginx
 ```
 
-### 3. Test API Proxy
+### 4. Test API Proxy
 ```bash
 # Should return API response
 curl -k https://localhost/api/health
 ```
 
-### 4. Browser Developer Tools
+### 5. Browser Developer Tools
 - Network tab should show requests to `/api/...` (relative URLs)
 - No CSP violations in Console
 - No blocked requests
 
 ## Troubleshooting
 
-### If still getting localhost:3000 errors:
-1. **Clear browser cache** completely
-2. **Verify accessing correct URL** (nginx ports, not API port)
-3. **Check nginx is running** and healthy
-4. **Verify Angular build** includes the fixes
+### ✅ If still getting localhost:3000 errors (RESOLVED):
+1. **Clear build cache completely** (PRIMARY SOLUTION)
+   ```bash
+   cd dynaform
+   rm -rf dist/ && rm -rf .angular/cache/
+   npm run build -- --configuration=production
+   ```
+2. **Clear browser cache** completely
+3. **Verify accessing correct URL** (nginx ports, not API port)
+4. **Rebuild Docker container** with new build
+   ```bash
+   docker compose -f docker-compose.ssl.yml build --no-cache dynaform-nginx
+   ```
 
 ### If CSP errors persist:
 1. **Check nginx.ssl.conf** is properly mounted in container
@@ -137,15 +145,28 @@ curl -k https://localhost/api/health
 2. **Verify static files** are in `/usr/share/nginx/html`
 3. **Check nginx configuration** for proper serving
 
-## Expected Behavior After Fix
+## ✅ Resolution Summary
+The primary issue was **stale build cache** containing hardcoded `localhost:3000` URLs from an older version of the Angular application. The solution was to:
+
+1. **Clear Angular build cache**: `rm -rf dist/ && rm -rf .angular/cache/`
+2. **Rebuild Angular app**: `npm run build -- --configuration=production`
+3. **Verify clean build**: Check that no hardcoded URLs remain in the `dist` folder
+4. **Rebuild Docker container**: Ensure the new build is used in production
+
+## Expected Behavior After Fix ✅ VERIFIED
 - ✅ Angular app loads from nginx
 - ✅ Google Fonts load without CSP errors  
 - ✅ API calls work through nginx proxy (relative URLs)
 - ✅ No "Refused to connect" errors
 - ✅ Passkey authentication works properly
+- ✅ No hardcoded `localhost:3000` URLs in compiled code
 
 ## Key Files Modified
-- `docker-compose.ssl.yml` - Removed API port exposure
+- `docker-compose.ssl.yml` - Removed API port exposure, added WebAuthn/CORS env vars
 - `dynaform/nginx.ssl.conf` - Updated CSP headers
 - `dynaform/Dockerfile.ssl` - Fixed Angular build path
 - Angular service files - Ensured relative URLs
+- `server/src/services/webauthnService.ts` - Configured RP_ID and origin from env vars
+- `server/src/middleware/index.ts` - Updated CORS to use env variables
+- `server/.env` - Added WebAuthn and CORS configuration
+- `PASSKEY_CORS_CONFIGURATION.md` - Complete configuration guide

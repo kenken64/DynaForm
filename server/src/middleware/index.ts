@@ -4,9 +4,29 @@ import { Request, Response, NextFunction } from 'express';
 export { verifyToken, requireRole, optionalAuth, AuthMiddleware } from './auth';
 
 export function corsMiddleware(req: Request, res: Response, next: NextFunction): void {
-  res.header('Access-Control-Allow-Origin', '*');
+  const corsOrigin = process.env.CORS_ORIGIN || '*';
+  const allowCredentials = process.env.CORS_CREDENTIALS === 'true';
+  
+  // Handle multiple origins (comma-separated)
+  if (corsOrigin !== '*') {
+    const allowedOrigins = corsOrigin.split(',').map(origin => origin.trim());
+    const requestOrigin = req.headers.origin;
+    
+    if (requestOrigin && allowedOrigins.includes(requestOrigin)) {
+      res.header('Access-Control-Allow-Origin', requestOrigin);
+    } else if (allowedOrigins.length === 1) {
+      res.header('Access-Control-Allow-Origin', allowedOrigins[0]);
+    }
+  } else {
+    res.header('Access-Control-Allow-Origin', '*');
+  }
+  
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  
+  if (allowCredentials) {
+    res.header('Access-Control-Allow-Credentials', 'true');
+  }
   
   if (req.method === 'OPTIONS') {
     res.sendStatus(200);
