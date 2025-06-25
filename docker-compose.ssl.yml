@@ -96,11 +96,11 @@ services:
       - REDIS_PASSWORD=
       - REDIS_DB=0
       # WebAuthn/Passkey Configuration
-      - RP_ID=${DOMAIN_NAME:-localhost}
+      - RP_ID=dynaform.xyz
       - RP_NAME=DynaForm
-      - WEBAUTHN_ORIGIN=https://${DOMAIN_NAME:-localhost}
+      - WEBAUTHN_ORIGIN=https://dynaform.xyz
       # CORS Configuration  
-      - CORS_ORIGIN=https://${DOMAIN_NAME:-localhost},http://${DOMAIN_NAME:-localhost}
+      - CORS_ORIGIN=https://dynaform.xyz,http://dynaform.xyz
       - CORS_CREDENTIALS=true
     restart: unless-stopped
     depends_on:
