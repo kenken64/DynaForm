@@ -255,7 +255,6 @@ services:
     restart: unless-stopped
     volumes:
       - ./pdf-png/generated_pngs:/app/generated_pngs
-      - generated_images_ssl:/app/generated_pngs
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5001/", "||", "exit", "1"]
       interval: 30s
