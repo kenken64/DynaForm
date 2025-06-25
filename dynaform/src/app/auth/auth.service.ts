@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, map } from 'rxjs/operators';
 import { startRegistration, startAuthentication } from '@simplewebauthn/browser';
+import { environment } from '../../environments/environment';
 
 export interface User {
   id: string;

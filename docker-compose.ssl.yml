@@ -81,12 +81,13 @@ services:
         - BUILDKIT_INLINE_CACHE=0
         - BUILD_TIMESTAMP=${BUILD_TIMESTAMP:-default}
     pull_policy: build
-    ports:
-      - "3000:3000"
+    # Note: Don't expose port 3000 externally - all traffic should go through nginx
+    # ports:
+    #   - "3000:3000"
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - OLLAMA_BASE_URL=http://ollama-gpu:11434
+      - OLLAMA_BASE_URL=http://ai-agent:11435
       - DEFAULT_QWEN_MODEL_NAME=qwen2.5vl:latest
       - MONGODB_URI=mongodb://mongodb:27017/doc2formjson
       # Redis Configuration (matching server/.env)
