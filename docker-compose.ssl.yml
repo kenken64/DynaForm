@@ -137,7 +137,7 @@ services:
       - OLLAMA_TIMEOUT=10000
       # API Endpoints
       - VERIFIABLE_CONTRACT_API=http://verifiable-contract:3002/api/urls
-      - FRONTEND_BASE_URL=https://localhost
+      - FRONTEND_BASE_URL=https://dynaform.xyz
     # Default mode: interceptor (real-time conversation interception)
     # Override with: docker-compose run ai-agent server
     command: ["interceptor"]
