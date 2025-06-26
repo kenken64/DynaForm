@@ -6,14 +6,25 @@ export const ndiController = {
     try {
       const { fullName, email, username, ndiVerificationData } = req.body;
 
-      if (!fullName || !email || !username || !ndiVerificationData) {
+      if (!fullName || !email || !username) {
         res.status(400).json({
           success: false,
           error: 'Missing required fields',
-          message: 'Full name, email, username, and NDI verification data are required'
+          message: 'Full name, email, and username are required'
         });
         return;
       }
+
+      // NDI verification data is optional - create default if not provided
+      const verificationData = ndiVerificationData || {
+        type: 'manual-registration',
+        verification_result: 'ManualEntry',
+        timestamp: new Date().toISOString(),
+        data: {
+          source: 'manual-entry',
+          verified: false
+        }
+      };
 
       // Import auth service to handle user creation and JWT generation
       const { authService } = await import('../services/authService');
@@ -55,8 +66,8 @@ export const ndiController = {
         { _id: new (await import('mongodb')).ObjectId(result.userId) },
         {
           $set: {
-            ndiVerificationData,
-            isNdiVerified: true,
+            ndiVerificationData: verificationData,
+            isNdiVerified: verificationData.verification_result === 'ProofValidated',
             ndiVerifiedAt: new Date(),
             updatedAt: new Date()
           }

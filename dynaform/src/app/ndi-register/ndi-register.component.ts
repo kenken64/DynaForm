@@ -37,6 +37,11 @@ export class NdiRegisterComponent implements OnInit {
     //   return;
     // }
 
+    // Allow registration even without NDI data (for manual testing/fallback)
+    if (!this.ndiData) {
+      console.warn('No NDI verification data found - allowing manual registration');
+    }
+
     console.log('NDI verification data:', this.ndiData);
     console.log('Pre-extracted user data:', userData);
     
@@ -146,7 +151,7 @@ export class NdiRegisterComponent implements OnInit {
     }
 
     // Basic username validation
-    const usernameRegex = /^[a-zA-Z0-9_-]{3,20}$/;
+    const usernameRegex = /^[a-zA-Z0-9_\-]{3,20}$/;
     if (!usernameRegex.test(this.username.trim())) {
       this.errorMessage = 'Username must be 3-20 characters long and contain only letters, numbers, hyphens, and underscores.';
       return;
@@ -161,15 +166,26 @@ export class NdiRegisterComponent implements OnInit {
         fullName: this.fullName.trim(),
         email: this.email.trim(),
         username: this.username.trim(),
-        ndiData: this.ndiData
+        ndiData: this.ndiData || 'No NDI data available'
       });
 
       // Call the new NDI registration endpoint
+      // If ndiData is undefined, create a placeholder structure
+      const ndiVerificationData = this.ndiData || {
+        type: 'manual-registration',
+        verification_result: 'ManualEntry',
+        timestamp: new Date().toISOString(),
+        data: {
+          source: 'manual-entry',
+          verified: false
+        }
+      };
+
       const response = await this.ndiService.registerNdiUser({
         fullName: this.fullName.trim(),
         email: this.email.trim(),
         username: this.username.trim(),
-        ndiVerificationData: this.ndiData
+        ndiVerificationData: ndiVerificationData
       }).toPromise();
 
       if (response?.success && response.user && response.accessToken) {
