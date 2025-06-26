@@ -204,6 +204,8 @@ export class BhutanNdiComponent implements OnInit, OnDestroy {
 
   private navigateToRegister(proof: any, userData: any, reason: string): void {
     console.log(`🧭 Navigating to registration - Reason: ${reason}`);
+    console.log(proof);
+    console.log(userData);
     
     try {
       this.router.navigate(['/ndi-register'], { 
