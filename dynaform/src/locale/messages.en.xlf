@@ -3,7 +3,7 @@
   <file source-language="en" datatype="plaintext" original="ng2.template">
     <body>
       <trans-unit id="ai.title" datatype="html">
-        <source>Ask DynaForm AI</source>
+        <source>Ask FormBT AI</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/ask-dynaform/ask-dynaform.component.html</context>
           <context context-type="linenumber">7,9</context>
@@ -24,7 +24,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="ai.subtitle" datatype="html">
-        <source> Get instant help with forms, data extraction, and DynaForm features </source>
+        <source> Get instant help with forms, data extraction, and FormBT features </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/ask-dynaform/ask-dynaform.component.html</context>
           <context context-type="linenumber">22,26</context>
@@ -206,7 +206,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="landing.search.placeholder" datatype="html">
-        <source>Enter DynaForm form URL or ID</source>
+        <source>Enter FormBT form URL or ID</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/landing/landing.component.html</context>
           <context context-type="linenumber">26,28</context>
@@ -325,7 +325,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="nav.ask-ai" datatype="html">
-        <source>Ask DynaForm AI</source>
+        <source>Ask FormBT AI</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/side-menu/side-menu.component.html</context>
           <context context-type="linenumber">60,62</context>

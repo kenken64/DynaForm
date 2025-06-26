@@ -49,7 +49,7 @@
         <div class="message-content">
           <div class="message-header">
             <span class="message-sender">
-              {{ message.role === 'user' ? 'You' : 'DynaForm AI' }}
+              {{ message.role === 'user' ? 'You' : 'FormBT AI' }}
             </span>
             <span class="message-time">
               {{ formatTime(message.timestamp) }}
@@ -94,7 +94,7 @@
           <textarea 
             matInput
             formControlName="message"
-            placeholder="Ask me anything about DynaForm..."
+            placeholder="Ask me anything about FormBT..."
             rows="1"
             cdkTextareaAutosize
             cdkAutosizeMinRows="1"
