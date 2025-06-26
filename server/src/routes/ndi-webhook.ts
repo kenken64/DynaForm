@@ -28,149 +28,20 @@ router.post('/', async (req: Request, res: Response) => {
     console.log("🕒 Timestamp:", new Date().toISOString());
     console.log("📋 Full Payload:");
     console.log(JSON.stringify(body, null, 2));
-    
-    // Detailed payload analysis
-    console.log("\n🔍 ========== DETAILED PAYLOAD ANALYSIS ==========");
-    
-    // Check webhook structure
-    if (body.data) {
-      console.log("✅ Webhook has 'data' field");
-      console.log("📊 Data type:", typeof body.data);
-      console.log("📊 Data content:", JSON.stringify(body.data, null, 2));
-    } else {
-      console.log("❌ No 'data' field in webhook");
-    }
-
-    // Check for common NDI verification fields
-    const checkField = (obj: any, path: string) => {
-      const value = path.split('.').reduce((current, key) => current?.[key], obj);
-      console.log(`📌 ${path}:`, value !== undefined ? value : "❌ NOT FOUND");
-      return value;
-    };
-
-    console.log("\n🎯 ========== KEY VERIFICATION FIELDS ==========");
-    checkField(body, 'type');
-    checkField(body, 'verification_result'); // NDI primary success indicator
-    checkField(body, 'status');
-    checkField(body, 'state');
-    checkField(body, 'thid'); // NDI thread ID
-    checkField(body, 'relationship_did');
-    checkField(body, 'holder_did');
-    checkField(body, 'requested_presentation'); // NDI proof data
-    checkField(body, 'requested_presentation.revealed_attrs'); // NDI user data
-    checkField(body, 'data.threadId');
-    checkField(body, 'data.proofRequestThreadId');
-    checkField(body, 'data.proof');
-    checkField(body, 'data.proofStatus');
-    checkField(body, 'data.verified');
-    checkField(body, 'data.isVerified');
-    checkField(body, 'data.verification');
-    checkField(body, 'data.proofData');
-    checkField(body, 'data.attributes');
-    checkField(body, 'data.credentials');
-
-    // Check for proof data and attributes
-    if (body.data?.proof) {
-      console.log("\n🔐 ========== PROOF DATA ANALYSIS ==========");
-      console.log("📋 Proof structure:", JSON.stringify(body.data.proof, null, 2));
-      
-      if (body.data.proof.requestedProof) {
-        console.log("✅ Has requestedProof");
-        console.log("📊 Requested proof:", JSON.stringify(body.data.proof.requestedProof, null, 2));
-      }
-      
-      if (body.data.proof.identifiers) {
-        console.log("✅ Has identifiers");
-        console.log("📊 Identifiers:", JSON.stringify(body.data.proof.identifiers, null, 2));
-      }
-    }
-
-    // Check for verification status indicators
-    console.log("\n🚦 ========== VERIFICATION STATUS ANALYSIS ==========");
-    const possibleSuccessFields = [
-      'verification_result', // NDI primary indicator
-      'type', // NDI event type
-      'success', 'verified', 'isVerified', 'status', 'state',
-      'data.success', 'data.verified', 'data.isVerified', 'data.status', 'data.state',
-      'data.proof.verified', 'data.proofStatus', 'data.verification.success',
-      'data.verification_result' // In case it's nested
-    ];
-    
-    possibleSuccessFields.forEach(field => {
-      const value = checkField(body, field);
-      if (value !== undefined) {
-        console.log(`🎯 POTENTIAL SUCCESS INDICATOR - ${field}:`, value);
-        if (field === 'verification_result') {
-          console.log(`   ✅ PRIMARY NDI INDICATOR: ${value === 'ProofValidated' ? 'VALID' : 'INVALID'}`);
-        }
-      }
-    });
-
-    // Check for user data (ID Number, Full Name, etc.)
-    console.log("\n👤 ========== USER DATA ANALYSIS ==========");
-    const userDataPaths = [
-      'requested_presentation.revealed_attrs', // NDI primary user data location
-      'requested_presentation.revealed_attr_groups',
-      'requested_presentation.identifiers',
-      'data.proof.requestedProof.revealedAttrs',
-      'data.proof.requestedProof.revealedAttrGroups',
-      'data.attributes',
-      'data.userData',
-      'data.credentials',
-      'data.proof.revealedAttrs',
-      'data.requested_presentation.revealed_attrs' // NDI nested path
-    ];
-    
-    userDataPaths.forEach(path => {
-      const value = checkField(body, path);
-      if (value) {
-        console.log(`👤 USER DATA FOUND at ${path}:`, JSON.stringify(value, null, 2));
-        
-        // Special handling for NDI revealed_attrs
-        if (path.includes('revealed_attrs') && typeof value === 'object') {
-          Object.keys(value).forEach(attrKey => {
-            console.log(`   📋 Attribute "${attrKey}":`, value[attrKey]);
-          });
-        }
-      }
-    });
-
-    // Log headers for debugging
-    console.log("\n📧 ========== REQUEST HEADERS ==========");
-    console.log("Authorization:", req.headers.authorization ? "Present" : "❌ Missing");
-    console.log("Content-Type:", req.headers['content-type']);
-    console.log("User-Agent:", req.headers['user-agent']);
-    console.log("X-Forwarded-For:", req.headers['x-forwarded-for']);
 
     // Determine if this looks like a successful verification
     const isLikelySuccess = determineVerificationSuccess(body);
     console.log("\n🎯 ========== VERIFICATION ASSESSMENT ==========");
     console.log(`🔍 Likely successful verification: ${isLikelySuccess ? '✅ YES' : '❌ NO'}`);
     
-    if (!isLikelySuccess) {
-      console.log("⚠️  WARNING: This webhook may be a false positive or incomplete verification");
-      console.log("📋 Reasons for concern:");
-      
-      // List specific concerns
-      if (!body.data) console.log("   - No 'data' field");
-      if (!body.data?.proof) console.log("   - No proof data");
-      if (!body.status && !body.data?.status) console.log("   - No status field");
-      if (!body.data?.verified && !body.verified && !body.success) console.log("   - No success indicators");
-    }
-
-    console.log("\n================================================\n");
-
     // Store the webhook payload
     latestProof = body;
 
-    // Determine if verification was successful based on verification_result
-    const isSuccessful = determineVerificationSuccess(body);
     
-    console.log(`🎯 FINAL VERIFICATION DECISION: ${isSuccessful ? '✅ SUCCESS' : '❌ FAILED'}`);
     console.log(`📋 Based on verification_result: "${body.verification_result}"`);
 
     // Only send positive SSE event if verification_result is ProofValidated
-    if (isSuccessful) {
+    if (isLikelySuccess) {
       // Send SSE event to notify frontend about successful verification
       SSEService.broadcast('ndi-verification', {
         success: true,
@@ -179,7 +50,7 @@ router.post('/', async (req: Request, res: Response) => {
         timestamp: new Date().toISOString(),
         verification_result: body.verification_result,
         analysis: {
-          likelySuccess: isSuccessful,
+          likelySuccess: isLikelySuccess,
           hasProofData: !!(
             body.requested_presentation || 
             body.data?.proof || 
