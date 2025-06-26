@@ -360,6 +360,7 @@ server/src/
 ✅ **Nginx Configuration**
 - Updated Content Security Policy to allow QR code images
 - Added `https://api.qrserver.com` to `img-src` directive
+- Added `https://*.s3.ap-southeast-1.amazonaws.com` for AWS S3 QR data
 - QR code display now properly allowed by nginx
 - Production-ready SSL configuration
 

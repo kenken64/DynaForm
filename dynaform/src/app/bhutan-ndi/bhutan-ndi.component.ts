@@ -146,6 +146,8 @@ export class BhutanNdiComponent implements OnInit, OnDestroy {
 
   // Handle QR code image loading error
   onQRError(): void {
-    this.errorMessage = 'Failed to load QR code. Please try again.';
+    console.error('QR Code loading failed for URL:', this.qrCodeUrl);
+    console.error('This could be due to CSP restrictions or network issues');
+    this.errorMessage = 'Failed to load QR code. Please try again or check your network connection.';
   }
 }
