@@ -45,9 +45,9 @@ export class FormVerificationService {
     if (this.isHttpUrl(input)) {
       // For HTTP URLs, use specific patterns to extract form ID
       const urlPatterns = [
-        // Standard form URL: http://localhost:4200/public/form/{formId}/{fingerprint}
+        // Standard form URL: https://formbt.com/public/form/{formId}/{fingerprint}
         /^https?:\/\/[^\/]+\/public\/form\/([a-fA-F0-9]{24})\/[a-fA-F0-9]+/,
-        // Form viewer URL: http://localhost:4200/forms/{formId}
+        // Form viewer URL: https://formbt.com/forms/{formId}
         /^https?:\/\/[^\/]+\/forms\/([a-fA-F0-9]{24})/,
         // URL with query params: ?formId=6845b18ab44242b5eeba4e41
         /^https?:\/\/[^\/]+.*[?&]formId=([a-fA-F0-9]{24})/

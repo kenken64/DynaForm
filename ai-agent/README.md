@@ -145,7 +145,7 @@ The agent expects forms in MongoDB with this structure:
 
 Published forms are accessible at:
 ```
-http://localhost:4200/public/form/{form_id}/{json_fingerprint}
+https://formbt.com/public/form/{form_id}/{json_fingerprint}
 ```
 
 ## Dependencies

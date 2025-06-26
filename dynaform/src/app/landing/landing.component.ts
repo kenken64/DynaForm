@@ -44,7 +44,7 @@ export class LandingComponent {
         this.verificationResult = {
           success: false,
           verified: false,
-          message: 'Invalid DynaForm URL format. Expected format: http://localhost:4200/public/form/{formId}/{fingerprint}',
+          message: 'Invalid FormBT URL format. Expected format: https://formbt.com/public/form/{formId}/{fingerprint}',
           error: 'Invalid URL format'
         };
         return;
@@ -139,14 +139,14 @@ export class LandingComponent {
 
   generateSampleHash() {
     // Use the sample form ID for testing (24 characters for valid MongoDB ObjectId)
-    this.searchQuery = 'http://localhost:4200/public/form/6845ca285a88a8c1282af178/9fda53adc47ad259e739faff83b0d69c8ec9ea9a1437b935328df5be75ee5bdf';
+    this.searchQuery = 'https://formbt.com/public/form/6845ca285a88a8c1282af178/9fda53adc47ad259e739faff83b0d69c8ec9ea9a1437b935328df5be75ee5bdf';
   }
 
   /**
    * Debug method to test URL extraction
    */
   testUrlExtraction() {
-    const testUrl = 'http://localhost:4200/public/form/6845ca285a88a8c1282af178/9fda53adc47ad259e739faff83b0d69c8ec9ea9a1437b935328df5be75ee5bdf';
+    const testUrl = 'https://formbt.com/public/form/6845ca285a88a8c1282af178/9fda53adc47ad259e739faff83b0d69c8ec9ea9a1437b935328df5be75ee5bdf';
     const extractedId = this.formVerificationService.extractFormIdFromUrl(testUrl);
     console.log('Test URL:', testUrl);
     console.log('Extracted Form ID:', extractedId);

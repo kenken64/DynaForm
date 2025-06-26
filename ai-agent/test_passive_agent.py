@@ -90,7 +90,7 @@ async def test_form_data_retrieval():
                     print(f"✅ Successfully retrieved fingerprint: {fingerprint[:20]}...")
                     
                     # Test URL building
-                    url = f"{os.getenv('FRONTEND_BASE_URL', 'http://localhost:4200')}/public/form/{form_id}/{fingerprint}"
+                    url = f"{os.getenv('FRONTEND_BASE_URL', 'https://formbt.com')}/public/form/{form_id}/{fingerprint}"
                     print(f"📄 Public URL would be: {url}")
                 else:
                     print("⚠️ No fingerprint found for this form")

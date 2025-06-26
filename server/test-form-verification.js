@@ -26,7 +26,7 @@ async function createTestForm() {
         transactionHash: '0x1234567890abcdef1234567890abcdef12345678',
         blockNumber: 12345678,
         verifiedAt: new Date(),
-        publicUrl: `http://localhost:4200/public/form/${testFormId}/test123`
+        publicUrl: `https://formbt.com/public/form/${testFormId}/test123`
       },
       formData: {
         title: 'Test Form',
