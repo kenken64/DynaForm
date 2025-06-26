@@ -153,7 +153,7 @@ services:
       - FORMS_COLLECTION=generated_form
       # Ollama Configuration
       #- OLLAMA_HOST=http://ollama-gpu:11434
-      - OLLAMA_HOST=http://134.199.203.91:11434
+      - OLLAMA_HOST=http://134.199.205.46:11434
       - OLLAMA_MODEL=qwen2.5vl:latest
       - DEEPSEEK_MODEL_NAME=qwen2.5:0.5b
       - OLLAMA_KEEP_ALIVE=20m
@@ -207,7 +207,7 @@ services:
       - OLLAMA_TIMEOUT=10000
       # API Endpoints
       - VERIFIABLE_CONTRACT_API=http://verifiable-contract:3002/api/urls
-      - FRONTEND_BASE_URL=https://localhost
+      - FRONTEND_BASE_URL=https://formbt.com
     # Run in server mode
     command: ["server"]
     depends_on:
