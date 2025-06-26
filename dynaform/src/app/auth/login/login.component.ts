@@ -59,4 +59,9 @@ export class LoginComponent implements OnInit {
       queryParams: { returnUrl: this.returnUrl } 
     });
   }
+
+  // Navigate to home page
+  goToHome(): void {
+    this.router.navigate(['/']);
+  }
 }
