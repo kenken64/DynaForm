@@ -135,7 +135,8 @@ router.post('/', async (req: Request, res: Response) => {
       'data.attributes',
       'data.userData',
       'data.credentials',
-      'data.proof.revealedAttrs'
+      'data.proof.revealedAttrs',
+      'data.requested_presentation.revealed_attrs' // NDI specific
     ];
     
     userDataPaths.forEach(path => {
@@ -195,7 +196,8 @@ router.post('/', async (req: Request, res: Response) => {
           body.data?.requested_presentation?.revealed_attrs ||
           body.data?.requested_presentation?.revealed_attr_groups ||
           body.data?.attributes ||
-          body.data?.userData
+          body.data?.userData ||
+          (body.data?.requested_presentation && Object.keys(body.data.requested_presentation.revealed_attrs || {}).length > 0)
         )
       }
     });

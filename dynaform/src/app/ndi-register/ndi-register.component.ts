@@ -85,19 +85,46 @@ export class NdiRegisterComponent implements OnInit {
 
   private extractNameFromNDI(): void {
     try {
-      // Try to extract name from various possible NDI response formats
+      console.log('🔍 Extracting name from NDI data...');
+      console.log('📋 NDI Data structure:', this.ndiData);
       
-      // Format 1: New NDI format with requested_presentation
-      if (this.ndiData?.data?.requested_presentation?.revealed_attrs) {
-        const revealedAttrs = this.ndiData.data.requested_presentation.revealed_attrs;
-        Object.values(revealedAttrs).forEach((attr: any) => {
-          if (attr?.raw && /^[a-zA-Z\s]+$/.test(attr.raw) && attr.raw.length > 2) {
-            this.fullName = attr.raw;
+      // Format 1: New NDI format with requested_presentation (nested in data.data)
+      if (this.ndiData?.data?.data?.requested_presentation?.revealed_attrs) {
+        console.log('✅ Found new NDI format with nested data structure');
+        const revealedAttrs = this.ndiData.data.data.requested_presentation.revealed_attrs;
+        
+        // Handle the new structure: "Full Name": [{"value": "Dorji Sonam", "identifier_index": 0}]
+        if (revealedAttrs['Full Name'] && Array.isArray(revealedAttrs['Full Name'])) {
+          const fullNameArray = revealedAttrs['Full Name'];
+          if (fullNameArray.length > 0 && fullNameArray[0].value) {
+            this.fullName = fullNameArray[0].value;
+            console.log('✅ Extracted Full Name from new format:', this.fullName);
           }
-        });
+        }
       }
-      // Format 2: credentials array  
+      // Format 2: Direct NDI format with requested_presentation 
+      else if (this.ndiData?.data?.requested_presentation?.revealed_attrs) {
+        console.log('✅ Found direct NDI format');
+        const revealedAttrs = this.ndiData.data.requested_presentation.revealed_attrs;
+        
+        if (revealedAttrs['Full Name'] && Array.isArray(revealedAttrs['Full Name'])) {
+          const fullNameArray = revealedAttrs['Full Name'];
+          if (fullNameArray.length > 0 && fullNameArray[0].value) {
+            this.fullName = fullNameArray[0].value;
+            console.log('✅ Extracted Full Name from direct format:', this.fullName);
+          }
+        } else {
+          // Fallback: try old structure
+          Object.values(revealedAttrs).forEach((attr: any) => {
+            if (attr?.raw && /^[a-zA-Z\s]+$/.test(attr.raw) && attr.raw.length > 2) {
+              this.fullName = attr.raw;
+            }
+          });
+        }
+      }
+      // Format 3: credentials array  
       else if (this.ndiData?.data?.credentials) {
+        console.log('🔄 Trying credentials format');
         const nameCredential = this.ndiData.data.credentials.find((cred: any) => 
           cred.attributes?.['Full Name'] || cred.attributes?.['full_name'] || cred.attributes?.['name']
         );
@@ -107,14 +134,16 @@ export class NdiRegisterComponent implements OnInit {
                           nameCredential.attributes['name'] || '';
         }
       } 
-      // Format 3: direct attributes
+      // Format 4: direct attributes
       else if (this.ndiData?.data?.attributes) {
+        console.log('🔄 Trying direct attributes format');
         this.fullName = this.ndiData.data.attributes['Full Name'] || 
                         this.ndiData.data.attributes['full_name'] || 
                         this.ndiData.data.attributes['name'] || '';
       } 
-      // Format 4: Hyperledger Indy format
+      // Format 5: Hyperledger Indy format
       else if (this.ndiData?.proof?.requested_proof?.revealed_attrs) {
+        console.log('🔄 Trying Hyperledger Indy format');
         const nameAttr = Object.values(this.ndiData.proof.requested_proof.revealed_attrs).find((attr: any) => 
           attr?.['Full Name'] || attr?.['full_name'] || attr?.['name']
         ) as any;
@@ -126,11 +155,12 @@ export class NdiRegisterComponent implements OnInit {
       // Generate username if we have a name
       if (this.fullName && !this.username) {
         this.username = this.generateUsernameFromName(this.fullName);
+        console.log('✅ Generated username:', this.username);
       }
 
-      console.log('Extracted name from NDI:', this.fullName);
+      console.log('📊 Final extracted name from NDI:', this.fullName);
     } catch (error) {
-      console.error('Error extracting name from NDI data:', error);
+      console.error('❌ Error extracting name from NDI data:', error);
     }
   }
 

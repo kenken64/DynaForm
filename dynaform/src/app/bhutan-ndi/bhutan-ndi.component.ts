@@ -230,28 +230,60 @@ export class BhutanNdiComponent implements OnInit, OnDestroy {
     let email = '';
 
     try {
-      // Try to extract from requested_presentation
-      const presentation = proof?.data?.requested_presentation;
+      console.log('🔍 Starting user data extraction from proof...');
+      
+      // Try to extract from requested_presentation (new NDI format)
+      const presentation = proof?.data?.data?.requested_presentation;
+      console.log('📋 Presentation object:', presentation);
       
       if (presentation?.revealed_attrs) {
-        // Look for ID Number and Full Name in revealed attributes
-        Object.values(presentation.revealed_attrs).forEach((attr: any) => {
-          if (attr?.raw) {
-            // Check if this looks like an ID number (numeric)
-            if (/^\d+$/.test(attr.raw) && attr.raw.length >= 10) {
-              idNumber = attr.raw;
-            }
-            // Check if this looks like a name (contains letters and spaces)
-            else if (/^[a-zA-Z\s]+$/.test(attr.raw) && attr.raw.length > 2) {
-              fullName = attr.raw;
-            }
+        console.log('✅ Found revealed_attrs:', presentation.revealed_attrs);
+        
+        // Handle the new structure where attributes are keyed by name
+        // Example: "Full Name": [{"value": "Dorji Sonam", "identifier_index": 0}]
+        
+        // Extract Full Name
+        if (presentation.revealed_attrs['Full Name']) {
+          const fullNameArray = presentation.revealed_attrs['Full Name'];
+          if (Array.isArray(fullNameArray) && fullNameArray.length > 0 && fullNameArray[0].value) {
+            fullName = fullNameArray[0].value;
+            console.log('✅ Extracted Full Name:', fullName);
           }
-        });
+        }
+        
+        // Extract ID Number
+        if (presentation.revealed_attrs['ID Number']) {
+          const idNumberArray = presentation.revealed_attrs['ID Number'];
+          if (Array.isArray(idNumberArray) && idNumberArray.length > 0 && idNumberArray[0].value) {
+            idNumber = idNumberArray[0].value;
+            console.log('✅ Extracted ID Number:', idNumber);
+          }
+        }
+      } else {
+        console.log('❌ No revealed_attrs found in presentation');
+        
+        // Fallback: Try the old structure
+        const oldPresentation = proof?.data?.requested_presentation;
+        if (oldPresentation?.revealed_attrs) {
+          console.log('🔄 Trying fallback extraction from old structure');
+          Object.values(oldPresentation.revealed_attrs).forEach((attr: any) => {
+            if (attr?.raw) {
+              // Check if this looks like an ID number (numeric)
+              if (/^\d+$/.test(attr.raw) && attr.raw.length >= 3) {
+                idNumber = attr.raw;
+              }
+              // Check if this looks like a name (contains letters and spaces)
+              else if (/^[a-zA-Z\s]+$/.test(attr.raw) && attr.raw.length > 2) {
+                fullName = attr.raw;
+              }
+            }
+          });
+        }
       }
 
-      console.log('Extracted user data:', { idNumber, fullName, email });
+      console.log('📊 Final extracted user data:', { idNumber, fullName, email });
     } catch (error) {
-      console.error('Error extracting user data from proof:', error);
+      console.error('❌ Error extracting user data from proof:', error);
     }
 
     return { idNumber, fullName, email };
