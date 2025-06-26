@@ -94,6 +94,7 @@ This project includes comprehensive documentation with diagrams, implementation 
 | **✨ Features** | [User Public Submissions](USER_PUBLIC_SUBMISSIONS_TESTING_COMPLETE.md) | Public submission system |
 | **🔐 Security** | [Secure Implementation](SECURE_IMPLEMENTATION_SUMMARY.md) | Security implementation guide |
 | **🔐 Security** | [Testing Secure Config](TESTING_SECURE_CONFIG.md) | Security testing procedures |
+| **🔐 Security** | [Bhutan NDI Login Complete](BHUTAN_NDI_LOGIN_COMPLETE.md) | Complete NDI authentication integration |
 | **🧪 Testing** | [Autosave Testing Guide](AUTOSAVE_TESTING_GUIDE.md) | Testing autosave features |
 | **🧪 Testing** | [Autosave Fix Verification](AUTOSAVE_FIX_VERIFICATION.md) | Autosave bug fixes |
 | **🛠️ DevOps** | [Scripts Organization](SCRIPTS_REORGANIZATION_COMPLETE.md) | Script structure reorganization |

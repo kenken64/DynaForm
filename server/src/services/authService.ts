@@ -203,8 +203,8 @@ export const authService = {
         };
       }
 
-      // Generate tokens
-      const { accessToken, refreshToken } = this.generateTokens(verification.user.id);
+      // Generate tokens with user data
+      const { accessToken, refreshToken } = this.generateTokensWithUserData(verification.user);
 
       return {
         success: true,
@@ -264,17 +264,47 @@ export const authService = {
   generateTokens(userId: string): { accessToken: string; refreshToken: string } {
     const jwtSecret = config.JWT_SECRET as string;
     const jwtRefreshSecret = config.JWT_REFRESH_SECRET as string;
-    const expiresIn = config.JWT_EXPIRES_IN as string;
-    const refreshExpiresIn = config.JWT_REFRESH_EXPIRES_IN as string;
 
+    // We need to get user info to include in the JWT payload
+    // This is a synchronous method, so we'll create a version that accepts user data
     const accessToken = jwt.sign(
       { userId, type: 'access' },
-      jwtSecret
+      jwtSecret,
+      { expiresIn: '1h' }
     );
 
     const refreshToken = jwt.sign(
       { userId, type: 'refresh' },
-      jwtRefreshSecret
+      jwtRefreshSecret,
+      { expiresIn: '7d' }
+    );
+
+    return { accessToken, refreshToken };
+  },
+
+  // Generate JWT tokens with user data
+  generateTokensWithUserData(user: any): { accessToken: string; refreshToken: string } {
+    const jwtSecret = config.JWT_SECRET as string;
+    const jwtRefreshSecret = config.JWT_REFRESH_SECRET as string;
+
+    const accessToken = jwt.sign(
+      { 
+        userId: user._id?.toString() || user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role || 'user'
+      },
+      jwtSecret,
+      { expiresIn: '1h' }
+    );
+
+    const refreshToken = jwt.sign(
+      { 
+        userId: user._id?.toString() || user.id,
+        type: 'refresh'
+      },
+      jwtRefreshSecret,
+      { expiresIn: '7d' }
     );
 
     return { accessToken, refreshToken };
@@ -308,7 +338,7 @@ export const authService = {
         };
       }
 
-      const { accessToken, refreshToken: newRefreshToken } = this.generateTokens(decoded.userId);
+      const { accessToken, refreshToken: newRefreshToken } = this.generateTokensWithUserData(user);
 
       return {
         success: true,

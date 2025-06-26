@@ -63,10 +63,7 @@ export const ndiController = {
         }
       );
 
-      // Generate JWT tokens (same as passkey auth flow)
-      const { accessToken, refreshToken } = authService.generateTokens(result.userId);
-
-      // Get the created user
+      // Get the created user first
       const user = await usersCollection.findOne({ 
         _id: new (await import('mongodb')).ObjectId(result.userId) 
       });
@@ -79,6 +76,9 @@ export const ndiController = {
         });
         return;
       }
+
+      // Generate JWT tokens with user data (same as passkey auth flow)
+      const { accessToken, refreshToken } = authService.generateTokensWithUserData(user);
 
       const userResponse = {
         id: user._id.toString(),
