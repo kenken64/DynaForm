@@ -30,12 +30,12 @@ export class NdiRegisterComponent implements OnInit {
     this.ndiData = navigation?.extras?.state?.['ndiData'];
     const userData = navigation?.extras?.state?.['userData'];
     
-    if (!this.ndiData) {
-      // If no NDI data, redirect back to login
-      console.error('No NDI verification data found');
-      this.router.navigate(['/login']);
-      return;
-    }
+    // if (!this.ndiData) {
+    //   // If no NDI data, redirect back to login
+    //   console.error('No NDI verification data found');
+    //   this.router.navigate(['/login']);
+    //   return;
+    // }
 
     console.log('NDI verification data:', this.ndiData);
     console.log('Pre-extracted user data:', userData);
