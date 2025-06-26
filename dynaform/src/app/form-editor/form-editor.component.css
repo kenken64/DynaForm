@@ -675,6 +675,36 @@
   color: #333;
 }
 
+.label-element .label-heading {
+  margin: 0 0 8px 0;
+  font-size: 20px;
+  font-weight: 500;
+  color: #333;
+  border-left: 4px solid #2196f3;
+  padding-left: 12px;
+  background-color: #f8f9fa;
+  padding: 8px 12px;
+  border-radius: 4px;
+}
+
+.label-element .label-helper-text {
+  font-style: italic;
+}
+
+.debug-info {
+  background-color: #fff3cd;
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px solid #ffeaa7;
+}
+
+.unknown-element {
+  border: 2px dashed #f44336;
+  padding: 8px;
+  border-radius: 4px;
+  background-color: #ffeaea;
+}
+
 /* Properties Panel */
 .properties-panel {
   width: 320px;

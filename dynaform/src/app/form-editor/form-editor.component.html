@@ -246,7 +246,21 @@
               
               <!-- Label/Heading -->
               <div *ngSwitchCase="'label'" class="label-element">
-                <h3>{{ element.label }}</h3>
+                <h3 class="label-heading">{{ element.label }}</h3>
+                <div class="label-helper-text" style="font-size: 12px; color: #666; margin-top: 4px;">
+                  This is a label field (read-only heading)
+                </div>
+              </div>
+              
+              <!-- Default case for unknown types -->
+              <div *ngSwitchDefault class="unknown-element">
+                <div class="error-message" style="color: red; font-size: 12px;">
+                  Unknown element type: "{{ element.type }}"
+                </div>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>{{ element.label }} (Unknown Type)</mat-label>
+                  <input matInput [placeholder]="element.placeholder || ''" [required]="element.required">
+                </mat-form-field>
               </div>
               
             </div>

@@ -182,7 +182,7 @@ export class FormEditorComponent implements OnInit, OnDestroy {
             ...field,
             id: `field_${index}_${Date.now()}`,
             type: mappedType, // Map field types to supported types
-            label: field.name,
+            label: mappedType === 'label' ? (field.value || field.name || 'Label') : field.name, // For labels, use value as the label text
             position: index,
             required: requiredStatus,
             options: extractedOptions || field.options // Extract options from field.value or use field.options directly
@@ -652,6 +652,16 @@ export class FormEditorComponent implements OnInit, OnDestroy {
 
   trackByElementType(index: number, element: FormElementType): string {
     return element.id;
+  }
+
+  // Helper method to check if a field is a label field
+  isLabelField(element: DragFormField): boolean {
+    return element.type === 'label';
+  }
+
+  // Helper method for debugging - logs element types
+  logElementType(element: DragFormField): void {
+    console.log(`Element ${element.name} has type: "${element.type}" (isLabel: ${this.isLabelField(element)})`);
   }
 
   // Map field types from API to form editor types
