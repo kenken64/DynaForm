@@ -357,6 +357,12 @@ server/src/
 - Input validation and sanitization
 - HTTPS enforcement ready
 
+✅ **Nginx Configuration**
+- Updated Content Security Policy to allow QR code images
+- Added `https://api.qrserver.com` to `img-src` directive
+- QR code display now properly allowed by nginx
+- Production-ready SSL configuration
+
 ✅ **User Experience**
 - Professional UI/UX design
 - Real-time verification feedback
@@ -383,9 +389,28 @@ cd dynaform && npm run build ✅
 # Backend compilation confirmed  
 cd server && npm run build ✅
 
+# Nginx configuration updated for QR codes ✅
 # Complete authentication flow implemented
 # JWT token integration verified
 # AuthGuard compatibility confirmed
 ```
+
+### Final Testing Steps
+After deploying the updated nginx configuration:
+
+1. **Restart nginx container**:
+   ```bash
+   docker-compose -f docker-compose.ssl.yml restart nginx
+   ```
+
+2. **Verify QR code display**:
+   - Navigate to `https://formbt.com/login`
+   - Click "Sign in with Bhutan NDI"
+   - Confirm QR code from api.qrserver.com loads correctly
+
+3. **Test complete authentication flow**:
+   - NDI verification → Registration form → Dashboard access
+   - Verify JWT tokens work with AuthGuard
+   - Confirm passkey authentication still functions
 
 **The implementation provides a complete user journey from NDI verification through dashboard access with full authentication integration.** 🇧🇹✨
