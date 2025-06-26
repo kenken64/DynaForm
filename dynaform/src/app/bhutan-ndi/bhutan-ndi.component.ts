@@ -109,16 +109,82 @@ export class BhutanNdiComponent implements OnInit, OnDestroy {
     // Handle successful verification
     console.log('NDI verification successful:', proof);
     
-    // You can extract user information from the proof here
-    // For example: proof.data.credentials or proof.data.attributes
+    // Stop SSE listening since verification is complete
+    this.stopSSEListening();
     
-    // Show success message
-    alert('NDI verification successful! Please complete your registration.');
+    // Check if this is a ProofValidated result (indicating successful verification)
+    const isValidated = proof?.data?.verification_result === 'ProofValidated' || 
+                       proof?.data?.type === 'present-proof/presentation-result';
     
-    // Navigate to NDI registration form with verification data
-    this.router.navigate(['/ndi-register'], { 
-      state: { ndiData: proof }
-    });
+    if (isValidated) {
+      console.log('✅ NDI ProofValidated - Processing user data');
+      
+      // Extract user data from the requested_presentation
+      const userData = this.extractUserDataFromProof(proof);
+      
+      if (userData.idNumber && userData.fullName) {
+        console.log('📝 User data extracted, navigating to registration');
+        
+        // Navigate to registration form with pre-filled data
+        this.router.navigate(['/ndi-register'], { 
+          state: { 
+            ndiData: proof,
+            userData: userData
+          },
+          queryParams: { returnUrl: this.returnUrl }
+        });
+      } else {
+        console.log('⚠️ Incomplete user data, proceeding to manual registration');
+        
+        // Navigate to registration form with verification data
+        this.router.navigate(['/ndi-register'], { 
+          state: { ndiData: proof },
+          queryParams: { returnUrl: this.returnUrl }
+        });
+      }
+    } else {
+      // For other verification types, go to registration form
+      console.log('📝 NDI verification requires registration');
+      
+      // Navigate to NDI registration form with verification data
+      this.router.navigate(['/ndi-register'], { 
+        state: { ndiData: proof },
+        queryParams: { returnUrl: this.returnUrl }
+      });
+    }
+  }
+
+  private extractUserDataFromProof(proof: any): {idNumber: string, fullName: string, email: string} {
+    let idNumber = '';
+    let fullName = '';
+    let email = '';
+
+    try {
+      // Try to extract from requested_presentation
+      const presentation = proof?.data?.requested_presentation;
+      
+      if (presentation?.revealed_attrs) {
+        // Look for ID Number and Full Name in revealed attributes
+        Object.values(presentation.revealed_attrs).forEach((attr: any) => {
+          if (attr?.raw) {
+            // Check if this looks like an ID number (numeric)
+            if (/^\d+$/.test(attr.raw) && attr.raw.length >= 10) {
+              idNumber = attr.raw;
+            }
+            // Check if this looks like a name (contains letters and spaces)
+            else if (/^[a-zA-Z\s]+$/.test(attr.raw) && attr.raw.length > 2) {
+              fullName = attr.raw;
+            }
+          }
+        });
+      }
+
+      console.log('Extracted user data:', { idNumber, fullName, email });
+    } catch (error) {
+      console.error('Error extracting user data from proof:', error);
+    }
+
+    return { idNumber, fullName, email };
   }
 
   // Retry verification

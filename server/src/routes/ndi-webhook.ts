@@ -22,7 +22,10 @@ function determineVerificationSuccess(body: any): boolean {
     body.data?.state === 'verified' || body.data?.state === 'success' || body.data?.state === 'completed',
     body.data?.proof?.verified,
     body.data?.proofStatus === 'verified' || body.data?.proofStatus === 'success',
-    body.data?.verification?.success
+    body.data?.verification?.success,
+    // NDI specific verification indicators
+    body.data?.verification_result === 'ProofValidated',
+    body.data?.type === 'present-proof/presentation-result' && body.data?.verification_result === 'ProofValidated'
   ];
 
   // Check if any success indicator is true
@@ -33,14 +36,17 @@ function determineVerificationSuccess(body: any): boolean {
     body.data?.proof ||
     body.data?.attributes ||
     body.data?.credentials ||
-    body.data?.userData
+    body.data?.userData ||
+    body.data?.requested_presentation // NDI specific
   );
 
   // Check for revealed attributes (strong indicator of successful verification)
   const hasRevealedAttrs = !!(
     body.data?.proof?.requestedProof?.revealedAttrs ||
     body.data?.proof?.requestedProof?.revealedAttrGroups ||
-    body.data?.proof?.revealedAttrs
+    body.data?.proof?.revealedAttrs ||
+    body.data?.requested_presentation?.revealed_attrs || // NDI specific
+    body.data?.requested_presentation?.revealed_attr_groups // NDI specific
   );
 
   return hasSuccessIndicator || hasProofData || hasRevealedAttrs;
