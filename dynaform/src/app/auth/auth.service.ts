@@ -54,6 +54,9 @@ export class AuthService {
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
   public currentUser$ = this.currentUserSubject.asObservable();
 
+  // Safeguard flag to prevent accidental registration during auth failures
+  private preventAutoRegistration = false;
+
   constructor(
     private router: Router,
     private http: HttpClient
@@ -81,6 +84,12 @@ export class AuthService {
   }
 
   register(name: string, email: string, username: string): Observable<boolean> {
+    // SAFEGUARD: Prevent registration if we're in the middle of an authentication attempt
+    if (this.preventAutoRegistration) {
+      console.warn('Registration blocked: Currently in authentication flow');
+      return throwError(() => new Error('Registration is temporarily disabled during authentication'));
+    }
+
     const registerData = { fullName: name, email, username };
     
     return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, registerData)
@@ -167,6 +176,9 @@ export class AuthService {
   }
 
   async authenticateWithPasskey(): Promise<boolean> {
+    // Set safeguard flag to prevent accidental registration during auth
+    this.preventAutoRegistration = true;
+    
     try {
       // Enhanced WebAuthn support check
       const isWebAuthnSupported = await this.checkWebAuthnSupport();
@@ -178,13 +190,14 @@ export class AuthService {
       const optionsResponse = await this.http.post<any>(`${this.apiUrl}/auth/passkey/authenticate/begin`, {}).toPromise();
       
       if (!optionsResponse.success) {
-        throw new Error(optionsResponse.message || 'Failed to get authentication options');
+        console.log('Failed to get authentication options:', optionsResponse.message);
+        return false; // Explicitly return false, don't throw
       }
 
       // Validate that options exist and have the required structure
       if (!optionsResponse.options || !optionsResponse.options.challenge) {
         console.error('Invalid authentication options received:', optionsResponse);
-        throw new Error('Invalid authentication options received from server');
+        return false; // Explicitly return false, don't throw
       }
 
       console.log('Starting passkey authentication with options:', optionsResponse.options);
@@ -194,8 +207,9 @@ export class AuthService {
       try {
         asseResp = await startAuthentication({ optionsJSON: optionsResponse.options });
       } catch (error: any) {
-        console.error('SimpleWebAuthn authentication error:', error);
-        throw new Error(`Passkey authentication failed: ${error.message}`);
+        console.log('SimpleWebAuthn authentication error:', error);
+        // IMPORTANT: Don't throw error on authentication failure, just return false
+        return false;
       }
 
       // Send credential to server for verification
@@ -208,6 +222,8 @@ export class AuthService {
         return true;
       }
 
+      // IMPORTANT: Failed verification should return false, not throw
+      console.log('Passkey verification failed');
       return false;
     } catch (error: any) {
       // Handle HTTP errors more gracefully
@@ -224,10 +240,14 @@ export class AuthService {
         console.log('Passkey authentication cancelled by user');
         return false;
       } else {
-        // Only log unexpected errors
+        // IMPORTANT: Even for unexpected errors, return false instead of throwing
+        // This prevents any error handling from accidentally triggering registration
         console.error('Unexpected passkey authentication error:', error);
-        throw new Error('Authentication failed due to an unexpected error');
+        return false;
       }
+    } finally {
+      // Always clear the safeguard flag
+      this.preventAutoRegistration = false;
     }
   }
 

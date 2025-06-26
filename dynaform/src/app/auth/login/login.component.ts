@@ -42,11 +42,13 @@ export class LoginComponent implements OnInit {
       if (success) {
         this.router.navigate([this.returnUrl]);
       } else {
-        this.errorMessage = 'Passkey authentication failed';
+        // IMPORTANT: Only show error message, never trigger registration automatically
+        this.errorMessage = 'Passkey authentication failed. Please try again or register if you don\'t have an account.';
       }
     } catch (error: any) {
       this.isLoading = false;
-      this.errorMessage = error.message || 'Passkey authentication failed';
+      // IMPORTANT: Even on unexpected errors, only show message - never auto-register
+      this.errorMessage = 'Authentication failed. Please try again or register if you don\'t have an account.';
       console.error('Passkey authentication error:', error);
     }
   }
