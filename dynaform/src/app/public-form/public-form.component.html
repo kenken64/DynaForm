@@ -1,37 +1,139 @@
 <div class="public-form-container">
-  <!-- Loading State -->
-  <div *ngIf="loading" class="loading-container">
-    <div class="loading-gif-container">
-      <img src="https://i.pinimg.com/originals/99/b9/52/99b952956e2b92e88bbfeb747b61e503.gif" 
-           alt="Loading..." 
-           class="loading-gif" />
-    </div>
-    <p class="loading-text">Loading your form...</p>
-  </div>
-
-  <!-- Error State -->
-  <div *ngIf="error && !loading" class="error-container">
-    <img src="https://i.pinimg.com/originals/ef/8b/bd/ef8bbd4554dedcc2fd1fd15ab0ebd7a1.gif" 
-         alt="Error" 
-         class="error-gif" />
-    <h2>Unable to Load Form</h2>
-    <p>{{ error }}</p>
-    <button mat-raised-button color="primary" (click)="loadForm()">
-      <mat-icon>refresh</mat-icon>
-      Try Again
-    </button>
-  </div>
-
-  <!-- Form Content -->
-  <div *ngIf="formData && !loading && !error" class="form-content">
-    <!-- Form Header -->
-    <div class="form-header">
-      <div class="form-title-section">
-        <mat-icon class="form-icon">assignment</mat-icon>
-        <h1 class="form-title">{{ formTitle }}</h1>
+  <!-- NDI Verification Section (shows first) -->
+  <div *ngIf="!isNdiVerified" class="ndi-verification-section">
+    <div class="ndi-card">
+      <!-- Header -->
+      <div class="ndi-header">
+        <div class="ndi-title">
+          <img src="assets/images/bhutan-flag.png" 
+               alt="Bhutan Flag" 
+               class="flag-icon"
+               onerror="this.style.display='none'">
+          <h1>Identity Verification Required</h1>
+          <p>Please verify your identity with Bhutan NDI to access this form</p>
+        </div>
       </div>
-      <p class="form-subtitle">Please fill out all required fields and submit your form.</p>
+
+      <div class="ndi-content">
+        <!-- Loading State -->
+        <div *ngIf="isNdiLoading" class="loading-section">
+          <div class="loading-gif-container">
+            <img src="https://i.pinimg.com/originals/99/b9/52/99b952956e2b92e88bbfeb747b61e503.gif" 
+                 alt="Loading..." 
+                 class="loading-gif" />
+          </div>
+          <h2>Creating Verification Request</h2>
+          <p>Please wait while we generate your verification QR code...</p>
+        </div>
+
+        <!-- Error State -->
+        <div *ngIf="ndiError && !isNdiLoading" class="error-section">
+          <img src="https://i.pinimg.com/originals/ef/8b/bd/ef8bbd4554dedcc2fd1fd15ab0ebd7a1.gif" 
+               alt="Error" 
+               class="error-gif" />
+          <h2>Verification Failed</h2>
+          <p class="error-message">{{ ndiError }}</p>
+          <div class="error-actions">
+            <button mat-raised-button 
+                    color="primary"
+                    (click)="retryNdiVerification()">
+              <mat-icon>refresh</mat-icon>
+              Try Again
+            </button>
+          </div>
+        </div>
+
+        <!-- QR Code Display -->
+        <div *ngIf="qrCodeUrl && !isNdiLoading && !ndiError" class="qr-section">
+          <div class="qr-instructions">
+            <mat-icon class="qr-icon">qr_code_scanner</mat-icon>
+            <h2>Scan QR Code</h2>
+            <p>Open your <strong>Bhutan NDI</strong> mobile app and scan the QR code below to verify your identity.</p>
+          </div>
+
+          <div class="qr-code-container">
+            <div class="qr-code-wrapper">
+              <img [src]="qrCodeUrl" 
+                   alt="NDI Verification QR Code"
+                   class="qr-image"
+                   (error)="onQRError()">
+            </div>
+          </div>
+
+          <div class="verification-steps">
+            <h3>Verification Steps:</h3>
+            <ol>
+              <li>Open your Bhutan NDI mobile application</li>
+              <li>Select "Scan QR Code" or use the camera feature</li>
+              <li>Point your camera at the QR code above</li>
+              <li>Follow the prompts to verify your identity</li>
+              <li>Wait for confirmation on this page</li>
+            </ol>
+          </div>
+
+          <!-- Connection Status -->
+          <div *ngIf="isListening" class="connection-status">
+            <div class="spinner"></div>
+            <span>Connected - Waiting for verification...</span>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="qr-actions">
+            <button mat-raised-button 
+                    color="primary"
+                    (click)="retryNdiVerification()">
+              <mat-icon>refresh</mat-icon>
+              Generate New QR Code
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
+
+  <!-- Form Content (shows after NDI verification) -->
+  <div *ngIf="isNdiVerified">
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-container">
+      <div class="loading-gif-container">
+        <img src="https://i.pinimg.com/originals/99/b9/52/99b952956e2b92e88bbfeb747b61e503.gif" 
+             alt="Loading..." 
+             class="loading-gif" />
+      </div>
+      <p class="loading-text">Loading your form...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error && !loading" class="error-container">
+      <img src="https://i.pinimg.com/originals/ef/8b/bd/ef8bbd4554dedcc2fd1fd15ab0ebd7a1.gif" 
+           alt="Error" 
+           class="error-gif" />
+      <h2>Unable to Load Form</h2>
+      <p>{{ error }}</p>
+      <button mat-raised-button color="primary" (click)="loadForm()">
+        <mat-icon>refresh</mat-icon>
+        Try Again
+      </button>
+    </div>
+
+    <!-- Verification Success Badge -->
+    <div *ngIf="formData && !loading && !error" class="verification-success">
+      <div class="verification-badge">
+        <mat-icon class="check-icon">verified_user</mat-icon>
+        <span>Identity Verified with Bhutan NDI</span>
+      </div>
+    </div>
+
+    <!-- Form Content (after NDI verification) -->
+    <div *ngIf="formData && !loading && !error" class="form-content">
+      <!-- Form Header -->
+      <div class="form-header">
+        <div class="form-title-section">
+          <mat-icon class="form-icon">assignment</mat-icon>
+          <h1 class="form-title">{{ formTitle }}</h1>
+        </div>
+        <p class="form-subtitle">Please fill out all required fields and submit your form.</p>
+      </div>
 
     <!-- Dynamic Form -->
     <div class="form-card" *ngIf="dynamicForm && fields.length > 0">
@@ -273,5 +375,6 @@
       <h3>No Form Fields</h3>
       <p>This form doesn't contain any fillable fields.</p>
     </div>
-  </div>
+    </div> <!-- End form-content -->
+  </div> <!-- End isNdiVerified -->
 </div>

@@ -1,17 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { GeneratedForm, FieldConfiguration, FieldConfigurationValue } from '../interfaces/form.interface';
+import { NdiService } from '../services/ndi.service';
 
 @Component({
   selector: 'app-public-form',
   templateUrl: './public-form.component.html',
   styleUrls: ['./public-form.component.css']
 })
-export class PublicFormComponent implements OnInit {
+export class PublicFormComponent implements OnInit, OnDestroy {
   formData: GeneratedForm | null = null;
   loading = false;
   saving = false;
@@ -27,6 +28,18 @@ export class PublicFormComponent implements OnInit {
   formTitle: string = '';
   fieldConfigurations: Record<string, FieldConfigurationValue> = {};
   
+  // NDI Verification properties
+  isNdiVerificationRequired = true;
+  isNdiVerified = false;
+  isNdiLoading = false;
+  ndiError = '';
+  qrCodeUrl = '';
+  threadId = '';
+  isListening = false;
+  ndiData: any = null;
+  
+  private sseSubscription?: Subscription;
+  
   // Utility
   objectKeys = Object.keys;
 
@@ -35,7 +48,8 @@ export class PublicFormComponent implements OnInit {
     private router: Router,
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
-    private http: HttpClient
+    private http: HttpClient,
+    private ndiService: NdiService
   ) {
     // Initialize empty form to prevent template errors
     this.dynamicForm = this.fb.group({});
@@ -47,10 +61,125 @@ export class PublicFormComponent implements OnInit {
     this.jsonFingerprint = this.route.snapshot.paramMap.get('fingerprint') || '';
     
     if (this.formId && this.jsonFingerprint) {
-      this.loadForm();
+      // Start with NDI verification instead of loading form directly
+      this.startNdiVerification();
     } else {
       this.error = 'Invalid form parameters. Both form ID and JSON fingerprint are required.';
     }
+  }
+
+  ngOnDestroy(): void {
+    this.stopSSEListening();
+  }
+
+  // NDI Verification Methods
+  async startNdiVerification(): Promise<void> {
+    if (this.isNdiLoading) return;
+
+    this.isNdiLoading = true;
+    this.ndiError = '';
+
+    try {
+      console.log('🔒 Starting NDI verification for public form access...');
+      
+      const response = await this.ndiService.createProofRequest().toPromise();
+      
+      if (response && response.success && response.url) {
+        console.log('✅ NDI proof request created:', response);
+        
+        // Generate QR code for the proof request URL
+        this.qrCodeUrl = this.ndiService.generateQRCodeUrl(response.url);
+        this.threadId = response.threadId;
+        
+        console.log('📱 QR Code URL:', this.qrCodeUrl);
+        
+        // Start listening for SSE notifications
+        this.startSSEListening();
+      } else {
+        throw new Error('Invalid response from NDI service');
+      }
+    } catch (error: any) {
+      console.error('❌ NDI proof request error:', error);
+      this.ndiError = 'Failed to create NDI verification request. Please try again.';
+    } finally {
+      this.isNdiLoading = false;
+    }
+  }
+
+  private startSSEListening(): void {
+    if (this.isListening) return;
+    
+    this.isListening = true;
+    console.log('🎧 Starting SSE connection for NDI verification...');
+
+    this.sseSubscription = this.ndiService.createSSEConnection(this.threadId).subscribe({
+      next: (event) => {
+        console.log('📡 SSE Event received:', event);
+        
+        if (event.type === 'ndi-verification') {
+          console.log('✅ NDI verification completed via SSE:', event.data);
+          this.onNdiVerificationSuccess(event.data);
+        } else if (event.type === 'connected') {
+          console.log('🔗 SSE connection established');
+        } else if (event.type === 'heartbeat') {
+          // Heartbeat received, connection is alive
+        }
+      },
+      error: (error) => {
+        console.error('❌ SSE connection error:', error);
+        this.ndiError = 'Connection lost. Please try again.';
+        this.isListening = false;
+      }
+    });
+  }
+
+  private stopSSEListening(): void {
+    if (this.sseSubscription) {
+      this.sseSubscription.unsubscribe();
+      this.sseSubscription = undefined;
+    }
+    this.isListening = false;
+    console.log('🔇 SSE connection stopped');
+  }
+
+  private onNdiVerificationSuccess(proof: any): void {
+    console.log('🎉 NDI verification successful for public form:', proof);
+    
+    // Stop SSE listening since verification is complete
+    this.stopSSEListening();
+    
+    // Check if this is a valid NDI verification
+    const isValidated = proof?.data?.verification_result === 'ProofValidated' || 
+                       proof?.data?.type === 'present-proof/presentation-result';
+    
+    if (isValidated) {
+      console.log('✅ NDI verification validated - Loading public form');
+      
+      // Store NDI data
+      this.ndiData = proof;
+      this.isNdiVerified = true;
+      
+      // Now load the actual form
+      this.loadForm();
+    } else {
+      console.log('❌ NDI verification failed - Invalid proof');
+      this.ndiError = 'NDI verification failed. Please try again.';
+    }
+  }
+
+  // NDI retry method
+  retryNdiVerification(): void {
+    this.stopSSEListening();
+    this.qrCodeUrl = '';
+    this.threadId = '';
+    this.ndiError = '';
+    this.startNdiVerification();
+  }
+
+  // Handle QR code image loading error
+  onQRError(): void {
+    console.error('❌ QR Code loading failed for URL:', this.qrCodeUrl);
+    this.ndiError = 'Failed to load QR code. Please try again or check your network connection.';
   }
 
   loadForm(): void {
@@ -241,13 +370,14 @@ export class PublicFormComponent implements OnInit {
       formId: this.formId,
       jsonFingerprint: this.jsonFingerprint,
       submissionData: this.dynamicForm.value,
-      submittedAt: new Date().toISOString()
+      submittedAt: new Date().toISOString(),
+      ndiVerificationData: this.ndiData // Include NDI verification data
     };
 
     this.http.post<any>('/api/public/forms/submit', formSubmissionData).subscribe({
       next: (response: any) => {
         this.saving = false;
-        this.snackBar.open('Form submitted successfully!', 'Close', {
+        this.snackBar.open('Form submitted successfully with NDI verification!', 'Close', {
           duration: 5000,
           panelClass: ['success-snackbar']
         });

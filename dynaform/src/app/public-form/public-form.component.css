@@ -419,6 +419,240 @@
   margin-top: 4px;
 }
 
+/* NDI Verification Section */
+.ndi-verification-section {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.ndi-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+}
+
+.ndi-header {
+  margin-bottom: 30px;
+}
+
+.ndi-title h1 {
+  color: #1976d2;
+  margin: 15px 0 10px;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.ndi-title p {
+  color: #666;
+  margin: 0;
+  font-size: 16px;
+}
+
+.flag-icon {
+  width: 48px;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.loading-section,
+.error-section {
+  padding: 40px 20px;
+}
+
+.error-section h2 {
+  color: #d32f2f;
+  margin: 20px 0 15px;
+}
+
+.error-message {
+  color: #666;
+  margin-bottom: 25px;
+}
+
+.error-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.error-gif {
+  max-width: 100px;
+  height: auto;
+  margin-bottom: 15px;
+}
+
+.qr-section {
+  padding: 20px;
+}
+
+.qr-instructions {
+  margin-bottom: 30px;
+}
+
+.qr-instructions h2 {
+  color: #1976d2;
+  margin: 15px 0 10px;
+  font-size: 24px;
+}
+
+.qr-instructions p {
+  color: #666;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.qr-icon {
+  font-size: 48px;
+  color: #1976d2;
+  margin-bottom: 10px;
+}
+
+.qr-code-container {
+  display: flex;
+  justify-content: center;
+  margin: 30px 0;
+}
+
+.qr-code-wrapper {
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border: 2px solid #e3f2fd;
+}
+
+.qr-image {
+  max-width: 200px;
+  height: auto;
+  display: block;
+}
+
+.verification-steps {
+  margin: 30px 0;
+  text-align: left;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.verification-steps h3 {
+  color: #1976d2;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.verification-steps ol {
+  padding-left: 20px;
+  line-height: 1.8;
+  color: #555;
+}
+
+.verification-steps li {
+  margin-bottom: 8px;
+}
+
+.connection-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+  padding: 15px;
+  background: #e8f5e8;
+  border-radius: 8px;
+  color: #2e7d32;
+  font-weight: 500;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #e3f2fd;
+  border-top: 2px solid #1976d2;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.qr-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 25px;
+  flex-wrap: wrap;
+}
+
+/* Verification Success Badge */
+.verification-success {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.verification-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #e8f5e8;
+  color: #2e7d32;
+  padding: 12px 20px;
+  border-radius: 25px;
+  font-weight: 500;
+  border: 2px solid #a5d6a7;
+}
+
+.verification-badge .check-icon {
+  font-size: 20px;
+}
+
+/* Responsive Design for NDI Section */
+@media (max-width: 768px) {
+  .ndi-card {
+    padding: 25px 20px;
+    margin: 10px;
+  }
+  
+  .ndi-title h1 {
+    font-size: 24px;
+  }
+  
+  .qr-code-wrapper {
+    padding: 15px;
+  }
+  
+  .qr-image {
+    max-width: 180px;
+  }
+  
+  .verification-steps {
+    text-align: left;
+  }
+  
+  .qr-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .qr-actions button {
+    width: 100%;
+    max-width: 250px;
+  }
+}
+
 /* Snackbar Styling */
 ::ng-deep .success-snackbar {
   background-color: #4caf50 !important;
