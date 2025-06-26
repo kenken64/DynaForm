@@ -50,7 +50,7 @@ export class AskDynaformComponent implements OnInit, OnDestroy, AfterViewChecked
     // Add welcome message
     this.addMessage({
       id: this.generateMessageId(),
-      content: 'Hello! I\'m your DynaForm AI assistant. I can help you with form creation, data extraction, and answer questions about using DynaForm. What would you like to know?',
+      content: 'Hello! I\'m your FormBT AI assistant. I can help you with form creation, data extraction, and answer questions about using FormBT. What would you like to know?',
       role: 'assistant',
       timestamp: new Date()
     });
