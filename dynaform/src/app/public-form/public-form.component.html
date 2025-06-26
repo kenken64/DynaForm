@@ -132,37 +132,37 @@
       </div>
     </div>
 
-    <!-- Blockchain Verification Header -->
-    <div *ngIf="formData && !loading && !error && isFormBlockchainVerified()" class="blockchain-verification-header">
-      <div class="blockchain-badge">
-        <mat-icon class="blockchain-icon">verified</mat-icon>
-        <div class="blockchain-info">
-          <h3>Blockchain Verified Form</h3>
-          <p>This form has been verified and registered on the Ethereum Sepolia testnet</p>
-          <div class="blockchain-details">
-            <div class="tx-info">
-              <span class="tx-label">Transaction Hash:</span>
-              <span class="tx-hash">{{ getBlockchainTransactionHash() | slice:0:10 }}...{{ getBlockchainTransactionHash() | slice:-8 }}</span>
+    <!-- Form Content (after NDI verification) -->
+    <div *ngIf="formData && !loading && !error" class="form-content">
+      <!-- Blockchain Verification Header - Top of Form -->
+      <div *ngIf="isFormBlockchainVerified()" class="blockchain-verification-header">
+        <div class="blockchain-badge">
+          <mat-icon class="blockchain-icon">verified</mat-icon>
+          <div class="blockchain-info">
+            <h3>Blockchain Verified Form</h3>
+            <p>This form has been verified and registered on the Ethereum Sepolia testnet</p>
+            <div class="blockchain-details">
+              <div class="tx-info">
+                <span class="tx-label">Transaction Hash:</span>
+                <span class="tx-hash">{{ getBlockchainTransactionHash() | slice:0:10 }}...{{ getBlockchainTransactionHash() | slice:-8 }}</span>
+              </div>
+              <div class="verification-date" *ngIf="getBlockchainVerificationDate()">
+                <span class="date-label">Verified:</span>
+                <span class="date-value">{{ getBlockchainVerificationDate() }}</span>
+              </div>
+              <button mat-raised-button 
+                      color="primary" 
+                      class="explorer-btn"
+                      (click)="openBlockchainExplorer()"
+                      [disabled]="!getBlockchainTransactionHash()">
+                <mat-icon>open_in_new</mat-icon>
+                View on Etherscan
+              </button>
             </div>
-            <div class="verification-date" *ngIf="getBlockchainVerificationDate()">
-              <span class="date-label">Verified:</span>
-              <span class="date-value">{{ getBlockchainVerificationDate() }}</span>
-            </div>
-            <button mat-raised-button 
-                    color="primary" 
-                    class="explorer-btn"
-                    (click)="openBlockchainExplorer()"
-                    [disabled]="!getBlockchainTransactionHash()">
-              <mat-icon>open_in_new</mat-icon>
-              View on Etherscan
-            </button>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Form Content (after NDI verification) -->
-    <div *ngIf="formData && !loading && !error" class="form-content">
       <!-- Form Header -->
       <div class="form-header">
         <div class="form-title-section">
