@@ -421,6 +421,153 @@
   opacity: 0.8;
 }
 
+/* Blockchain Verification Header */
+.blockchain-verification-header {
+  width: 100%;
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 0 20px;
+}
+
+.blockchain-badge {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-radius: 12px;
+  padding: 20px;
+  color: white;
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  animation: verified-glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes verified-glow {
+  0% {
+    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+  }
+  100% {
+    box-shadow: 0 6px 25px rgba(16, 185, 129, 0.5);
+  }
+}
+
+.blockchain-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.blockchain-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.blockchain-info h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.blockchain-info p {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.9;
+  line-height: 1.4;
+}
+
+.blockchain-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.tx-info, .verification-date {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.tx-label, .date-label {
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.tx-hash {
+  font-family: 'Courier New', monospace;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+.date-value {
+  font-weight: 500;
+}
+
+.explorer-btn {
+  align-self: flex-start;
+  margin-top: 8px;
+  background: rgba(255, 255, 255, 0.15) !important;
+  color: white !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  font-size: 12px !important;
+  padding: 6px 12px !important;
+  min-width: auto !important;
+  height: 32px !important;
+  line-height: 20px !important;
+  transition: all 0.3s ease;
+}
+
+.explorer-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.25) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.explorer-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.explorer-btn mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+}
+
+/* Responsive Design for Blockchain Badge */
+@media (max-width: 768px) {
+  .blockchain-verification-header {
+    padding: 0 15px;
+  }
+  
+  .blockchain-badge {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+  }
+  
+  .blockchain-icon {
+    align-self: center;
+  }
+  
+  .explorer-btn {
+    align-self: stretch;
+    justify-content: center;
+  }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .form-content {

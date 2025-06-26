@@ -62,7 +62,22 @@ export class PublicFormService {
       }
 
       console.log(`Verified public form retrieved successfully: ${formId} with fingerprint: ${jsonFingerprint}`);
-      return form;
+      
+      // Include blockchain verification information in the response
+      const formWithBlockchain = {
+        ...form,
+        isBlockchainVerified: !!(form.status === 'verified' && form.blockchainInfo?.transactionHash),
+        blockchainData: form.blockchainInfo ? {
+          transactionHash: form.blockchainInfo.transactionHash,
+          blockNumber: form.blockchainInfo.blockNumber,
+          verifiedAt: form.blockchainInfo.verifiedAt,
+          gasUsed: form.blockchainInfo.gasUsed,
+          explorerUrl: form.blockchainInfo.transactionHash ? 
+            `https://sepolia.etherscan.io/tx/${form.blockchainInfo.transactionHash}` : null
+        } : null
+      };
+      
+      return formWithBlockchain;
 
     } catch (error: any) {
       console.error('Error getting public form:', error);

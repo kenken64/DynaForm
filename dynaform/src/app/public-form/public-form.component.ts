@@ -39,6 +39,10 @@ export class PublicFormComponent implements OnInit, OnDestroy {
   isListening = false;
   ndiData: any = null;
   
+  // Blockchain Verification properties
+  isBlockchainVerified = false;
+  blockchainData: any = null;
+  
   private sseSubscription?: Subscription;
   
   // Utility
@@ -232,6 +236,28 @@ export class PublicFormComponent implements OnInit, OnDestroy {
       next: (formData: GeneratedForm) => {
         this.loading = false;
         this.formData = formData;
+        
+        // Extract blockchain verification information
+        this.isBlockchainVerified = (formData as any).isBlockchainVerified || false;
+        this.blockchainData = (formData as any).blockchainData || null;
+        
+        // Also check form status and blockchainInfo directly for verification
+        if (!this.isBlockchainVerified && (formData as any).status === 'verified' && (formData as any).blockchainInfo) {
+          this.isBlockchainVerified = true;
+          this.blockchainData = (formData as any).blockchainInfo;
+          
+          // If no explorerUrl is set, construct it
+          if (this.blockchainData && this.blockchainData.transactionHash && !this.blockchainData.explorerUrl) {
+            this.blockchainData.explorerUrl = `https://sepolia.etherscan.io/tx/${this.blockchainData.transactionHash}`;
+          }
+        }
+        
+        console.log('🔗 Blockchain verification status:', this.isBlockchainVerified);
+        console.log('📋 Form status:', (formData as any).status);
+        if (this.blockchainData) {
+          console.log('💎 Blockchain data:', this.blockchainData);
+          console.log('🔗 Explorer URL:', this.blockchainData.explorerUrl);
+        }
         
         // Extract form data and build dynamic form
         if (this.formData && this.formData.formData) {
@@ -444,5 +470,37 @@ export class PublicFormComponent implements OnInit, OnDestroy {
         control.markAsTouched();
       }
     });
+  }
+
+  // Helper method to check if form is blockchain verified
+  isFormBlockchainVerified(): boolean {
+    return this.isBlockchainVerified && !!this.blockchainData?.transactionHash;
+  }
+
+  // Get blockchain transaction hash for display
+  getBlockchainTransactionHash(): string {
+    return this.blockchainData?.transactionHash || '';
+  }
+
+  // Get formatted blockchain verification date
+  getBlockchainVerificationDate(): string {
+    if (this.blockchainData?.verifiedAt) {
+      return new Date(this.blockchainData.verifiedAt).toLocaleDateString();
+    }
+    return '';
+  }
+
+  // Blockchain verification method
+  openBlockchainExplorer(): void {
+    // Check for explorerUrl first, if not available construct from transaction hash
+    if (this.blockchainData?.explorerUrl) {
+      window.open(this.blockchainData.explorerUrl, '_blank');
+    } else if (this.blockchainData?.transactionHash) {
+      // Construct Sepolia Etherscan URL from transaction hash
+      const sepoliaUrl = `https://sepolia.etherscan.io/tx/${this.blockchainData.transactionHash}`;
+      window.open(sepoliaUrl, '_blank');
+    } else {
+      console.warn('No transaction hash or explorer URL available for blockchain verification');
+    }
   }
 }
