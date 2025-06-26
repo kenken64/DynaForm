@@ -93,11 +93,11 @@ fi
 
 echo
 echo "🚀 Step 4: Test image URL"
-echo "Testing URL: https://dynaform.xyz/conversion/generated_images/6fdf740a-f008-4a73-bc59-a35248a39f60/sampleform_page_1.png"
+echo "Testing URL: https://formbt.com/conversion/generated_images/6fdf740a-f008-4a73-bc59-a35248a39f60/sampleform_page_1.png"
 
 if command -v curl >/dev/null 2>&1; then
     echo "Using curl to test..."
-    HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://dynaform.xyz/conversion/generated_images/6fdf740a-f008-4a73-bc59-a35248a39f60/sampleform_page_1.png")
+    HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://formbt.com/conversion/generated_images/6fdf740a-f008-4a73-bc59-a35248a39f60/sampleform_page_1.png")
     
     if [ "$HTTP_CODE" = "200" ]; then
         echo "✅ Image is accessible! (HTTP 200)"
@@ -127,7 +127,7 @@ echo "💡 Next Steps if Still 404:"
 echo "1. Try uploading a new PDF to generate fresh images"
 echo "2. Check volume mount in docker-compose.ssl.yml"
 echo "3. Verify PDF converter is working: docker logs \$(docker compose ps -q pdf-converter)"
-echo "4. Test a simple file: curl -I https://dynaform.xyz/health"
+echo "4. Test a simple file: curl -I https://formbt.com/health"
 
 echo
 echo "🎯 Current nginx configuration for images:"

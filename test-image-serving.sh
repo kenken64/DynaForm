@@ -45,7 +45,7 @@ if [ -n "$UUID_DIR" ]; then
         
         echo
         echo "🌐 URL to test in browser:"
-        echo "https://dynaform.xyz/conversion/generated_images/$UUID_DIR/$IMAGE_FILE"
+        echo "https://formbt.com/conversion/generated_images/$UUID_DIR/$IMAGE_FILE"
         
         echo
         echo "🔍 Step 6: Testing curl from container..."

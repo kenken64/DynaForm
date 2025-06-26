@@ -88,7 +88,7 @@ fi
 
 # Test basic connectivity
 echo "🌐 Testing basic connectivity..."
-BASE_URL="https://dynaform.xyz"
+BASE_URL="https://formbt.com"
 test_route "$BASE_URL" "200" "Main landing page"
 
 # Test API endpoints
@@ -119,7 +119,7 @@ echo "✅ If all tests show SUCCESS, the routing fix is working correctly"
 echo "❌ If any tests show FAILED, there may still be configuration issues"
 echo ""
 echo "📝 Manual tests to perform in browser:"
-echo "1. Navigate to https://dynaform.xyz/form-viewer/test123"
+echo "1. Navigate to https://formbt.com/form-viewer/test123"
 echo "2. Refresh the page (should not show 404)"
 echo "3. Check that authentication redirects work properly"
 echo "4. Test form editor 'Preview' button functionality"
@@ -127,4 +127,4 @@ echo ""
 echo "🔧 If issues persist:"
 echo "1. Check docker logs: docker compose -f docker-compose.ssl.yml logs nginx"
 echo "2. Check Angular build: docker compose -f docker-compose.ssl.yml logs frontend"
-echo "3. Verify SSL certificates: openssl s_client -connect dynaform.xyz:443"
+echo "3. Verify SSL certificates: openssl s_client -connect formbt.com:443"

@@ -36,6 +36,6 @@ if [ -n "$UUID_DIR" ]; then
     if [ -n "$IMAGE_FILE" ]; then
         echo
         echo "🧪 Test this URL:"
-        echo "https://dynaform.xyz/conversion/generated_images/$UUID_DIR/$IMAGE_FILE"
+        echo "https://formbt.com/conversion/generated_images/$UUID_DIR/$IMAGE_FILE"
     fi
 fi

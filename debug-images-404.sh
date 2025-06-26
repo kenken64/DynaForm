@@ -16,7 +16,7 @@ echo "📋 Image Details:"
 echo "   UUID: $IMAGE_UUID"
 echo "   File: $IMAGE_FILE"
 echo "   URL: $IMAGE_URL"
-echo "   Full URL: https://dynaform.xyz$IMAGE_URL"
+echo "   Full URL: https://formbt.com$IMAGE_URL"
 echo
 
 # Check if Docker is available
@@ -85,7 +85,7 @@ echo "   ls -la ./pdf-png/generated_pngs/$IMAGE_UUID/"
 
 echo
 echo "2. Test nginx configuration:"
-echo "   curl -I https://dynaform.xyz$IMAGE_URL"
+echo "   curl -I https://formbt.com$IMAGE_URL"
 
 echo
 echo "3. Check nginx container directly:"

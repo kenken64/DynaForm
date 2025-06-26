@@ -13,7 +13,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Default configuration
-DEFAULT_DOMAIN="dynaform.xyz"
+DEFAULT_DOMAIN="formbt.com"
 DEFAULT_EMAIL="bunnyppl@gmail.com"
 COMPOSE_FILE="docker-compose.ssl.yml"
 

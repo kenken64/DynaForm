@@ -24,7 +24,7 @@ https://localhost  (accept certificate warning once)
 
 # ❌ FAILS: Access via IP or custom domain with self-signed certs
 https://192.168.1.100
-https://dynaform.xyz (with self-signed certs)
+https://formbt.com (with self-signed certs)
 ```
 
 **Steps:**

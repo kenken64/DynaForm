@@ -16,7 +16,7 @@ WebAuthn requires a secure context. Browsers only allow WebAuthn on:
 Change your browser URL from:
 ```
 ❌ https://192.168.1.100        (fails - IP with self-signed cert)
-❌ https://dynaform.xyz         (fails - custom domain with self-signed cert)
+❌ https://formbt.com         (fails - custom domain with self-signed cert)
 ```
 
 To:

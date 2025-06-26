@@ -54,11 +54,11 @@ doc2formjson-api:
     - REDIS_PASSWORD=
     - REDIS_DB=0
     # WebAuthn/Passkey Configuration
-    - RP_ID=dynaform.xyz
+    - RP_ID=formbt.com
     - RP_NAME=DynaForm
-    - WEBAUTHN_ORIGIN=https://dynaform.xyz
+    - WEBAUTHN_ORIGIN=https://formbt.com
     # CORS Configuration
-    - CORS_ORIGIN=https://dynaform.xyz,http://dynaform.xyz
+    - CORS_ORIGIN=https://formbt.com,http://formbt.com
     - CORS_CREDENTIALS=true
 ```
 

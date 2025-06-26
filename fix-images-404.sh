@@ -40,7 +40,7 @@ if command -v docker >/dev/null 2>&1; then
     echo
     echo "🎉 Generated images should now be accessible!"
     echo "   Try accessing your image URL again:"
-    echo "   https://dynaform.xyz/conversion/generated_images/7ee36852-b3a7-4293-85d4-2728d527eb48/StudentForm_page_1.png"
+    echo "   https://formbt.com/conversion/generated_images/7ee36852-b3a7-4293-85d4-2728d527eb48/StudentForm_page_1.png"
     
 else
     echo "⚠️  Docker not found. Please restart nginx manually:"

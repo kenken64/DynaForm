@@ -14,7 +14,7 @@ import json
 app = Flask(__name__)
 CORS(app, resources={
     r"/conversion/*": {
-        "origins": ["http://localhost:4201", "http://dynaform.xyz", "https://dynaform.xyz"],
+        "origins": ["http://localhost:4201", "http://formbt.com", "https://formbt.com"],
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization"],
         "supports_credentials": True

@@ -7,7 +7,7 @@ echo "🔍 SSL Certificate Debug Tool"
 echo "============================="
 
 # Check if domain argument provided
-DOMAIN=${1:-"dynaform.xyz"}
+DOMAIN=${1:-"formbt.com"}
 echo "Debugging domain: $DOMAIN"
 echo
 

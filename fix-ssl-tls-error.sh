@@ -96,10 +96,10 @@ echo "./force-renew-ssl.sh recreate"
 echo "docker compose -f docker-compose.ssl.yml restart dynaform-nginx"
 echo
 echo -e "${GREEN}Option 3: Use HTTP only (temporary)${NC}"
-echo "Access: http://dynaform.xyz (if port 80 is working)"
+echo "Access: http://formbt.com (if port 80 is working)"
 echo
 echo -e "${GREEN}Option 4: Debug mode${NC}"
-echo "./debug-ssl.sh dynaform.xyz"
+echo "./debug-ssl.sh formbt.com"
 echo
 
 # Check specific nginx SSL errors

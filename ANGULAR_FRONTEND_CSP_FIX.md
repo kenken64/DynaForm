@@ -44,7 +44,7 @@ COPY --from=builder /app/dist/dynaform/browser /usr/share/nginx/html
 ### 4. Fixed Health Check URLs (docker-compose.ssl.yml)
 ```yaml
 # Before (external domain that may not exist)
-test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "https://dynaform.xyz/health", "||", "exit", "1"]
+test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "https://formbt.com/health", "||", "exit", "1"]
 
 # After (local container check)
 test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/", "||", "exit", "1"]

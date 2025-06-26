@@ -32,7 +32,7 @@ if [ -n "$UUID_DIR" ]; then
     IMAGE_FILE=$(ls ./pdf-png/generated_pngs/$UUID_DIR/ | head -1)
     if [ -n "$IMAGE_FILE" ]; then
         echo "📋 Testing image: /conversion/generated_images/$UUID_DIR/$IMAGE_FILE"
-        echo "🌐 Try accessing: https://dynaform.xyz/conversion/generated_images/$UUID_DIR/$IMAGE_FILE"
+        echo "🌐 Try accessing: https://formbt.com/conversion/generated_images/$UUID_DIR/$IMAGE_FILE"
     fi
 fi
 
