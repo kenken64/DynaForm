@@ -321,7 +321,7 @@ services:
       - DOMAIN_NAME=${DOMAIN_NAME:-localhost}
       - SSL_EMAIL=${SSL_EMAIL:-admin@localhost}
     volumes:
-      - ./dynaform/nginx.ssl.conf:/etc/nginx/nginx.conf:ro
+      - ./dynaform/nginx.temp.conf:/etc/nginx/nginx.conf:ro
       - ./pdf-png/generated_pngs:/usr/share/nginx/html/generated_pngs:ro
       - certbot_certs:/etc/letsencrypt:ro
       - certbot_www:/var/www/certbot:ro
