@@ -100,6 +100,12 @@ export class PublicFormComponent implements OnInit {
     const group: any = {};
 
     this.fields.forEach(field => {
+      // Skip label fields as they don't need form controls
+      if (field.type === 'label') {
+        console.log(`Skipping label field: ${field.name} (labels don't need form controls)`);
+        return;
+      }
+      
       const sanitizedName = this.sanitizeFieldName(field.name);
       const validators = [];
       

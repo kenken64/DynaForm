@@ -210,6 +210,26 @@
   font-weight: bold;
 }
 
+/* Label Field Styling */
+.label-field {
+  margin: 16px 0;
+  text-align: left;
+}
+
+.form-label-heading {
+  color: #333;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+  padding: 8px 0;
+  border-bottom: 2px solid #667eea;
+  display: inline-block;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 /* Form Fields */
 .full-width {
   width: 100%;

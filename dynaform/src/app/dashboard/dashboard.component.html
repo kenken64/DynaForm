@@ -333,8 +333,15 @@
               </mat-form-field>
             </ng-container>
 
+            <!-- Label/Heading Fields -->
+            <ng-container *ngIf="field.type === 'label'">
+              <div class="label-field">
+                <h3 class="form-label-heading">{{ field.name }}</h3>
+              </div>
+            </ng-container>
+
             <!-- Text/Number/Date Fields -->
-            <ng-container *ngIf="field.type !== 'checkbox' && !isTextAreaField(field) && !isSignatureField(field)">
+            <ng-container *ngIf="field.type !== 'checkbox' && field.type !== 'label' && !isTextAreaField(field) && !isSignatureField(field)">
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label>{{ field.name }}</mat-label>
                 <input matInput 

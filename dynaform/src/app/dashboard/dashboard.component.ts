@@ -309,6 +309,12 @@ export class DashboardComponent implements AfterViewInit, OnInit {
     console.log('Building form with fields:', this.fields);
 
     this.fields.forEach(field => {
+      // Skip label fields as they don't need form controls
+      if (field.type === 'label') {
+        console.log(`Skipping label field: ${field.name} (labels don't need form controls)`);
+        return;
+      }
+      
       const sanitizedKey = this.sanitizeFieldName(field.name);
       this.originalFieldNameMap[sanitizedKey] = field.name;
       

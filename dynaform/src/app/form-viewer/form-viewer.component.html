@@ -70,6 +70,13 @@
                     </div>
                   </div>
 
+                  <!-- Label/Heading Fields -->
+                  <ng-container *ngIf="isLabelField(field)">
+                    <div class="label-field">
+                      <h3 class="form-label-heading">{{ field.name }}</h3>
+                    </div>
+                  </ng-container>
+
                   <!-- Textarea Fields -->
                   <ng-container *ngIf="isTextAreaField(field)">
                     <div class="field-label">
@@ -106,7 +113,7 @@
                   </ng-container>
 
                   <!-- Text/Number/Date Fields -->
-                  <ng-container *ngIf="field.type !== 'checkbox' && field.type !== 'select' && !isTextAreaField(field) && !isSignatureField(field)">
+                  <ng-container *ngIf="field.type !== 'checkbox' && field.type !== 'select' && field.type !== 'label' && !isTextAreaField(field) && !isSignatureField(field)">
                     <div class="field-label">
                       {{ field.name }}
                       <span *ngIf="getFieldConfiguration(field.name).includes('mandatory')" class="required-indicator">*</span>

@@ -126,6 +126,12 @@ export class FormViewerComponent implements OnInit, AfterViewInit {
       // Normalize field types for backward compatibility
       field = this.normalizeFieldType(field);
       
+      // Skip label fields as they don't need form controls
+      if (field.type === 'label') {
+        console.log(`Skipping label field: ${field.name} (labels don't need form controls)`);
+        return;
+      }
+      
       const sanitizedKey = this.sanitizeFieldName(field.name);
       this.originalFieldNameMap[sanitizedKey] = field.name;
       
@@ -194,6 +200,10 @@ export class FormViewerComponent implements OnInit, AfterViewInit {
 
   isSignatureField(field: any): boolean {
     return field.type === 'signature';
+  }
+
+  isLabelField(field: any): boolean {
+    return field.type === 'label';
   }
 
   isSingleCheckbox(field: any): boolean {
@@ -421,6 +431,20 @@ export class FormViewerComponent implements OnInit, AfterViewInit {
     const updatedFields: any[] = [];
     
     this.fields.forEach(field => {
+      // Skip label fields as they don't have form data
+      if (field.type === 'label') {
+        // Still include label fields in the updated fields, but with their original data
+        const updatedField = {
+          ...field,
+          configuration: {
+            mandatory: this.getFieldConfiguration(field.name).includes('mandatory'),
+            validation: this.getFieldConfiguration(field.name).includes('validation')
+          }
+        };
+        updatedFields.push(updatedField);
+        return;
+      }
+      
       const sanitizedKey = this.sanitizeFieldName(field.name);
       const originalName = field.name;
       const value = formData[sanitizedKey];

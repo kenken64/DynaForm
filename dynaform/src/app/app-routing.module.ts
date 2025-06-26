@@ -24,6 +24,7 @@ const routes: Routes = [
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
   { path: 'forms', component: FormsListComponent, canActivate: [AuthGuard] },
   { path: 'forms/:id', component: FormViewerComponent, canActivate: [AuthGuard] },
+  { path: 'form-viewer/:id', component: FormViewerComponent, canActivate: [AuthGuard] },
   { path: 'form-editor', component: FormEditorComponent, canActivate: [AuthGuard] },
   { path: 'form-editor/:id', component: FormEditorComponent, canActivate: [AuthGuard] },
   { path: 'form-data', component: FormDataListComponent, canActivate: [AuthGuard] },
