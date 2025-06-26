@@ -21,7 +21,7 @@ export class TranslationService {
     en: {
       'landing.hero.title': 'Transform Documents into Smart Forms',
       'landing.hero.subtitle': 'AI-powered form generation from PDFs with blockchain verification',
-      'landing.search.title': 'Verify DynaForm on Blockchain',
+      'landing.search.title': 'Verify FormBT on Blockchain',
       'landing.search.placeholder': 'Enter DynaForm form URL or ID',
       'landing.verify.button': 'Verify',
       'landing.verifying.button': 'Verifying...',
