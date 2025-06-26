@@ -32,6 +32,7 @@ export class PublicFormComponent implements OnInit, OnDestroy {
   isNdiVerificationRequired = true;
   isNdiVerified = false;
   isNdiLoading = false;
+  isWaitingForSSEVerification = false; // New property to track SSE waiting state
   ndiError = '';
   qrCodeUrl = '';
   threadId = '';
@@ -95,6 +96,10 @@ export class PublicFormComponent implements OnInit, OnDestroy {
         
         // Start listening for SSE notifications
         this.startSSEListening();
+        
+        // Set waiting state for SSE verification
+        this.isWaitingForSSEVerification = true;
+        console.log('⏳ Now waiting for SSE verification event...');
       } else {
         throw new Error('Invalid response from NDI service');
       }
@@ -116,13 +121,16 @@ export class PublicFormComponent implements OnInit, OnDestroy {
       next: (event) => {
         console.log('📡 SSE Event received:', event);
         
+        // Only process NDI verification events
         if (event.type === 'ndi-verification') {
-          console.log('✅ NDI verification completed via SSE:', event.data);
-          this.onNdiVerificationSuccess(event.data);
+          console.log('🔍 Processing NDI verification event:', event.data);
+          this.processNdiVerificationEvent(event.data);
         } else if (event.type === 'connected') {
           console.log('🔗 SSE connection established');
         } else if (event.type === 'heartbeat') {
-          // Heartbeat received, connection is alive
+          console.log('💓 Heartbeat received - connection alive');
+        } else {
+          console.log('ℹ️ Ignoring non-verification SSE event:', event.type);
         }
       },
       error: (error) => {
@@ -131,6 +139,38 @@ export class PublicFormComponent implements OnInit, OnDestroy {
         this.isListening = false;
       }
     });
+  }
+
+  private processNdiVerificationEvent(eventData: any): void {
+    console.log('🔎 Validating NDI verification event data:', eventData);
+    
+    // Clear waiting state since we received an event
+    this.isWaitingForSSEVerification = false;
+    
+    // Strict validation of SSE event data
+    if (!eventData) {
+      console.log('❌ No event data received');
+      this.ndiError = 'Invalid verification data received. Please try again.';
+      return;
+    }
+
+    // Check for valid verification result
+    const isProofValidated = eventData?.verification_result === 'ProofValidated';
+    const isPresentationResult = eventData?.type === 'present-proof/presentation-result';
+    const hasValidData = eventData?.data || eventData?.revealed_attrs || eventData?.requested_presentation;
+
+    if (isProofValidated || isPresentationResult) {
+      if (hasValidData) {
+        console.log('✅ Valid NDI verification event - proceeding with form access');
+        this.onNdiVerificationSuccess({ data: eventData });
+      } else {
+        console.log('❌ NDI verification event missing required data');
+        this.ndiError = 'Verification completed but data is incomplete. Please try again.';
+      }
+    } else {
+      console.log('❌ Invalid NDI verification event type or result');
+      this.ndiError = 'Invalid verification result. Please try again.';
+    }
   }
 
   private stopSSEListening(): void {
@@ -148,22 +188,28 @@ export class PublicFormComponent implements OnInit, OnDestroy {
     // Stop SSE listening since verification is complete
     this.stopSSEListening();
     
-    // Check if this is a valid NDI verification
+    // Clear waiting state
+    this.isWaitingForSSEVerification = false;
+    
+    // Check if this is a valid NDI verification from SSE event
     const isValidated = proof?.data?.verification_result === 'ProofValidated' || 
                        proof?.data?.type === 'present-proof/presentation-result';
     
     if (isValidated) {
-      console.log('✅ NDI verification validated - Loading public form');
+      console.log('✅ NDI verification validated via SSE - Setting verified state and loading form');
       
       // Store NDI data
       this.ndiData = proof;
+      
+      // Set verified state (this will show the form section)
       this.isNdiVerified = true;
       
-      // Now load the actual form
+      // Load the actual form after SSE verification
       this.loadForm();
     } else {
-      console.log('❌ NDI verification failed - Invalid proof');
+      console.log('❌ NDI verification failed - Invalid proof from SSE');
       this.ndiError = 'NDI verification failed. Please try again.';
+      this.isNdiVerified = false; // Ensure we stay in verification mode
     }
   }
 
@@ -173,6 +219,7 @@ export class PublicFormComponent implements OnInit, OnDestroy {
     this.qrCodeUrl = '';
     this.threadId = '';
     this.ndiError = '';
+    this.isWaitingForSSEVerification = false; // Clear waiting state
     this.startNdiVerification();
   }
 

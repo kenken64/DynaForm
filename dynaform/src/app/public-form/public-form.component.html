@@ -77,6 +77,20 @@
             <span>Connected - Waiting for verification...</span>
           </div>
 
+          <!-- Waiting for SSE Verification -->
+          <div *ngIf="isWaitingForSSEVerification" class="sse-waiting-section">
+            <div class="sse-waiting-content">
+              <div class="loading-gif-container">
+                <img src="https://i.pinimg.com/originals/99/b9/52/99b952956e2b92e88bbfeb747b61e503.gif" 
+                     alt="Waiting..." 
+                     class="loading-gif" />
+              </div>
+              <h3>Waiting for Verification</h3>
+              <p>Please complete the verification on your mobile device.</p>
+              <p class="sse-note">The form will appear automatically once verification is complete.</p>
+            </div>
+          </div>
+
           <!-- Action Buttons -->
           <div class="qr-actions">
             <button mat-raised-button 
