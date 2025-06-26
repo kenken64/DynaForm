@@ -87,9 +87,23 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
+      # JWT Configuration
+      - JWT_SECRET=your-super-secret-jwt-key-change-in-production-minimum-256-bits
+      - JWT_REFRESH_SECRET=your-super-secret-refresh-jwt-key-change-in-production-minimum-256-bits
+      - JWT_EXPIRES_IN=24h
+      - JWT_REFRESH_EXPIRES_IN=7d
+      # Ollama Configuration
       - OLLAMA_BASE_URL=http://ai-agent:11435 ## this is the Ollama proxy port for real-time interception
+      - OLLAMA_KEEP_ALIVE=50200s
+      - OLLAMA_TIMEOUT_MS=1080000
       - DEFAULT_QWEN_MODEL_NAME=qwen2.5vl:latest
+      - DEEPSEEK_MODEL_NAME=qwen2.5:0.5b
+      # MongoDB Configuration
       - MONGODB_URI=mongodb://mongodb:27017/doc2formjson
+      - MONGODB_HOST=mongodb
+      - MONGODB_PORT=27017
+      - MONGODB_DATABASE=doc2formjson
+      - MONGODB_DB_NAME=doc2formjson
       # Redis Configuration (matching server/.env)
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -140,6 +154,7 @@ services:
       # Ollama Configuration
       - OLLAMA_HOST=http://ollama-gpu:11434
       - OLLAMA_MODEL=qwen2.5vl:latest
+      - DEEPSEEK_MODEL_NAME=qwen2.5:0.5b
       - OLLAMA_KEEP_ALIVE=20m
       - OLLAMA_TIMEOUT=10000
       # API Endpoints
@@ -186,6 +201,7 @@ services:
       # Ollama Configuration
       - OLLAMA_HOST=http://ollama-gpu:11434
       - OLLAMA_MODEL=qwen2.5vl:latest
+      - DEEPSEEK_MODEL_NAME=qwen2.5:0.5b
       - OLLAMA_KEEP_ALIVE=20m
       - OLLAMA_TIMEOUT=10000
       # API Endpoints
