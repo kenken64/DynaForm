@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../auth.service';
+import { NdiService } from '../../services/ndi.service';
 
 @Component({
   selector: 'app-login',
@@ -11,11 +12,16 @@ export class LoginComponent implements OnInit {
   isLoading = false;
   errorMessage = '';
   returnUrl = '';
+  
+  // NDI-related properties
+  isNDILoading = false;
+  ndiError = '';
 
   constructor(
     private authService: AuthService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private ndiService: NdiService
   ) {}
 
   ngOnInit(): void {
@@ -63,5 +69,25 @@ export class LoginComponent implements OnInit {
   // Navigate to home page
   goToHome(): void {
     this.router.navigate(['/']);
+  }
+
+  // NDI authentication
+  async signInWithNDI(): Promise<void> {
+    if (this.isNDILoading) return;
+
+    this.isNDILoading = true;
+    this.ndiError = '';
+
+    try {
+      // Navigate to the Bhutan NDI component with return URL
+      this.router.navigate(['/bhutan-ndi'], { 
+        queryParams: { returnUrl: this.returnUrl } 
+      });
+    } catch (error: any) {
+      console.error('NDI navigation error:', error);
+      this.ndiError = 'Failed to navigate to NDI verification. Please try again.';
+    } finally {
+      this.isNDILoading = false;
+    }
   }
 }

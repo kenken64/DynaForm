@@ -208,6 +208,140 @@
   color: white !important;
 }
 
+/* NDI Authentication Section */
+.ndi-section {
+  margin-top: 24px;
+}
+
+.ndi-description {
+  margin: 16px 0 20px 0;
+  font-size: 14px;
+  color: #666;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.ndi-button {
+  width: 100%;
+  height: 56px;
+  font-weight: 500;
+  font-size: 16px;
+  background: #f59e0b !important;
+  border: none !important;
+  color: white !important;
+  transition: all 0.3s ease;
+  margin-bottom: 16px;
+}
+
+.ndi-button:hover:not([disabled]) {
+  background: #d97706 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.ndi-button mat-icon {
+  margin-right: 8px;
+  font-size: 24px;
+  color: white !important;
+}
+
+.ndi-button .mdc-button__label {
+  color: white !important;
+}
+
+.ndi-button span {
+  color: white !important;
+}
+
+.ndi-button:disabled {
+  background: #d1d5db !important;
+  color: #6b7280 !important;
+}
+
+.ndi-error {
+  margin-bottom: 16px;
+}
+
+/* QR Code Container */
+.qr-code-container {
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  margin-top: 16px;
+  animation: fadeIn 0.5s ease-in;
+}
+
+.qr-code-container h3 {
+  margin: 0 0 20px 0;
+  color: #1e293b;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.qr-code-image {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+  padding: 16px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.qr-image {
+  max-width: 200px;
+  max-height: 200px;
+  width: auto;
+  height: auto;
+  border-radius: 4px;
+}
+
+.qr-instructions {
+  margin: 16px 0;
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.qr-actions {
+  margin: 20px 0 16px 0;
+}
+
+.qr-actions button {
+  min-width: 120px;
+}
+
+.polling-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  background: #eff6ff;
+  border-radius: 8px;
+  color: #3b82f6;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.polling-indicator mat-spinner {
+  margin-right: 4px;
+}
+
+/* Fade in animation for QR code */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Responsive Design */
 @media (max-width: 480px) {
   .login-container {
@@ -226,6 +360,19 @@
     font-size: 40px;
     width: 40px;
     height: 40px;
+  }
+  
+  .qr-code-container {
+    padding: 16px;
+  }
+  
+  .qr-code-container h3 {
+    font-size: 16px;
+  }
+  
+  .qr-image {
+    max-width: 180px;
+    max-height: 180px;
   }
 }
 

@@ -1,0 +1,142 @@
+<div class="ndi-container">
+  <div class="ndi-card">
+    <!-- Header with navigation -->
+    <div class="ndi-header">
+      <div class="nav-buttons">
+        <button mat-icon-button 
+                class="nav-button"
+                (click)="goToHome()"
+                title="Back to Home">
+          <mat-icon>home</mat-icon>
+        </button>
+        <button mat-icon-button 
+                class="nav-button"
+                (click)="cancel()"
+                title="Back to Login">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+      </div>
+      
+      <div class="ndi-title">
+        <img src="assets/images/bhutan-flag.png" 
+             alt="Bhutan Flag" 
+             class="flag-icon"
+             onerror="this.style.display='none'">
+        <h1>Bhutan National Digital Identity</h1>
+        <p>Secure Identity Verification</p>
+      </div>
+    </div>
+
+    <div class="ndi-content">
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="loading-section">
+        <mat-spinner diameter="48"></mat-spinner>
+        <h2>Creating Verification Request</h2>
+        <p>Please wait while we generate your verification QR code...</p>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="errorMessage && !isLoading" class="error-section">
+        <mat-icon class="error-icon">error_outline</mat-icon>
+        <h2>Verification Failed</h2>
+        <p class="error-message">{{ errorMessage }}</p>
+        <div class="error-actions">
+          <button mat-raised-button 
+                  color="primary"
+                  (click)="retry()">
+            <mat-icon>refresh</mat-icon>
+            Try Again
+          </button>
+          <button mat-stroked-button 
+                  color="warn"
+                  (click)="cancel()">
+            <mat-icon>close</mat-icon>
+            Cancel
+          </button>
+        </div>
+      </div>
+
+      <!-- QR Code Display -->
+      <div *ngIf="qrCodeUrl && !isLoading && !errorMessage" class="qr-section">
+        <div class="qr-instructions">
+          <mat-icon class="qr-icon">qr_code_scanner</mat-icon>
+          <h2>Scan QR Code</h2>
+          <p>Open your <strong>Bhutan NDI</strong> mobile app and scan the QR code below to verify your identity.</p>
+        </div>
+
+        <div class="qr-code-container">
+          <div class="qr-code-wrapper">
+            <img [src]="qrCodeUrl" 
+                 alt="NDI Verification QR Code"
+                 class="qr-image"
+                 (error)="onQRError()">
+          </div>
+        </div>
+
+        <div class="verification-steps">
+          <h3>Verification Steps:</h3>
+          <ol>
+            <li>Open your Bhutan NDI mobile application</li>
+            <li>Select "Scan QR Code" or use the camera feature</li>
+            <li>Point your camera at the QR code above</li>
+            <li>Follow the prompts to verify your identity</li>
+            <li>Wait for confirmation on this page</li>
+          </ol>
+        </div>
+
+        <!-- Connection Status -->
+        <div *ngIf="isListening" class="connection-status">
+          <mat-spinner diameter="20"></mat-spinner>
+          <span>Connected - Waiting for verification...</span>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="qr-actions">
+          <button mat-raised-button 
+                  color="primary"
+                  (click)="retry()">
+            <mat-icon>refresh</mat-icon>
+            Generate New QR Code
+          </button>
+          <button mat-stroked-button 
+                  color="warn"
+                  (click)="cancel()">
+            <mat-icon>close</mat-icon>
+            Cancel Verification
+          </button>
+        </div>
+      </div>
+
+      <!-- Help Section -->
+      <div class="help-section">
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-icon>help_outline</mat-icon>
+              Need Help?
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="help-content">
+            <h4>Don't have the Bhutan NDI app?</h4>
+            <p>Download the official Bhutan National Digital Identity app from:</p>
+            <ul>
+              <li>Google Play Store (Android)</li>
+              <li>Apple App Store (iOS)</li>
+            </ul>
+            
+            <h4>QR Code not working?</h4>
+            <ul>
+              <li>Ensure good lighting when scanning</li>
+              <li>Hold your phone steady</li>
+              <li>Try generating a new QR code</li>
+              <li>Check your internet connection</li>
+            </ul>
+
+            <h4>Still having issues?</h4>
+            <p>Contact FormBT support or try using the standard passkey login method.</p>
+          </div>
+        </mat-expansion-panel>
+      </div>
+    </div>
+  </div>
+</div>

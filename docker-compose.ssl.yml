@@ -116,6 +116,11 @@ services:
       # CORS Configuration  
       - CORS_ORIGIN=https://formbt.com,http://formbt.com
       - CORS_CREDENTIALS=true
+      # NDI Configuration
+      - NDI_CLIENT_ID=3tq7ho23g5risndd90a76jre5f 
+      - NDI_CLIENT_SECRET=111rvn964mucumr6c3qq3n2poilvq5v92bkjh58p121nmoverquh
+      - WEBHOOK_ID=formbt1234567890
+      - WEBHOOK_TOKEN=32746327bnmbesfnbsdnfbdsf34
     restart: unless-stopped
     depends_on:
       - ollama-gpu

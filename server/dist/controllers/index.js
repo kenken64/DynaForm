@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.authController = exports.chatController = exports.ChatController = exports.publicFormController = exports.PublicFormController = exports.recipientGroupController = exports.RecipientGroupController = exports.recipientController = exports.RecipientController = exports.formDataController = exports.FormDataController = exports.formController = exports.FormController = exports.imageController = exports.ImageController = void 0;
+exports.ndiController = exports.authController = exports.chatController = exports.ChatController = exports.publicFormController = exports.PublicFormController = exports.recipientGroupController = exports.RecipientGroupController = exports.recipientController = exports.RecipientController = exports.formDataController = exports.FormDataController = exports.formController = exports.FormController = exports.imageController = exports.ImageController = void 0;
 var imageController_1 = require("./imageController");
 Object.defineProperty(exports, "ImageController", { enumerable: true, get: function () { return imageController_1.ImageController; } });
 Object.defineProperty(exports, "imageController", { enumerable: true, get: function () { return imageController_1.imageController; } });
@@ -24,4 +24,6 @@ Object.defineProperty(exports, "ChatController", { enumerable: true, get: functi
 Object.defineProperty(exports, "chatController", { enumerable: true, get: function () { return chatController_1.chatController; } });
 var authController_1 = require("./authController");
 Object.defineProperty(exports, "authController", { enumerable: true, get: function () { return authController_1.authController; } });
+var ndiController_1 = require("./ndiController");
+Object.defineProperty(exports, "ndiController", { enumerable: true, get: function () { return ndiController_1.ndiController; } });
 //# sourceMappingURL=index.js.map

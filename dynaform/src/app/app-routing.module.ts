@@ -11,6 +11,8 @@ import { FormDataListComponent } from './form-data-list/form-data-list.component
 import { FormDataViewerComponent } from './form-data-viewer/form-data-viewer.component';
 import { RecipientsComponent } from './recipients/recipients.component';
 import { PublicFormComponent } from './public-form/public-form.component';
+import { BhutanNdiComponent } from './bhutan-ndi/bhutan-ndi.component';
+import { NdiRegisterComponent } from './ndi-register/ndi-register.component';
 import { AuthGuard } from './auth/auth.guard';
 import { DebugFormsComponent } from './debug-forms.component';
 import { AskDynaformComponent } from './ask-dynaform/ask-dynaform.component';
@@ -21,6 +23,8 @@ const routes: Routes = [
   { path: '', component: LandingComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
+  { path: 'bhutan-ndi', component: BhutanNdiComponent },
+  { path: 'ndi-register', component: NdiRegisterComponent },
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
   { path: 'forms', component: FormsListComponent, canActivate: [AuthGuard] },
   { path: 'forms/:id', component: FormViewerComponent, canActivate: [AuthGuard] },

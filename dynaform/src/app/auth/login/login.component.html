@@ -38,6 +38,30 @@
         </button>
       </div>
 
+      <!-- NDI Authentication Section -->
+      <div class="ndi-section">
+        <mat-divider></mat-divider>
+        <p class="ndi-description">Or verify your identity with Bhutan National Digital Identity</p>
+        
+        <!-- NDI Error Message -->
+        <div *ngIf="ndiError" class="error-message ndi-error">
+          <mat-icon>error</mat-icon>
+          <span>{{ ndiError }}</span>
+        </div>
+
+        <!-- NDI Button -->
+        <button mat-raised-button 
+                type="button"
+                color="accent"
+                class="ndi-button"
+                [disabled]="isNDILoading"
+                (click)="signInWithNDI()">
+          <mat-spinner *ngIf="isNDILoading" diameter="20" class="login-spinner"></mat-spinner>
+          <mat-icon *ngIf="!isNDILoading">verified_user</mat-icon>
+          {{ isNDILoading ? 'Opening NDI...' : 'Sign in with Bhutan NDI' }}
+        </button>
+      </div>
+
       <!-- Register Link -->
       <div class="register-section">
         <mat-divider></mat-divider>

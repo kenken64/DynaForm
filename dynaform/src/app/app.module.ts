@@ -32,6 +32,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { DatePipe, TitleCasePipe } from '@angular/common';
@@ -66,6 +67,8 @@ import { FormSaveConfirmationDialogComponent } from './form-save-confirmation-di
 import { LanguageSelectorComponent } from './language-selector/language-selector.component';
 import { SettingsComponent } from './settings/settings.component';
 import { TranslatePipe } from './shared/translate.pipe';
+import { BhutanNdiComponent } from './bhutan-ndi/bhutan-ndi.component';
+import { NdiRegisterComponent } from './ndi-register/ndi-register.component';
 
 @NgModule({
   declarations: [
@@ -95,7 +98,9 @@ import { TranslatePipe } from './shared/translate.pipe';
     FormSaveConfirmationDialogComponent,
     LanguageSelectorComponent,
     SettingsComponent,
-    TranslatePipe
+    TranslatePipe,
+    BhutanNdiComponent,
+    NdiRegisterComponent
   ],
   imports: [
     BrowserModule,
@@ -128,6 +133,7 @@ import { TranslatePipe } from './shared/translate.pipe';
     MatDatepickerModule,
     MatNativeDateModule,
     MatRadioModule,
+    MatExpansionModule,
     DragDropModule,
     TextFieldModule
   ],

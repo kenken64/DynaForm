@@ -288,6 +288,11 @@ export class AuthService {
     return 'Unknown Device';
   }
 
+  // Public method for setting authentication data (used by NDI registration)
+  public setUserAuthData(user: User, accessToken: string, refreshToken?: string): void {
+    this.setAuthData(user, accessToken, refreshToken);
+  }
+
   private setAuthData(user: User, accessToken: string, refreshToken?: string): void {
     // Store tokens
     localStorage.setItem('access_token', accessToken);

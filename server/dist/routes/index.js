@@ -12,6 +12,8 @@ const recipientGroupRoutes_1 = __importDefault(require("./recipientGroupRoutes")
 const publicRoutes_1 = __importDefault(require("./publicRoutes"));
 const authRoutes_1 = __importDefault(require("./authRoutes"));
 const chatRoutes_1 = __importDefault(require("./chatRoutes"));
+const ndi_webhook_1 = __importDefault(require("./ndi-webhook"));
+const ndiRoutes_1 = __importDefault(require("./ndiRoutes"));
 const router = (0, express_1.Router)();
 // Mount all routes under /api prefix for consistency
 router.use('/api', imageRoutes_1.default);
@@ -22,6 +24,8 @@ router.use('/api/recipient-groups', recipientGroupRoutes_1.default);
 router.use('/api/public', publicRoutes_1.default);
 router.use('/api/auth', authRoutes_1.default);
 router.use('/api/chat', chatRoutes_1.default);
+router.use('/api/ndi-webhook', ndi_webhook_1.default);
+router.use('/api/ndi', ndiRoutes_1.default);
 // Keep health check at root level for monitoring tools
 router.get('/health', (req, res) => {
     res.status(200).json({

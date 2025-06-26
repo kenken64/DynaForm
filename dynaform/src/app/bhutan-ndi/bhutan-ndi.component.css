@@ -1,0 +1,293 @@
+.ndi-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 20px;
+}
+
+.ndi-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.ndi-header {
+  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+  color: white;
+  padding: 24px;
+  position: relative;
+}
+
+.nav-buttons {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  display: flex;
+  gap: 8px;
+}
+
+.nav-button {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  backdrop-filter: blur(10px);
+}
+
+.nav-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.ndi-title {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.flag-icon {
+  width: 32px;
+  height: 24px;
+  margin-bottom: 12px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.ndi-title h1 {
+  margin: 0 0 8px 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.ndi-title p {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 14px;
+}
+
+.ndi-content {
+  padding: 32px 24px;
+}
+
+/* Loading Section */
+.loading-section {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.loading-section h2 {
+  margin: 24px 0 8px 0;
+  color: #333;
+  font-size: 20px;
+}
+
+.loading-section p {
+  color: #666;
+  margin: 0;
+}
+
+/* Error Section */
+.error-section {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.error-icon {
+  font-size: 48px;
+  color: #f44336;
+  margin-bottom: 16px;
+}
+
+.error-section h2 {
+  margin: 0 0 16px 0;
+  color: #333;
+  font-size: 20px;
+}
+
+.error-message {
+  color: #f44336;
+  margin-bottom: 24px;
+  font-weight: 500;
+}
+
+.error-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* QR Code Section */
+.qr-section {
+  text-align: center;
+}
+
+.qr-instructions {
+  margin-bottom: 32px;
+}
+
+.qr-icon {
+  font-size: 48px;
+  color: #ff6b35;
+  margin-bottom: 16px;
+}
+
+.qr-instructions h2 {
+  margin: 0 0 12px 0;
+  color: #333;
+  font-size: 24px;
+}
+
+.qr-instructions p {
+  color: #666;
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.qr-code-container {
+  margin: 32px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.qr-code-wrapper {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 2px solid #ff6b35;
+}
+
+.qr-image {
+  width: 250px;
+  height: 250px;
+  display: block;
+  border-radius: 8px;
+}
+
+.verification-steps {
+  background: #f8f9fa;
+  padding: 24px;
+  border-radius: 12px;
+  margin: 32px 0;
+  text-align: left;
+}
+
+.verification-steps h3 {
+  margin: 0 0 16px 0;
+  color: #333;
+  font-size: 18px;
+  text-align: center;
+}
+
+.verification-steps ol {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.verification-steps li {
+  margin-bottom: 8px;
+  color: #555;
+  line-height: 1.4;
+}
+
+.connection-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 24px 0;
+  padding: 16px;
+  background: #e3f2fd;
+  border-radius: 8px;
+  color: #1976d2;
+  font-weight: 500;
+}
+
+.qr-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 32px;
+  flex-wrap: wrap;
+}
+
+/* Help Section */
+.help-section {
+  margin-top: 32px;
+}
+
+.help-content {
+  padding: 16px 0;
+}
+
+.help-content h4 {
+  margin: 16px 0 8px 0;
+  color: #333;
+  font-size: 16px;
+}
+
+.help-content p {
+  margin: 0 0 12px 0;
+  color: #666;
+  line-height: 1.5;
+}
+
+.help-content ul {
+  margin: 0 0 16px 0;
+  padding-left: 20px;
+}
+
+.help-content li {
+  margin-bottom: 4px;
+  color: #555;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .ndi-container {
+    padding: 10px;
+  }
+  
+  .ndi-content {
+    padding: 24px 16px;
+  }
+  
+  .qr-image {
+    width: 200px;
+    height: 200px;
+  }
+  
+  .qr-actions {
+    flex-direction: column;
+  }
+  
+  .error-actions {
+    flex-direction: column;
+  }
+  
+  .ndi-title h1 {
+    font-size: 20px;
+  }
+}
+
+/* Angular Material Overrides */
+::ng-deep .mat-expansion-panel-header-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+::ng-deep .mat-raised-button {
+  border-radius: 8px;
+  font-weight: 500;
+  text-transform: none;
+}
+
+::ng-deep .mat-stroked-button {
+  border-radius: 8px;
+  font-weight: 500;
+  text-transform: none;
+}

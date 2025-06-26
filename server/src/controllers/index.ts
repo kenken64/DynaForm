@@ -6,3 +6,4 @@ export { RecipientGroupController, recipientGroupController } from './recipientG
 export { PublicFormController, publicFormController } from './publicFormController';
 export { ChatController, chatController } from './chatController';
 export { authController } from './authController';
+export { ndiController } from './ndiController';

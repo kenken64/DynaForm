@@ -7,6 +7,8 @@ import recipientGroupRoutes from './recipientGroupRoutes';
 import publicRoutes from './publicRoutes';
 import authRoutes from './authRoutes';
 import chatRoutes from './chatRoutes';
+import ndiWebhookRoutes from './ndi-webhook';
+import ndiRoutes from './ndiRoutes';
 
 const router = Router();
 
@@ -19,6 +21,8 @@ router.use('/api/recipient-groups', recipientGroupRoutes);
 router.use('/api/public', publicRoutes);
 router.use('/api/auth', authRoutes);
 router.use('/api/chat', chatRoutes);
+router.use('/api/ndi-webhook', ndiWebhookRoutes);
+router.use('/api/ndi', ndiRoutes);
 
 // Keep health check at root level for monitoring tools
 router.get('/health', (req, res) => {
