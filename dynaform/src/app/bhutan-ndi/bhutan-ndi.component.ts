@@ -163,43 +163,15 @@ export class BhutanNdiComponent implements OnInit, OnDestroy {
 
   private validateNDIProof(proof: any): {isValid: boolean, reasons: string[]} {
     const reasons: string[] = [];
-    
-    // Check basic success indicators
-    if (!proof?.success) {
-      reasons.push('Missing success flag');
+    // Strictly require verification_result === 'ProofValidated'
+    const verificationResult = proof?.verification_result || proof?.data?.verification_result;
+    const isProofValidated = verificationResult === 'ProofValidated';
+    if (!isProofValidated) {
+      reasons.push(`verification_result is not 'ProofValidated' (actual: '${verificationResult}')`);
     }
-    
-    // Check NDI-specific indicators
-    const hasValidationType = proof?.data?.type === 'present-proof/presentation-result';
-    const hasValidationResult = proof?.data?.verification_result === 'ProofValidated';
-    
-    if (!hasValidationType) {
-      reasons.push('Missing or invalid type field');
-    }
-    
-    if (!hasValidationResult) {
-      reasons.push('Missing or invalid verification_result');
-    }
-    
-    // Check for data presence
-    if (!proof?.data) {
-      reasons.push('Missing data object');
-    }
-    
-    // Check analysis object (if present)
-    if (proof?.analysis) {
-      if (!proof.analysis.likelySuccess) {
-        reasons.push('Analysis indicates likely failure');
-      }
-      if (!proof.analysis.hasProofData) {
-        reasons.push('Analysis indicates no proof data');
-      }
-    }
-    
-    // Validation passes if we have basic NDI success indicators
-    const isValid = proof?.success && hasValidationType && hasValidationResult;
-    
-    return { isValid, reasons };
+    // Optionally, you can keep other checks for logging or debugging
+    // But only ProofValidated is considered valid
+    return { isValid: isProofValidated, reasons };
   }
 
   private navigateToRegister(proof: any, userData: any, reason: string): void {

@@ -18,9 +18,7 @@
         <!-- Loading State -->
         <div *ngIf="isNdiLoading" class="loading-section">
           <div class="loading-gif-container">
-            <img src="https://i.pinimg.com/originals/99/b9/52/99b952956e2b92e88bbfeb747b61e503.gif" 
-                 alt="Loading..." 
-                 class="loading-gif" />
+            <div class="loading-spinner"></div>
           </div>
           <h2>Creating Verification Request</h2>
           <p>Please wait while we generate your verification QR code...</p>
@@ -28,9 +26,9 @@
 
         <!-- Error State -->
         <div *ngIf="ndiError && !isNdiLoading" class="error-section">
-          <img src="https://i.pinimg.com/originals/ef/8b/bd/ef8bbd4554dedcc2fd1fd15ab0ebd7a1.gif" 
-               alt="Error" 
-               class="error-gif" />
+          <div class="error-icon-container">
+            <mat-icon class="error-icon">error_outline</mat-icon>
+          </div>
           <h2>Verification Failed</h2>
           <p class="error-message">{{ ndiError }}</p>
           <div class="error-actions">
@@ -81,9 +79,7 @@
           <div *ngIf="isWaitingForSSEVerification" class="sse-waiting-section">
             <div class="sse-waiting-content">
               <div class="loading-gif-container">
-                <img src="https://i.pinimg.com/originals/99/b9/52/99b952956e2b92e88bbfeb747b61e503.gif" 
-                     alt="Waiting..." 
-                     class="loading-gif" />
+                <div class="loading-spinner"></div>
               </div>
               <h3>Waiting for Verification</h3>
               <p>Please complete the verification on your mobile device.</p>
@@ -110,18 +106,16 @@
     <!-- Loading State -->
     <div *ngIf="loading" class="loading-container">
       <div class="loading-gif-container">
-        <img src="https://i.pinimg.com/originals/99/b9/52/99b952956e2b92e88bbfeb747b61e503.gif" 
-             alt="Loading..." 
-             class="loading-gif" />
+        <div class="loading-spinner"></div>
       </div>
       <p class="loading-text">Loading your form...</p>
     </div>
 
     <!-- Error State -->
     <div *ngIf="error && !loading" class="error-container">
-      <img src="https://i.pinimg.com/originals/ef/8b/bd/ef8bbd4554dedcc2fd1fd15ab0ebd7a1.gif" 
-           alt="Error" 
-           class="error-gif" />
+      <div class="error-icon-container">
+        <mat-icon class="error-icon">error_outline</mat-icon>
+      </div>
       <h2>Unable to Load Form</h2>
       <p>{{ error }}</p>
       <button mat-raised-button color="primary" (click)="loadForm()">

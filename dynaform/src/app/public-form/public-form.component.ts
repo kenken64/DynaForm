@@ -154,22 +154,17 @@ export class PublicFormComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Check for valid verification result
+    // Check for valid verification result - ONLY ProofValidated is considered positive
     const isProofValidated = eventData?.verification_result === 'ProofValidated';
-    const isPresentationResult = eventData?.type === 'present-proof/presentation-result';
-    const hasValidData = eventData?.data || eventData?.revealed_attrs || eventData?.requested_presentation;
+    
+    console.log(`🔍 Verification result: "${eventData?.verification_result}" - Valid: ${isProofValidated}`);
 
-    if (isProofValidated || isPresentationResult) {
-      if (hasValidData) {
-        console.log('✅ Valid NDI verification event - proceeding with form access');
-        this.onNdiVerificationSuccess({ data: eventData });
-      } else {
-        console.log('❌ NDI verification event missing required data');
-        this.ndiError = 'Verification completed but data is incomplete. Please try again.';
-      }
+    if (isProofValidated) {
+      console.log('✅ Valid NDI verification event (ProofValidated) - proceeding with form access');
+      this.onNdiVerificationSuccess({ data: eventData });
     } else {
-      console.log('❌ Invalid NDI verification event type or result');
-      this.ndiError = 'Invalid verification result. Please try again.';
+      console.log('❌ NDI verification failed - Result is not ProofValidated:', eventData?.verification_result);
+      this.ndiError = 'NDI verification failed. Please try again.';
     }
   }
 
@@ -191,12 +186,11 @@ export class PublicFormComponent implements OnInit, OnDestroy {
     // Clear waiting state
     this.isWaitingForSSEVerification = false;
     
-    // Check if this is a valid NDI verification from SSE event
-    const isValidated = proof?.data?.verification_result === 'ProofValidated' || 
-                       proof?.data?.type === 'present-proof/presentation-result';
+    // Check if this is a valid NDI verification from SSE event - ONLY ProofValidated is valid
+    const isValidated = proof?.data?.verification_result === 'ProofValidated';
     
     if (isValidated) {
-      console.log('✅ NDI verification validated via SSE - Setting verified state and loading form');
+      console.log('✅ NDI verification validated via SSE (ProofValidated) - Setting verified state and loading form');
       
       // Store NDI data
       this.ndiData = proof;
@@ -207,7 +201,7 @@ export class PublicFormComponent implements OnInit, OnDestroy {
       // Load the actual form after SSE verification
       this.loadForm();
     } else {
-      console.log('❌ NDI verification failed - Invalid proof from SSE');
+      console.log('❌ NDI verification failed - Invalid proof from SSE, verification_result is not ProofValidated:', proof?.data?.verification_result);
       this.ndiError = 'NDI verification failed. Please try again.';
       this.isNdiVerified = false; // Ensure we stay in verification mode
     }

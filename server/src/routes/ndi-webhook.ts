@@ -8,48 +8,15 @@ let latestProof: any = null;
 
 // Helper function to determine if webhook indicates successful verification
 function determineVerificationSuccess(body: any): boolean {
-  // Check multiple possible success indicators
-  const successIndicators = [
-    body.success,
-    body.verified,
-    body.isVerified,
-    body.status === 'verified' || body.status === 'success' || body.status === 'completed',
-    body.state === 'verified' || body.state === 'success' || body.state === 'completed',
-    body.data?.success,
-    body.data?.verified,
-    body.data?.isVerified,
-    body.data?.status === 'verified' || body.data?.status === 'success' || body.data?.status === 'completed',
-    body.data?.state === 'verified' || body.data?.state === 'success' || body.data?.state === 'completed',
-    body.data?.proof?.verified,
-    body.data?.proofStatus === 'verified' || body.data?.proofStatus === 'success',
-    body.data?.verification?.success,
-    // NDI specific verification indicators
-    body.data?.verification_result === 'ProofValidated',
-    body.data?.type === 'present-proof/presentation-result' && body.data?.verification_result === 'ProofValidated'
-  ];
-
-  // Check if any success indicator is true
-  const hasSuccessIndicator = successIndicators.some(indicator => indicator === true);
-
-  // Check if we have proof data (another indicator of successful verification)
-  const hasProofData = !!(
-    body.data?.proof ||
-    body.data?.attributes ||
-    body.data?.credentials ||
-    body.data?.userData ||
-    body.data?.requested_presentation // NDI specific
-  );
-
-  // Check for revealed attributes (strong indicator of successful verification)
-  const hasRevealedAttrs = !!(
-    body.data?.proof?.requestedProof?.revealedAttrs ||
-    body.data?.proof?.requestedProof?.revealedAttrGroups ||
-    body.data?.proof?.revealedAttrs ||
-    body.data?.requested_presentation?.revealed_attrs || // NDI specific
-    body.data?.requested_presentation?.revealed_attr_groups // NDI specific
-  );
-
-  return hasSuccessIndicator || hasProofData || hasRevealedAttrs;
+  // Primary check: NDI's verification_result field - ONLY ProofValidated is considered success
+  const ndiVerificationResult = body.verification_result;
+  const isProofValidated = ndiVerificationResult === 'ProofValidated';
+  
+  console.log(`🔍 NDI verification_result: "${ndiVerificationResult}" - Valid: ${isProofValidated}`);
+  
+  // Return true ONLY if verification_result is exactly "ProofValidated"
+  // All other values (ProofRejected, ProofInvalid, etc.) are treated as failure
+  return isProofValidated;
 }
 
 // POST endpoint for receiving webhook
@@ -83,8 +50,14 @@ router.post('/', async (req: Request, res: Response) => {
 
     console.log("\n🎯 ========== KEY VERIFICATION FIELDS ==========");
     checkField(body, 'type');
+    checkField(body, 'verification_result'); // NDI primary success indicator
     checkField(body, 'status');
     checkField(body, 'state');
+    checkField(body, 'thid'); // NDI thread ID
+    checkField(body, 'relationship_did');
+    checkField(body, 'holder_did');
+    checkField(body, 'requested_presentation'); // NDI proof data
+    checkField(body, 'requested_presentation.revealed_attrs'); // NDI user data
     checkField(body, 'data.threadId');
     checkField(body, 'data.proofRequestThreadId');
     checkField(body, 'data.proof');
@@ -115,34 +88,50 @@ router.post('/', async (req: Request, res: Response) => {
     // Check for verification status indicators
     console.log("\n🚦 ========== VERIFICATION STATUS ANALYSIS ==========");
     const possibleSuccessFields = [
+      'verification_result', // NDI primary indicator
+      'type', // NDI event type
       'success', 'verified', 'isVerified', 'status', 'state',
       'data.success', 'data.verified', 'data.isVerified', 'data.status', 'data.state',
-      'data.proof.verified', 'data.proofStatus', 'data.verification.success'
+      'data.proof.verified', 'data.proofStatus', 'data.verification.success',
+      'data.verification_result' // In case it's nested
     ];
     
     possibleSuccessFields.forEach(field => {
       const value = checkField(body, field);
       if (value !== undefined) {
         console.log(`🎯 POTENTIAL SUCCESS INDICATOR - ${field}:`, value);
+        if (field === 'verification_result') {
+          console.log(`   ✅ PRIMARY NDI INDICATOR: ${value === 'ProofValidated' ? 'VALID' : 'INVALID'}`);
+        }
       }
     });
 
     // Check for user data (ID Number, Full Name, etc.)
     console.log("\n👤 ========== USER DATA ANALYSIS ==========");
     const userDataPaths = [
+      'requested_presentation.revealed_attrs', // NDI primary user data location
+      'requested_presentation.revealed_attr_groups',
+      'requested_presentation.identifiers',
       'data.proof.requestedProof.revealedAttrs',
       'data.proof.requestedProof.revealedAttrGroups',
       'data.attributes',
       'data.userData',
       'data.credentials',
       'data.proof.revealedAttrs',
-      'data.requested_presentation.revealed_attrs' // NDI specific
+      'data.requested_presentation.revealed_attrs' // NDI nested path
     ];
     
     userDataPaths.forEach(path => {
       const value = checkField(body, path);
       if (value) {
         console.log(`👤 USER DATA FOUND at ${path}:`, JSON.stringify(value, null, 2));
+        
+        // Special handling for NDI revealed_attrs
+        if (path.includes('revealed_attrs') && typeof value === 'object') {
+          Object.keys(value).forEach(attrKey => {
+            console.log(`   📋 Attribute "${attrKey}":`, value[attrKey]);
+          });
+        }
       }
     });
 
@@ -171,38 +160,52 @@ router.post('/', async (req: Request, res: Response) => {
 
     console.log("\n================================================\n");
 
-    // For now, treat every webhook call as positive (as requested)
     // Store the webhook payload
     latestProof = body;
 
-    // Send SSE event to notify frontend about the webhook
-    // Since we don't have thread ID from webhook, broadcast to all connections
-    SSEService.broadcast('ndi-verification', {
-      success: true,
-      message: 'NDI verification completed successfully',
-      data: body,
-      timestamp: new Date().toISOString(),
-      analysis: {
-        likelySuccess: isLikelySuccess,
-        hasProofData: !!(
-          body.data?.proof || 
-          body.data?.requested_presentation || 
-          body.data?.attributes ||
-          body.data?.credentials ||
-          body.data?.userData
-        ),
-        hasUserData: !!(
-          body.data?.proof?.requestedProof ||
-          body.data?.requested_presentation?.revealed_attrs ||
-          body.data?.requested_presentation?.revealed_attr_groups ||
-          body.data?.attributes ||
-          body.data?.userData ||
-          (body.data?.requested_presentation && Object.keys(body.data.requested_presentation.revealed_attrs || {}).length > 0)
-        )
-      }
-    });
+    // Determine if verification was successful based on verification_result
+    const isSuccessful = determineVerificationSuccess(body);
+    
+    console.log(`🎯 FINAL VERIFICATION DECISION: ${isSuccessful ? '✅ SUCCESS' : '❌ FAILED'}`);
+    console.log(`📋 Based on verification_result: "${body.verification_result}"`);
 
-    console.log("✅ NDI verification event broadcasted via SSE");
+    // Only send positive SSE event if verification_result is ProofValidated
+    if (isSuccessful) {
+      // Send SSE event to notify frontend about successful verification
+      SSEService.broadcast('ndi-verification', {
+        success: true,
+        message: 'NDI verification completed successfully',
+        data: body,
+        timestamp: new Date().toISOString(),
+        verification_result: body.verification_result,
+        analysis: {
+          likelySuccess: isSuccessful,
+          hasProofData: !!(
+            body.requested_presentation || 
+            body.data?.proof || 
+            body.data?.requested_presentation || 
+            body.data?.attributes ||
+            body.data?.credentials ||
+            body.data?.userData
+          ),
+          hasUserData: !!(
+            body.requested_presentation?.revealed_attrs ||
+            body.requested_presentation?.revealed_attr_groups ||
+            body.data?.proof?.requestedProof ||
+            body.data?.requested_presentation?.revealed_attrs ||
+            body.data?.requested_presentation?.revealed_attr_groups ||
+            body.data?.attributes ||
+            body.data?.userData ||
+            (body.requested_presentation?.revealed_attrs && Object.keys(body.requested_presentation.revealed_attrs).length > 0)
+          )
+        }
+      });
+
+      console.log("✅ NDI verification SUCCESS event broadcasted via SSE");
+    } else {
+      console.log("❌ NDI verification FAILED - No SSE event sent");
+      console.log(`📋 Reason: verification_result is "${body.verification_result}" (expected "ProofValidated")`);
+    }
 
     res.json({ received: true });
   } catch (error) {
