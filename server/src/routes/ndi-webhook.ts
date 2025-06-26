@@ -183,8 +183,20 @@ router.post('/', async (req: Request, res: Response) => {
       timestamp: new Date().toISOString(),
       analysis: {
         likelySuccess: isLikelySuccess,
-        hasProofData: !!body.data?.proof,
-        hasUserData: !!(body.data?.proof?.requestedProof || body.data?.attributes)
+        hasProofData: !!(
+          body.data?.proof || 
+          body.data?.requested_presentation || 
+          body.data?.attributes ||
+          body.data?.credentials ||
+          body.data?.userData
+        ),
+        hasUserData: !!(
+          body.data?.proof?.requestedProof ||
+          body.data?.requested_presentation?.revealed_attrs ||
+          body.data?.requested_presentation?.revealed_attr_groups ||
+          body.data?.attributes ||
+          body.data?.userData
+        )
       }
     });
 
