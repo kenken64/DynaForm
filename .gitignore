@@ -49,3 +49,8 @@ secrets/
 
 # Backup files
 *.backup.*
+
+env.ai-agent.txt
+env.server.txt
+.env.txt
+env.verifiable-url-contract.txt
